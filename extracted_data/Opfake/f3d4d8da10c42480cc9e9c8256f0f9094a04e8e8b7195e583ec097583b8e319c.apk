@@ -1,0 +1,15 @@
+{"timestamp":1592755590917,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755590925,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755590939,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591014,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591019,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591026,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591037,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591047,"class":"android.content.ContextWrapper","method":"openFileOutput","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591091,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591135,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591167,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591217,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591245,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591277,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592755591346,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

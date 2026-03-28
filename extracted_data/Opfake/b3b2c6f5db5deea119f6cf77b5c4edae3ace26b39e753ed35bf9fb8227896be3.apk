@@ -1,0 +1,15 @@
+{"timestamp":1592910636451,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636459,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636477,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636780,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636784,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636804,"class":"android.content.ContextWrapper","method":"startService","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636817,"class":"android.app.SharedPreferencesImpl$EditorImpl","method":"putBoolean","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636835,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636844,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636883,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636904,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636930,"class":"javax.crypto.spec.SecretKeySpec","method":"javax.crypto.spec.SecretKeySpec","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910636978,"class":"javax.crypto.Cipher","method":"doFinal","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910640355,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592910640519,"class":"android.app.ActivityThread","method":"handleReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

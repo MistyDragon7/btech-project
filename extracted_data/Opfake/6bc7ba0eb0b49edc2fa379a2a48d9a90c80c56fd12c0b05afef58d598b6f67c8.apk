@@ -1,0 +1,14 @@
+{"timestamp":1592051218102,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218110,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218123,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218198,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218201,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218211,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218215,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218229,"class":"android.content.ContextWrapper","method":"openFileOutput","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218265,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218302,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218320,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218352,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218378,"class":"android.telephony.SmsManager","method":"sendTextMessage","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592051218406,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

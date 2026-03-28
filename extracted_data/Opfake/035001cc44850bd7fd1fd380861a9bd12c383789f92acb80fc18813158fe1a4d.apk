@@ -1,0 +1,17 @@
+{"timestamp":1592930480318,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480326,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480343,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480368,"class":"dalvik.system.BaseDexClassLoader","method":"findResource","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480379,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480396,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480426,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480881,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480884,"class":"android.telephony.TelephonyManager","method":"getNetworkOperator","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480961,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930480964,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930481145,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930481148,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930481161,"class":"android.app.SharedPreferencesImpl$EditorImpl","method":"putBoolean","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930481172,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930481177,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592930481334,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

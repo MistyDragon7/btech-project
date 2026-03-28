@@ -1,0 +1,7 @@
+{"timestamp":1606404388188,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606404388210,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606404388239,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606404388359,"class":"android.telephony.TelephonyManager","method":"listen","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606404388395,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606404388546,"class":"android.content.ContextWrapper","method":"sendBroadcast","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606404389435,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

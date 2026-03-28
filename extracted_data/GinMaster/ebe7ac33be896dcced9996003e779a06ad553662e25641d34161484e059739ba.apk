@@ -1,0 +1,6 @@
+{"timestamp":1592771864499,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592771864507,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592771864522,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592771864554,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1592771864580,"class":"android.content.ContextWrapper","method":"startService","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592771865023,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

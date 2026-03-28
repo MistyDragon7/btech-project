@@ -1,0 +1,5 @@
+{"timestamp":1595539503880,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595539503897,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595539503927,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595539504038,"class":"java.lang.Runtime","method":"exec","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595539504086,"class":"java.lang.Runtime","method":"exec","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

@@ -1,0 +1,14 @@
+{"timestamp":1606412118700,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118707,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118719,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118734,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118740,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118867,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1606412118926,"class":"android.telephony.TelephonyManager","method":"listen","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118933,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412118955,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412119027,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412119031,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412119051,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412119054,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606412119080,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

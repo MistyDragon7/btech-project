@@ -1,0 +1,6 @@
+{"timestamp":1595541847077,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595541847085,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595541847096,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595541847159,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595541847253,"class":"java.lang.Runtime","method":"exec","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1595541847302,"class":"java.lang.Runtime","method":"exec","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

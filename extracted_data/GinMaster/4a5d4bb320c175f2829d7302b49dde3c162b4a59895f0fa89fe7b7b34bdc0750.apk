@@ -1,0 +1,9 @@
+{"timestamp":1606419972007,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972015,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972035,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972043,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972288,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972291,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972322,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972325,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606419972792,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

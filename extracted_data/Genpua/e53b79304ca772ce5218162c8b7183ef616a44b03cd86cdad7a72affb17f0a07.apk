@@ -1,0 +1,10 @@
+{"timestamp":1605666023791,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666023798,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666023814,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666024274,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666024279,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666024361,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666024369,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1605666024435,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666024437,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605666024594,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

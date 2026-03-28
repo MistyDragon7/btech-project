@@ -1,0 +1,15 @@
+{"timestamp":1592825373454,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825373461,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825373473,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825373495,"class":"dalvik.system.BaseDexClassLoader","method":"findResource","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825373501,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825373520,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825373547,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374025,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374028,"class":"android.telephony.TelephonyManager","method":"getNetworkOperator","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374200,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374208,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374261,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374264,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374276,"class":"android.content.ContextWrapper","method":"openFileOutput","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592825374442,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

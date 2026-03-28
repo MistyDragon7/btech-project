@@ -1,0 +1,16 @@
+{"timestamp":1606409164337,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409164346,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409164363,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409164577,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409166600,"class":"android.app.Activity","method":"startActivity","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409166606,"class":"android.app.Activity","method":"startActivity","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167145,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167157,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167209,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167220,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167348,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167373,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167379,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167404,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167469,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606409167553,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

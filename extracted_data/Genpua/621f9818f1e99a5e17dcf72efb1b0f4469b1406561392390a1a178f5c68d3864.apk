@@ -1,0 +1,13 @@
+{"timestamp":1605686349471,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349479,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349491,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349525,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349539,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349608,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1605686349620,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349668,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349764,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349820,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349837,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349861,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1605686349930,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

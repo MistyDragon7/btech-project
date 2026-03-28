@@ -1,0 +1,14 @@
+{"timestamp":1594870510986,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870510993,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870511012,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870511201,"class":"android.telephony.TelephonyManager","method":"getSimSerialNumber","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870511221,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870511260,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870513382,"class":"android.telephony.TelephonyManager","method":"getLine1Number","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870513439,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870543335,"class":"android.telephony.TelephonyManager","method":"getLine1Number","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870543343,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870573345,"class":"android.telephony.TelephonyManager","method":"getLine1Number","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870573355,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870603357,"class":"android.telephony.TelephonyManager","method":"getLine1Number","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594870603375,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
