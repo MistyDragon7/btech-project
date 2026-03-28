@@ -1,0 +1,9 @@
+{"timestamp":1594033439884,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033439892,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033439906,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033440221,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033440230,"class":"android.telephony.TelephonyManager","method":"getDeviceId","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033440807,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1594033441906,"class":"java.net.URL","method":"openConnection","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033441911,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594033517172,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

@@ -1,0 +1,12 @@
+{"timestamp":1598368093922,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368093929,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368093945,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368094347,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368094377,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368095300,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368106486,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368106502,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368106512,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368106553,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368106583,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598368106681,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

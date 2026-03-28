@@ -1,0 +1,14 @@
+{"timestamp":1597569724872,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569724879,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569724899,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569725238,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569729533,"class":"android.app.Activity","method":"startActivity","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569729552,"class":"android.app.Activity","method":"startActivity","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569730104,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1597569730229,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569730344,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569731053,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569731142,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569732337,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569732350,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597569732365,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

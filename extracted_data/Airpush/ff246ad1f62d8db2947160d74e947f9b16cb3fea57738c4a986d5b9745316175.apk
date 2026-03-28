@@ -1,0 +1,17 @@
+{"timestamp":1597430344432,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430344440,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430344457,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430344935,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1597430344942,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430344957,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345003,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345058,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345065,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345469,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345480,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345562,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430345597,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430346298,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430346301,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430346422,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1597430346452,"class":"org.apache.http.impl.client.AbstractHttpClient","method":"execute","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

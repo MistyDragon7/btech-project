@@ -1,0 +1,17 @@
+{"timestamp":1594062105786,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062105793,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062105813,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062105905,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062105912,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062105925,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106066,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106080,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106090,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106093,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106098,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106112,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106116,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106123,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106141,"class":"android.content.ContentValues","method":"put","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106876,"class":"android.content.ContentResolver","method":"query","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1594062106974,"class":"android.content.ContentResolver","method":"query","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

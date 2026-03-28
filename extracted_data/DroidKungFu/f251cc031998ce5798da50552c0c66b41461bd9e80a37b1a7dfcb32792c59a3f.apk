@@ -1,0 +1,14 @@
+{"timestamp":1592818281508,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281516,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281534,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281555,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281564,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281587,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281595,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281707,"class":"dalvik.system.DexFile","method":"openDexFile","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281712,"class":"dalvik.system.DexFile","method":"dalvik.system.DexFile","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281721,"class":"dalvik.system.DexFile","method":"dalvik.system.DexFile","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281724,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281763,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281766,"class":"dalvik.system.PathClassLoader","method":"dalvik.system.PathClassLoader","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1592818281834,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"getInstance","is_reflection":true}

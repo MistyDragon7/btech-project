@@ -1,0 +1,13 @@
+{"timestamp":1598743491183,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491190,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491208,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491443,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
+{"timestamp":1598743491460,"class":"android.telephony.TelephonyManager","method":"getDeviceId","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491476,"class":"android.telephony.TelephonyManager","method":"getDeviceId","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491482,"class":"android.accounts.AccountManager","method":"getAccounts","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491507,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743491574,"class":"java.net.ProxySelectorImpl","method":"select","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743494580,"class":"android.app.Activity","method":"startActivity","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743494584,"class":"android.app.Activity","method":"startActivity","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743495054,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598743495120,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

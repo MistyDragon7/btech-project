@@ -1,0 +1,4 @@
+{"timestamp":1598872422998,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598872423006,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598872423019,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598872423287,"class":"android.app.ApplicationPackageManager","method":"getInstalledPackages","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

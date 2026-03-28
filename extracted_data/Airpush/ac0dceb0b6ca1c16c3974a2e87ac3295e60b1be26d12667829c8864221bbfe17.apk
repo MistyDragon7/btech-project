@@ -1,0 +1,8 @@
+{"timestamp":1598471827629,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827636,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827655,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827734,"class":"android.telephony.TelephonyManager","method":"getSubscriberId","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827739,"class":"android.telephony.TelephonyManager","method":"getDeviceId","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827752,"class":"android.telephony.TelephonyManager","method":"getLine1Number","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827764,"class":"android.telephony.TelephonyManager","method":"getLine1Number","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1598471827798,"class":"java.lang.reflect.Method","method":"invoke","hooked_class":"UNK","hooked_method":"values","is_reflection":true}
