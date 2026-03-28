@@ -1,0 +1,8 @@
+{
+  "mean_gate_score": 0.1586141437292099,
+  "median_gate_score": 0.16798092424869537,
+  "std_gate_score": 0.021617233753204346,
+  "pct_below_0.1": 4.393287057376329e-05,
+  "pct_below_0.3": 1.0,
+  "pct_below_0.5": 1.0
+}

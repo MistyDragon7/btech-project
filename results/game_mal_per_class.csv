@@ -1,0 +1,3 @@
+,accuracy,sensitivity,specificity,precision,auc,f_score
+Fusob,1.0,1.0,1.0,1.0,1.0,1.0
+SmsPay,1.0,1.0,1.0,1.0,1.0,1.0
