@@ -1,0 +1,17 @@
+{"timestamp":1606046121902,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046121929,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046121950,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122183,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122214,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122286,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122289,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122304,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122307,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122335,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122339,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122344,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122367,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122379,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046122394,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046123206,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606046123216,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

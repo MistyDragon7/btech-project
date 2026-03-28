@@ -1,0 +1,13 @@
+{"timestamp":1606056519162,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519169,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519187,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519212,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519224,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519726,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519736,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519775,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056519828,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056520108,"class":"android.app.ApplicationPackageManager","method":"getInstalledPackages","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056524269,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056524554,"class":"android.app.ApplicationPackageManager","method":"getInstalledPackages","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056530257,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

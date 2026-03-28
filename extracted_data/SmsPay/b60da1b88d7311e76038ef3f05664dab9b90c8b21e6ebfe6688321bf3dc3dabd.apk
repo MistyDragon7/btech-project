@@ -1,0 +1,14 @@
+{"timestamp":1606067319149,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319168,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319185,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319281,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319284,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319295,"class":"android.app.SharedPreferencesImpl$EditorImpl","method":"putBoolean","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319304,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319317,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319394,"class":"android.content.ContextWrapper","method":"sendBroadcast","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319414,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319417,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067319457,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067320036,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606067320047,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

@@ -1,0 +1,16 @@
+{"timestamp":1606063430140,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430162,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430186,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430193,"class":"android.os.Debug","method":"isDebuggerConnected","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430212,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430218,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430226,"class":"dalvik.system.BaseDexClassLoader","method":"findLibrary","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430711,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430721,"class":"android.os.Debug","method":"isDebuggerConnected","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430725,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430739,"class":"dalvik.system.DexFile","method":"openDexFile","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430780,"class":"dalvik.system.DexFile","method":"dalvik.system.DexFile","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430812,"class":"dalvik.system.DexFile","method":"dalvik.system.DexFile","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430815,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430836,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606063430845,"class":"dalvik.system.PathClassLoader","method":"dalvik.system.PathClassLoader","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}

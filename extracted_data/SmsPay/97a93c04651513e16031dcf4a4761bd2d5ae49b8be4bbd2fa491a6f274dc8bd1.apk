@@ -1,0 +1,9 @@
+{"timestamp":1606056712075,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712091,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712114,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712374,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712416,"class":"android.app.ContextImpl","method":"registerReceiver","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712550,"class":"android.os.SystemProperties","method":"get","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712556,"class":"java.io.File","method":"exists","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056712630,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
+{"timestamp":1606056713766,"class":"libcore.io.IoBridge","method":"open","hooked_class":"UNK","hooked_method":"UNK","is_reflection":false}
