@@ -1,0 +1,18 @@
+00:36:22 [INFO] train_final: Loading corpus...
+00:36:22 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+00:36:25 [INFO] src.preprocessing:   Airpush: 5880 samples
+00:36:25 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+00:36:26 [INFO] src.preprocessing:   Fusob: 166 samples
+00:36:26 [INFO] src.preprocessing:   Genpua: 312 samples
+00:36:27 [INFO] src.preprocessing:   GinMaster: 523 samples
+00:36:28 [INFO] src.preprocessing:   Jisut: 430 samples
+00:36:30 [INFO] src.preprocessing:   Opfake: 596 samples
+00:36:30 [INFO] src.preprocessing:   SmsPay: 173 samples
+00:36:30 [INFO] train_final: Loaded 8085 samples across 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+00:36:30 [INFO] train_final: Building vocabulary (min_freq=2)...
+00:36:30 [INFO] src.preprocessing: Vocabulary size: 1109 (min_freq=2)
+00:36:30 [INFO] train_final: Vocab size: 1109
+00:36:31 [INFO] train_final: Train 7276 | Test 809
+00:36:31 [INFO] train_final: Device: mps
+00:37:45 [INFO] train_final: Epoch   1 | train=1.3977 | test=0.9253 | acc=0.7145 | f1=0.6019
+00:38:55 [INFO] train_final: Epoch   2 | train=0.6112 | test=0.5355 | acc=0.8566 | f1=0.7657

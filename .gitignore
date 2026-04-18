@@ -1,2 +1,27 @@
-raw_data
+# OS / Python artefacts only — everything else is backed up per user request.
 .DS_Store
+Thumbs.db
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+nohup.out
+
+# LaTeX aux files (regenerated on build)
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/sections/*.aux
+
+# Editor
+.vscode/
+.idea/

@@ -160,51 +160,53 @@ class MarkovPruningClassifier:
     def predict(self, encoded_sequences, max_spacing=10):
         from src.markov import extract_rules
 
+        # Build a fast lookup: rule -> (class_confidence vector)
+        # Only selected rules contribute.
+        rule_set = set(self.selected_rules)
         predictions = []
         for seq in encoded_sequences:
             sample_rules = extract_rules(seq, max_spacing)
+            seq_len = max(len(seq), 1)
             # Compute rank rho for each class (Eq. 6 from base paper)
+            # rho[c] = sum over matching rules: (count/seq_len) * confidence(rule, c)
             rho = np.zeros(self.num_classes)
-            for rule in self.selected_rules:
-                if rule in sample_rules:
-                    count = sample_rules[rule]
-                    seq_len = max(len(seq), 1)
-                    sigma_norm = count / seq_len
-                    for c in range(self.num_classes):
-                        conf_c = self.class_confidence[rule][c]
-                        if conf_c > 0:
-                            rho[c] += sigma_norm * conf_c
-                        else:
-                            # rule present but wrong class: penalty
-                            if self.class_confidence[rule].max() > 0:
-                                rho[c] += sigma_norm * (1.0 / self.class_confidence[rule].max())
+            for rule, count in sample_rules.items():
+                if rule not in rule_set:
+                    continue
+                sigma_norm = count / seq_len
+                rho += sigma_norm * self.class_confidence[rule]
 
             # Softmax classification (Eq. 7)
+            if rho.sum() == 0:
+                # No rules matched — fall back to class-prior (uniform)
+                predictions.append(0)
+                continue
             rho_exp = np.exp(rho - rho.max())  # numerical stability
             probs = rho_exp / rho_exp.sum()
-            predictions.append(np.argmax(probs))
+            predictions.append(int(np.argmax(probs)))
 
         return np.array(predictions)
 
     def predict_proba(self, encoded_sequences, max_spacing=10):
         from src.markov import extract_rules
 
+        rule_set = set(self.selected_rules)
         all_probs = []
         for seq in encoded_sequences:
             sample_rules = extract_rules(seq, max_spacing)
+            seq_len = max(len(seq), 1)
             rho = np.zeros(self.num_classes)
-            for rule in self.selected_rules:
-                if rule in sample_rules:
-                    count = sample_rules[rule]
-                    seq_len = max(len(seq), 1)
-                    sigma_norm = count / seq_len
-                    for c in range(self.num_classes):
-                        conf_c = self.class_confidence[rule][c]
-                        if conf_c > 0:
-                            rho[c] += sigma_norm * conf_c
+            for rule, count in sample_rules.items():
+                if rule not in rule_set:
+                    continue
+                sigma_norm = count / seq_len
+                rho += sigma_norm * self.class_confidence[rule]
 
-            rho_exp = np.exp(rho - rho.max())
-            probs = rho_exp / rho_exp.sum()
+            if rho.sum() == 0:
+                probs = np.ones(self.num_classes) / self.num_classes
+            else:
+                rho_exp = np.exp(rho - rho.max())
+                probs = rho_exp / rho_exp.sum()
             all_probs.append(probs)
 
         return np.array(all_probs)

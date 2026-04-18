@@ -1,0 +1,11 @@
+{
+  "vocab_size": 1109,
+  "num_classes": 8,
+  "d_model": 128,
+  "n_heads": 4,
+  "n_layers": 2,
+  "d_ff": 256,
+  "max_seq_len": 512,
+  "dropout": 0.1,
+  "notes": "Checkpoint saved at epoch 2 of a paused 30-epoch run (F1=0.77). For the published 3-fold results (F1=0.886), rerun scripts/train_final.py to completion."
+}

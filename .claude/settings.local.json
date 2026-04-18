@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/aravjain/PERSONAL/btech-project -type f ! -path \"./.git/*\" -exec file {})",
+      "Bash(wc -l /Users/aravjain/PERSONAL/btech-project/extracted_data/Fusob/*.apk)",
+      "Bash(wc -l /Users/aravjain/PERSONAL/btech-project/extracted_data/SmsPay/*.apk)",
+      "Bash(head -5 /Users/aravjain/PERSONAL/btech-project/extracted_data/Fusob/*.apk)"
+    ]
+  }
+}

@@ -1,0 +1,210 @@
+17:08:24 [INFO] GAME-Mal: ============================================================
+17:08:24 [INFO] GAME-Mal: STEP 1: Loading dataset from /Users/aravjain/PERSONAL/btech-project/extracted_data
+17:08:24 [INFO] GAME-Mal: ============================================================
+17:08:24 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+17:08:27 [INFO] src.preprocessing:   Airpush: 5880 samples
+17:08:28 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+17:08:28 [INFO] src.preprocessing:   Fusob: 166 samples
+17:08:28 [INFO] src.preprocessing:   Genpua: 312 samples
+17:08:29 [INFO] src.preprocessing:   GinMaster: 523 samples
+17:08:30 [INFO] src.preprocessing:   Jisut: 430 samples
+17:08:32 [INFO] src.preprocessing:   Opfake: 596 samples
+17:08:32 [INFO] src.preprocessing:   SmsPay: 173 samples
+17:08:32 [INFO] GAME-Mal: Total samples: 9337 | Classes: 8 (['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay'])
+17:08:32 [INFO] GAME-Mal:   Airpush: 5880 samples (63.0%)
+17:08:32 [INFO] GAME-Mal:   DroidKungFu: 1257 samples (13.5%)
+17:08:32 [INFO] GAME-Mal:   Fusob: 166 samples (1.8%)
+17:08:32 [INFO] GAME-Mal:   Genpua: 312 samples (3.3%)
+17:08:32 [INFO] GAME-Mal:   GinMaster: 523 samples (5.6%)
+17:08:32 [INFO] GAME-Mal:   Jisut: 430 samples (4.6%)
+17:08:32 [INFO] GAME-Mal:   Opfake: 596 samples (6.4%)
+17:08:32 [INFO] GAME-Mal:   SmsPay: 173 samples (1.9%)
+17:08:32 [INFO] GAME-Mal: ============================================================
+17:08:32 [INFO] GAME-Mal: STEP 2: Building vocabulary
+17:08:32 [INFO] GAME-Mal: ============================================================
+17:08:33 [INFO] src.preprocessing: Vocabulary size: 1118 (min_freq=2)
+17:08:33 [INFO] GAME-Mal: ============================================================
+17:08:33 [INFO] GAME-Mal: STEP 3: Preparing 3-fold cross-validation splits
+17:08:33 [INFO] GAME-Mal: ============================================================
+17:08:33 [INFO] GAME-Mal: ============================================================
+17:08:33 [INFO] GAME-Mal: FOLD 1/3 (train=6224, test=3113)
+17:08:33 [INFO] GAME-Mal: ============================================================
+17:08:33 [INFO] GAME-Mal: Building Markov chain features...
+17:08:37 [INFO] src.markov: Pruning: 2310/21492 rules kept (supp>=0.0005, conf>=0.30)
+17:08:37 [INFO] GAME-Mal: Rules: 21492 total, 2310 selected (3.7s)
+17:08:42 [INFO] GAME-Mal: --- Baseline Models ---
+17:08:43 [INFO] src.baselines: RandomForest: Acc=0.9467 F1=0.8793 AUC=0.9927
+17:08:45 [INFO] src.baselines: LinearSVM: Acc=0.9245 F1=0.8416 AUC=0.9732
+17:08:47 [INFO] src.baselines: DecisionTree: Acc=0.9210 F1=0.8341 AUC=0.9071
+17:08:48 [INFO] src.baselines: GaussianNB: Acc=0.8580 F1=0.7724 AUC=0.9167
+17:08:48 [INFO] GAME-Mal: --- Markov+Pruning Classifier ---
+17:08:48 [INFO] src.markov: Pruning: 2310/21492 rules kept (supp>=0.0005, conf>=0.30)
+17:08:52 [INFO] GAME-Mal: MarkovPruning: Acc=0.8179 F1=0.7068 AUC=0.9362
+17:08:52 [INFO] GAME-Mal: --- GAME-Mal (Gated Attention) ---
+17:08:52 [INFO] src.train: Using device: mps
+17:08:52 [INFO] src.train: Model parameters: 515656 (515.66 K)
+17:10:06 [INFO] src.train: Epoch   1 | train_loss=1.4122 | test_loss=1.0421 | acc=0.6161 | f1=0.4820
+17:14:48 [INFO] src.train: Epoch   5 | train_loss=0.3608 | test_loss=0.3376 | acc=0.9117 | f1=0.8437
+17:20:41 [INFO] src.train: Epoch  10 | train_loss=0.1781 | test_loss=0.3787 | acc=0.9197 | f1=0.8638
+17:26:51 [INFO] src.train: Epoch  15 | train_loss=0.1058 | test_loss=0.4049 | acc=0.9290 | f1=0.8617
+17:32:53 [INFO] src.train: Epoch  20 | train_loss=0.0576 | test_loss=0.4137 | acc=0.9319 | f1=0.8681
+17:38:51 [INFO] src.train: Epoch  25 | train_loss=0.0503 | test_loss=0.4375 | acc=0.9358 | f1=0.8705
+17:44:44 [INFO] src.train: Epoch  30 | train_loss=0.0364 | test_loss=0.4466 | acc=0.9345 | f1=0.8755
+17:50:35 [INFO] src.train: Epoch  35 | train_loss=0.0295 | test_loss=0.4444 | acc=0.9367 | f1=0.8769
+17:56:25 [INFO] src.train: Epoch  40 | train_loss=0.0302 | test_loss=0.4461 | acc=0.9374 | f1=0.8771
+17:56:25 [INFO] GAME-Mal: GAME-Mal: Acc=0.9374 F1=0.8793 AUC=0.9814
+17:56:25 [INFO] GAME-Mal: ============================================================
+17:56:25 [INFO] GAME-Mal: FOLD 2/3 (train=6225, test=3112)
+17:56:25 [INFO] GAME-Mal: ============================================================
+17:56:25 [INFO] GAME-Mal: Building Markov chain features...
+17:56:29 [INFO] src.markov: Pruning: 2219/21036 rules kept (supp>=0.0005, conf>=0.30)
+17:56:29 [INFO] GAME-Mal: Rules: 21036 total, 2219 selected (3.7s)
+17:56:34 [INFO] GAME-Mal: --- Baseline Models ---
+17:56:35 [INFO] src.baselines: RandomForest: Acc=0.9531 F1=0.8996 AUC=0.9945
+17:56:37 [INFO] src.baselines: LinearSVM: Acc=0.9229 F1=0.8345 AUC=0.9835
+17:56:39 [INFO] src.baselines: DecisionTree: Acc=0.9245 F1=0.8409 AUC=0.9098
+17:56:39 [INFO] src.baselines: GaussianNB: Acc=0.8612 F1=0.7890 AUC=0.9336
+17:56:39 [INFO] GAME-Mal: --- Markov+Pruning Classifier ---
+17:56:39 [INFO] src.markov: Pruning: 2219/21036 rules kept (supp>=0.0005, conf>=0.30)
+17:56:43 [INFO] GAME-Mal: MarkovPruning: Acc=0.8265 F1=0.7025 AUC=0.9478
+17:56:43 [INFO] GAME-Mal: --- GAME-Mal (Gated Attention) ---
+17:56:43 [INFO] src.train: Using device: mps
+17:56:43 [INFO] src.train: Model parameters: 515656 (515.66 K)
+17:57:55 [INFO] src.train: Epoch   1 | train_loss=1.4308 | test_loss=0.9385 | acc=0.7102 | f1=0.6098
+18:04:29 [INFO] src.train: Epoch   5 | train_loss=0.3538 | test_loss=0.3451 | acc=0.9039 | f1=0.8377
+18:10:23 [INFO] src.train: Epoch  10 | train_loss=0.1978 | test_loss=0.2990 | acc=0.9258 | f1=0.8645
+18:16:13 [INFO] src.train: Epoch  15 | train_loss=0.1093 | test_loss=0.3377 | acc=0.9235 | f1=0.8581
+18:22:03 [INFO] src.train: Epoch  20 | train_loss=0.0638 | test_loss=0.3320 | acc=0.9386 | f1=0.8814
+18:28:12 [INFO] src.train: Epoch  25 | train_loss=0.0418 | test_loss=0.3715 | acc=0.9422 | f1=0.8815
+18:33:54 [INFO] src.train: Epoch  30 | train_loss=0.0447 | test_loss=0.3723 | acc=0.9422 | f1=0.8822
+18:39:39 [INFO] src.train: Epoch  35 | train_loss=0.0344 | test_loss=0.3841 | acc=0.9428 | f1=0.8821
+18:45:52 [INFO] src.train: Epoch  40 | train_loss=0.0320 | test_loss=0.3819 | acc=0.9422 | f1=0.8828
+18:45:52 [INFO] GAME-Mal: GAME-Mal: Acc=0.9431 F1=0.8855 AUC=0.9856
+18:45:52 [INFO] GAME-Mal: ============================================================
+18:45:52 [INFO] GAME-Mal: FOLD 3/3 (train=6225, test=3112)
+18:45:52 [INFO] GAME-Mal: ============================================================
+18:45:52 [INFO] GAME-Mal: Building Markov chain features...
+18:45:56 [INFO] src.markov: Pruning: 2246/19520 rules kept (supp>=0.0005, conf>=0.30)
+18:45:56 [INFO] GAME-Mal: Rules: 19520 total, 2246 selected (3.8s)
+18:46:01 [INFO] GAME-Mal: --- Baseline Models ---
+18:46:02 [INFO] src.baselines: RandomForest: Acc=0.9505 F1=0.9012 AUC=0.9917
+18:46:04 [INFO] src.baselines: LinearSVM: Acc=0.9219 F1=0.8571 AUC=0.9837
+18:46:06 [INFO] src.baselines: DecisionTree: Acc=0.9219 F1=0.8324 AUC=0.9127
+18:46:06 [INFO] src.baselines: GaussianNB: Acc=0.8599 F1=0.7843 AUC=0.9249
+18:46:06 [INFO] GAME-Mal: --- Markov+Pruning Classifier ---
+18:46:07 [INFO] src.markov: Pruning: 2246/19520 rules kept (supp>=0.0005, conf>=0.30)
+18:46:10 [INFO] GAME-Mal: MarkovPruning: Acc=0.8422 F1=0.7184 AUC=0.9421
+18:46:10 [INFO] GAME-Mal: --- GAME-Mal (Gated Attention) ---
+18:46:10 [INFO] src.train: Using device: mps
+18:46:10 [INFO] src.train: Model parameters: 515656 (515.66 K)
+18:47:21 [INFO] src.train: Epoch   1 | train_loss=1.4415 | test_loss=0.8880 | acc=0.7600 | f1=0.5599
+18:52:04 [INFO] src.train: Epoch   5 | train_loss=0.3587 | test_loss=0.2912 | acc=0.9171 | f1=0.8530
+18:57:51 [INFO] src.train: Epoch  10 | train_loss=0.1999 | test_loss=0.3194 | acc=0.9181 | f1=0.8573
+19:03:33 [INFO] src.train: Epoch  15 | train_loss=0.1223 | test_loss=0.3219 | acc=0.9325 | f1=0.8803
+19:09:20 [INFO] src.train: Epoch  20 | train_loss=0.0700 | test_loss=0.3373 | acc=0.9377 | f1=0.8862
+19:15:43 [INFO] src.train: Epoch  25 | train_loss=0.0510 | test_loss=0.3664 | acc=0.9373 | f1=0.8816
+19:21:43 [INFO] src.train: Epoch  30 | train_loss=0.0389 | test_loss=0.3661 | acc=0.9412 | f1=0.8888
+19:27:31 [INFO] src.train: Epoch  35 | train_loss=0.0424 | test_loss=0.3774 | acc=0.9409 | f1=0.8920
+19:33:18 [INFO] src.train: Epoch  40 | train_loss=0.0286 | test_loss=0.3801 | acc=0.9412 | f1=0.8918
+19:33:18 [INFO] GAME-Mal: GAME-Mal: Acc=0.9409 F1=0.8946 AUC=0.9852
+19:33:18 [INFO] GAME-Mal: ============================================================
+19:33:18 [INFO] GAME-Mal: STEP 5: Aggregating results across 3 folds
+19:33:18 [INFO] GAME-Mal: ============================================================
+19:33:19 [INFO] GAME-Mal:    RandomForest | Acc=0.9501(+/-0.0026) | F1=0.8934(+/-0.0100) | AUC=0.9930(+/-0.0012)
+19:33:19 [INFO] GAME-Mal:       LinearSVM | Acc=0.9231(+/-0.0011) | F1=0.8444(+/-0.0094) | AUC=0.9802(+/-0.0049)
+19:33:19 [INFO] GAME-Mal:    DecisionTree | Acc=0.9225(+/-0.0015) | F1=0.8358(+/-0.0037) | AUC=0.9099(+/-0.0023)
+19:33:19 [INFO] GAME-Mal:      GaussianNB | Acc=0.8597(+/-0.0013) | F1=0.7819(+/-0.0070) | AUC=0.9251(+/-0.0069)
+19:33:19 [INFO] GAME-Mal:   MarkovPruning | Acc=0.8289(+/-0.0101) | F1=0.7092(+/-0.0067) | AUC=0.9421(+/-0.0047)
+19:33:19 [INFO] GAME-Mal:        GAME-Mal | Acc=0.9405(+/-0.0024) | F1=0.8864(+/-0.0063) | AUC=0.9841(+/-0.0019)
+19:33:19 [INFO] GAME-Mal: Results saved to /Users/aravjain/PERSONAL/btech-project/results/results_summary.csv
+19:33:19 [INFO] GAME-Mal: ============================================================
+19:33:19 [INFO] GAME-Mal: STEP 6: Explainability analysis
+19:33:19 [INFO] GAME-Mal: ============================================================
+19:33:30 [INFO] GAME-Mal: Sparsity stats: {
+  "mean_gate_score": 0.4401208758354187,
+  "median_gate_score": 0.4573167562484741,
+  "std_gate_score": 0.10633305460214615,
+  "pct_below_0.1": 0.0007530665202576749,
+  "pct_below_0.3": 0.11119231204405625,
+  "pct_below_0.5": 0.6552624696501208
+}
+19:33:31 [INFO] GAME-Mal: Top APIs per family:
+19:33:31 [INFO] GAME-Mal:   Airpush:
+19:33:31 [INFO] GAME-Mal:     0.5775  REFL:UNK._activity_pause
+19:33:31 [INFO] GAME-Mal:     0.5648  java.net.URL.openConnection
+19:33:31 [INFO] GAME-Mal:     0.5448  android.content.ContentValues.put
+19:33:31 [INFO] GAME-Mal:     0.5398  <UNK>
+19:33:31 [INFO] GAME-Mal:     0.5307  REFL:android.webkit.WebSettingsClassic.getUserAgentString
+19:33:31 [INFO] GAME-Mal:   DroidKungFu:
+19:33:31 [INFO] GAME-Mal:     0.5785  REFL:com.wqmobile.sdk.model.AppSettings.setNextADCount
+19:33:31 [INFO] GAME-Mal:     0.5587  REFL:com.baidu.android.pushservice.internal.CustomPushNotificationBuilder.writeObject
+19:33:31 [INFO] GAME-Mal:     0.5441  java.net.URL.openConnection
+19:33:31 [INFO] GAME-Mal:     0.5441  REFL:com.wqmobile.sdk.model.AppSettings.getIP
+19:33:31 [INFO] GAME-Mal:     0.5370  <UNK>
+19:33:31 [INFO] GAME-Mal:   Fusob:
+19:33:31 [INFO] GAME-Mal:     0.5748  android.telephony.TelephonyManager.getDeviceId
+19:33:31 [INFO] GAME-Mal:     0.5716  <UNK>
+19:33:31 [INFO] GAME-Mal:     0.5534  android.app.ContextImpl.registerReceiver
+19:33:31 [INFO] GAME-Mal:     0.5272  android.webkit.WebView.setWebViewClient
+19:33:31 [INFO] GAME-Mal:     0.5244  android.app.SharedPreferencesImpl$EditorImpl.putString
+19:33:31 [INFO] GAME-Mal:   Genpua:
+19:33:31 [INFO] GAME-Mal:     0.5742  REFL:com.google.appinventor.components.runtime.Label.FontItalic
+19:33:31 [INFO] GAME-Mal:     0.5625  java.net.URL.openConnection
+19:33:31 [INFO] GAME-Mal:     0.5625  REFL:com.google.appinventor.components.runtime.Label.Width
+19:33:31 [INFO] GAME-Mal:     0.5619  REFL:com.google.appinventor.components.runtime.AdMob.AdUnitID
+19:33:31 [INFO] GAME-Mal:     0.5509  REFL:com.google.appinventor.components.runtime.Button.Text
+19:33:31 [INFO] GAME-Mal:   GinMaster:
+19:33:31 [INFO] GAME-Mal:     0.5605  REFL:com.wqmobile.sdk.model.AppSettings.getTextColor
+19:33:31 [INFO] GAME-Mal:     0.5562  REFL:com.adobe.air.AndroidActivityWrapper.onAttachedToWindow
+19:33:31 [INFO] GAME-Mal:     0.5549  REFL:com.adobe.air.AndroidActivityWrapper.onContentChanged
+19:33:31 [INFO] GAME-Mal:     0.5531  java.net.URL.openConnection
+19:33:31 [INFO] GAME-Mal:     0.5438  REFL:com.wqmobile.sdk.model.AppSettings.setNextADCount
+19:33:31 [INFO] GAME-Mal:   Jisut:
+19:33:31 [INFO] GAME-Mal:     0.4323  libcore.io.IoBridge.open
+19:33:31 [INFO] GAME-Mal:     0.4013  java.io.File.exists
+19:33:31 [INFO] GAME-Mal:     0.3787  android.app.ActivityManager.getRunningTasks
+19:33:31 [INFO] GAME-Mal:     0.3779  android.os.SystemProperties.get
+19:33:31 [INFO] GAME-Mal:     0.3735  android.content.ContentResolver.query
+19:33:31 [INFO] GAME-Mal:   Opfake:
+19:33:31 [INFO] GAME-Mal:     0.6402  REFL:ynlxcd.cwductjwjc.admyusbyfes.getClass
+19:33:31 [INFO] GAME-Mal:     0.5921  REFL:gvvwtjh.btvamydntnm.orkwplsket.getSystemService
+19:33:31 [INFO] GAME-Mal:     0.5849  REFL:android.app.SharedPreferencesImpl.edit
+19:33:31 [INFO] GAME-Mal:     0.5790  REFL:vbkoxh.cswnpr.vmbatqef.getClass
+19:33:31 [INFO] GAME-Mal:     0.5605  REFL:tp5x.WGt12.Y6Cg03N.loadAndDecode
+19:33:31 [INFO] GAME-Mal:   SmsPay:
+19:33:31 [INFO] GAME-Mal:     0.5685  java.net.URL.openConnection
+19:33:31 [INFO] GAME-Mal:     0.5558  <UNK>
+19:33:31 [INFO] GAME-Mal:     0.5486  REFL:UNK.sendStaticMessage
+19:33:31 [INFO] GAME-Mal:     0.5466  REFL:android.app.ActivityManagerProxy.getMemoryInfo
+19:33:31 [INFO] GAME-Mal:     0.5454  REFL:java.net.PlainSocketImpl.getInputStream
+19:33:33 [INFO] GAME-Mal: 
+GAME-Mal Per-Class Metrics:
+19:33:33 [INFO] GAME-Mal: 
+             accuracy  sensitivity  specificity  precision       auc   f_score
+Airpush      0.958869     0.959184     0.958333   0.975104  0.958759  0.967078
+DroidKungFu  0.970437     0.923628     0.977720   0.865772  0.950674  0.893764
+Fusob        0.999357     1.000000     0.999346   0.964912  0.999673  0.982143
+Genpua       0.984254     0.740385     0.992686   0.777778  0.866535  0.758621
+GinMaster    0.986825     0.856322     0.994554   0.903030  0.925438  0.879056
+Jisut        0.996465     0.986111     0.996968   0.940397  0.991539  0.962712
+Opfake       0.995823     0.964646     0.997941   0.969543  0.981294  0.967089
+SmsPay       0.989717     0.810345     0.993124   0.691176  0.901734  0.746032
+19:33:33 [INFO] GAME-Mal: ============================================================
+19:33:33 [INFO] GAME-Mal: STEP 7: Generating paper-ready tables
+19:33:33 [INFO] GAME-Mal: ============================================================
+
+======================================================================
+COMPARISON TABLE (Paper Table Format)
+======================================================================
+       Method   Acc.  Sens.  Prec.    AUC F-Mea.
+ RandomForest 0.9501 0.8642 0.9327 0.9930 0.8934
+    LinearSVM 0.9231 0.8092 0.8908 0.9802 0.8444
+ DecisionTree 0.9225 0.8315 0.8423 0.9099 0.8358
+   GaussianNB 0.8597 0.8489 0.7414 0.9251 0.7819
+MarkovPruning 0.8289 0.7122 0.7513 0.9421 0.7092
+     GAME-Mal 0.9405 0.8906 0.8834 0.9841 0.8864
+======================================================================
+19:33:33 [INFO] GAME-Mal: 
+All results saved to: /Users/aravjain/PERSONAL/btech-project/results
+19:33:33 [INFO] GAME-Mal: Figures saved to: /Users/aravjain/PERSONAL/btech-project/results/figures
+19:33:33 [INFO] GAME-Mal: Done!

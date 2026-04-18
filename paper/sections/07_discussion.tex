@@ -1,0 +1,60 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\subsection{What the numbers say}
+
+GAME-Mal does not set a new state-of-the-art in raw accuracy on
+this corpus — a well-tuned Random Forest over pruned associative
+rules reaches almost identical accuracy. The contribution is
+instead twofold: (i) the gate mechanism closes the gap between a
+sequence model and a strong tree-based baseline on a task where
+trees usually win, and (ii) it does so with a built-in,
+forward-pass-native explanation mechanism that the Random Forest
+cannot match without falling back to post-hoc methods. For
+operational triage, a 0.5--1\% accuracy cost in exchange for
+per-sample API attributions computed at inference time is a
+favourable trade.
+
+\subsection{Limitations}
+
+\paragraph{Dataset scope.} Our evaluation is confined to eight
+families of the UMD corpus. Older families (Drebin) and newer
+ones (recent banking trojans) may exhibit API distributions
+sufficiently different to shift the picture. A multi-corpus study
+is a natural next step.
+
+\paragraph{Sequence truncation.} Droidmon traces can exceed
+$10^4$ API calls; we cap at 512 via tail-truncation. While we
+verified empirically that this preserves the payload-execution
+phase for the families studied, longer context would benefit
+multi-stage malware and is a natural fit for recent long-context
+attention variants.
+
+\paragraph{Reproducibility of gate explanations.} Gate activations
+are deterministic given a fixed model, but different random seeds
+produce quantitatively different fingerprints (though the top
+APIs per family are stable in our runs). Formal stability analysis
+is left to future work.
+
+\paragraph{Evasion.} A motivated attacker aware of GAME-Mal could
+attempt to pad traces with benign API calls specifically crafted
+to attract gate mass, displacing the true family signals. We have
+not yet evaluated the model under adversarial evasion.
+
+\paragraph{Single sandbox.} All traces were collected via a single
+Droidmon-instrumented sandbox configuration. Cross-sandbox
+generalisation (e.g.\ to CopperDroid or DroidScope traces) is
+untested.
+
+\subsection{Future work}
+
+Three directions are immediately attractive. First, extending
+the gate mechanism to produce per-head explanations rather than
+averaging across heads — different heads appear to specialise
+on different behavioural axes in preliminary inspection.
+Second, combining the rule-mining and gating approaches: using
+Markov-derived rules as an auxiliary input channel to the
+transformer, rather than as a separate baseline. Third,
+formalising the gate activations as a calibrated importance score
+by matching them against ground-truth behavioural annotations for
+a subset of samples.

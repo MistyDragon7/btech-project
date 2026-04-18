@@ -77,13 +77,13 @@ class Config:
     dropout = 0.15
     lr = 5e-4
     weight_decay = 1e-4
-    epochs = 80
-    batch_size = 16
-    patience = 15
+    epochs = 40
+    batch_size = 32
+    patience = 10
     min_vocab_freq = 2
 
     # Experiment
-    n_folds = 5
+    n_folds = 3
     seed = 42
 
 
@@ -306,9 +306,34 @@ def run_pipeline(skip_baselines=False, quick=False):
 
     if best_game_mal_model is not None and best_fold_data is not None:
         import torch
+        import pickle
         device = torch.device("mps" if torch.backends.mps.is_available()
                               else "cuda" if torch.cuda.is_available() else "cpu")
         best_game_mal_model.to(device)
+
+        # ── Persist model weights, vocab, and config ────────────────
+        models_dir = output_dir / "models"
+        models_dir.mkdir(parents=True, exist_ok=True)
+        torch.save(best_game_mal_model.state_dict(), models_dir / "game_mal_best.pt")
+        with open(models_dir / "vocab.pkl", "wb") as f:
+            pickle.dump({"api2idx": vocab.api2idx, "idx2api": vocab.idx2api,
+                         "min_freq": vocab.min_freq}, f)
+        with open(models_dir / "family_names.json", "w") as f:
+            json.dump(family_names, f, indent=2)
+        with open(models_dir / "config.json", "w") as f:
+            json.dump({
+                "vocab_size": len(vocab),
+                "num_classes": num_classes,
+                "d_model": Config.d_model,
+                "n_heads": Config.n_heads,
+                "n_layers": Config.n_layers,
+                "d_ff": Config.d_ff,
+                "max_seq_len": Config.max_seq_len,
+                "dropout": Config.dropout,
+                "best_fold": int(best_game_mal_fold),
+                "best_f1": float(best_game_mal_f1),
+            }, f, indent=2)
+        logger.info("Best GAME-Mal model saved to %s", models_dir)
 
         X_test_best = best_fold_data["X_test"]
         y_test_best = best_fold_data["y_test"]

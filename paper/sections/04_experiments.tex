@@ -1,0 +1,89 @@
+\section{Experimental Setup}
+\label{sec:experiments}
+
+\subsection{Dataset}
+
+We use an eight-family subset of the UMD Android Malware corpus,
+restricted to families with at least 150 droidmon-instrumented
+samples after deduplication and successful trace extraction
+(Table~\ref{tab:dataset}). After a minimum-length filter of
+30~API~calls, the corpus contains \textbf{9{,}337~samples}
+spanning families that together cover four dominant malicious
+behaviours: ad-injection (Airpush, Opfake), premium-SMS fraud
+(Jisut, Genpua, SmsPay), ransomware (Fusob), and generic
+trojans with dropper/rootkit behaviour (DroidKungFu, GinMaster).
+
+\begin{table}[t]
+\centering
+\caption{UMD eight-family subset.}
+\label{tab:dataset}
+\begin{tabular}{lrr}
+\toprule
+Family & \# samples & Share (\%) \\
+\midrule
+Airpush      & 5{,}956 & 63.8 \\
+DroidKungFu  & 1{,}315 & 14.1 \\
+Opfake       &   615 & 6.6  \\
+Jisut        &   534 & 5.7  \\
+GinMaster    &   529 & 5.7  \\
+Genpua       &   313 & 3.4  \\
+SmsPay       &   174 & 1.9  \\
+Fusob        &   166 & 1.8  \\
+\midrule
+\textbf{Total} & \textbf{9{,}337} & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The imbalance ratio between the largest and smallest family is
+approximately $34\times$, which we address through class-weighted
+cross-entropy training (Section~\ref{sec:training}) and
+macro-averaged reporting.
+
+\subsection{Baselines}
+
+We compare GAME-Mal against six baselines, all trained and
+evaluated under the identical fold splits described below:
+
+\begin{itemize}
+  \item \textbf{Random Forest} with $n=200$ trees over the
+    pruned-rule feature vectors.
+  \item \textbf{Linear SVM} with one-vs-rest, $C=1.0$, balanced
+    class weights.
+  \item \textbf{Decision Tree} with default scikit-learn settings.
+  \item \textbf{Gaussian Naïve Bayes} over the rule features.
+  \item \textbf{MarkovPruning}: our faithful reproduction of
+    D'Angelo et al.~\cite{dangelo2023association}, classifying via
+    Eq.~\ref{eq:rho}. This serves as our primary statistical
+    baseline.
+  \item \textbf{Plain Transformer}: an ablation of GAME-Mal with
+    the sigmoid gates removed (equivalent to standard multi-head
+    attention) but otherwise identical architecture, training
+    recipe, and hyperparameters.
+\end{itemize}
+
+\subsection{Evaluation protocol}
+
+We use \textbf{stratified 3-fold cross-validation}. Each family's
+samples are partitioned into three disjoint folds, preserving the
+family's global proportion. For each fold, the other two folds
+are used for training and rule mining, the held-out fold for
+evaluation. Reported numbers are means over the three folds.
+
+We report \textbf{accuracy}, \textbf{macro-averaged F1-score},
+and \textbf{macro-averaged one-vs-rest AUROC}. Macro-averaging
+prevents the majority class (Airpush at 63.8\%) from dominating
+the headline numbers. All deep models are evaluated with the
+checkpoint that achieved the highest validation macro-F1 during
+training, not the last-epoch checkpoint.
+
+\subsection{Implementation}
+
+All code is implemented in Python 3.9 with PyTorch 2.2 and
+scikit-learn 1.4. Experiments run on an Apple~M-series Mac,
+using the PyTorch MPS backend for GPU acceleration. A full
+three-fold run (seven classifiers per fold, including training
+GAME-Mal for up to 40 epochs) completes in approximately
+2.5~hours. Our full training and evaluation pipeline, together
+with pre-computed vocabularies, Markov rules, and trained model
+weights, is released at \url{https://github.com/<redacted>/game-mal}.

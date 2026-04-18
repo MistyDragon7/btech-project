@@ -1,0 +1,22 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented GAME-Mal, a malware family classifier that combines
+reflection-aware dynamic-trace parsing with a sigmoid-gated
+multi-head attention transformer. The gated architecture — G1
+position of Qiu et al.\ — not only matches a strong Random Forest
+baseline on the eight-family UMD subset but also exposes an
+intrinsic, forward-pass-native explanation of its decisions
+through its gate activations. On the minority ransomware family
+(Fusob) in particular, GAME-Mal improves macro F1 by over 0.4
+absolute points compared to a faithful reproduction of the
+Markov associative-rule classifier of D'Angelo et al., while
+producing behaviourally coherent per-family API fingerprints
+without any post-hoc attribution.
+
+The broader contribution is methodological: gated attention is a
+mechanism that \emph{trades a small amount of representational
+capacity for a meaningful amount of interpretability}. On
+security-critical applications where model behaviour must be
+explainable to a human analyst, this trade is often the one
+worth making.

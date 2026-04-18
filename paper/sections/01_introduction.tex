@@ -1,0 +1,87 @@
+\section{Introduction}
+\label{sec:introduction}
+
+The Android operating system accounts for the overwhelming majority of
+mobile devices in use worldwide, and consequently for the overwhelming
+majority of mobile malware samples captured in
+the wild~\cite{alswaina2020android,kaspersky2023mobile}. Attackers
+exploit both the openness of the ecosystem and the relative permissiveness
+of the permission model to deploy families that engage in SMS fraud,
+banking credential theft, device bricking, click fraud, and ransomware.
+Because modern malware families are repackaged and minor-version-bumped
+hundreds of times, \emph{family-level classification} — assigning a
+new sample to a known family — has become more operationally useful
+than hash-level detection.
+
+\subsection{The static--dynamic trade-off}
+
+Static analysis is fast but increasingly brittle: packers, control-flow
+flattening, and Java reflection collapse the observable API surface to
+generic entry points, so static features can no longer distinguish
+family-defining behaviour. Dynamic analysis — executing samples inside an
+instrumented Android sandbox — is slower but observes the \emph{true}
+behaviour. Hooking frameworks such as Droidmon emit a
+time-ordered log of every framework-level API call. These logs form the
+input to our study.
+
+\subsection{Limitations of existing approaches}
+
+Two lines of prior work dominate.
+
+\paragraph{Statistical rule-mining} D'Angelo et al.~\cite{dangelo2023association}
+treat each sample as a $k$-spaced Markov chain of API transitions
+$\{A \rightarrow B\}$, mine associative rules with
+support/confidence pruning, and classify new samples via
+rule-voting. This approach is interpretable and fast, but it (i) loses
+long-range sequential context by only modelling local transitions,
+(ii) has no learned representation, and (iii) is sensitive to pruning
+thresholds.
+
+\paragraph{Deep attention models} Transformer-based classifiers
+produce strong results on API sequences, but standard softmax attention
+produces ``attention sinks''~\cite{qiu2025gated} and offers no intrinsic
+mechanism for per-sample explanation. Post-hoc methods such as
+SHAP or LIME can be applied, but their explanations are approximations
+of a surrogate model, not of the classifier itself.
+
+\subsection{This paper}
+
+We propose GAME-Mal (\textbf{G}ated \textbf{A}ttention over
+\textbf{M}arkov \textbf{E}mbeddings for \textbf{Mal}ware
+classification). Our contributions are:
+
+\begin{itemize}
+  \item A \textbf{reflection-aware API resolution} scheme that uses
+  \texttt{hooked\_class.hooked\_method} for reflective calls (preserving
+  the true target behind \texttt{Method.invoke}) while retaining a
+  \texttt{REFL:} prefix as a mechanism tag.
+
+  \item The first application, to our knowledge, of
+  \textbf{sigmoid-gated multi-head attention} (Qiu et al.\
+  G1 position) to Android malware classification. A head-specific
+  sigmoid gate after the scaled dot-product attention output introduces
+  non-linearity, input-dependent sparsity, and breaks the linear
+  bottleneck between $V$ and $W_O$.
+
+  \item An \textbf{intrinsic explainability} mechanism: the gate
+  activations themselves rank APIs by importance per sample, yielding
+  per-family behavioural fingerprints without any post-hoc method.
+
+  \item A \textbf{reproducible experimental pipeline} that runs
+  four sklearn baselines (Random Forest, Linear SVM, Decision Tree,
+  Gaussian Naïve Bayes), a faithful reproduction of
+  D'Angelo et al.'s rule-voting classifier, and GAME-Mal under
+  identical stratified $k$-fold splits.
+\end{itemize}
+
+The remainder of the paper is organised as follows.
+Section~\ref{sec:related} reviews prior work on Android malware
+classification, Markov chain rule mining, and gated attention.
+Section~\ref{sec:methodology} details the GAME-Mal architecture and
+the reflection-aware preprocessing pipeline.
+Section~\ref{sec:experiments} describes the dataset and experimental
+protocol. Section~\ref{sec:results} reports quantitative results.
+Section~\ref{sec:explainability} analyses the gate activations and
+extracts per-family API fingerprints.
+Section~\ref{sec:discussion} discusses limitations.
+Section~\ref{sec:conclusion} concludes.

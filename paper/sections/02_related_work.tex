@@ -1,0 +1,60 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Android malware detection and classification}
+
+Early Android malware detection was dominated by signature matching and
+manifest-level permission analysis~\cite{felt2011survey}. As
+obfuscation techniques matured, work shifted to
+decompiled-code features~\cite{arp2014drebin} and, more recently, to
+dynamic behavioural traces captured in instrumented
+sandboxes~\cite{ali2020ransomware}. The availability of corpora such as
+Drebin, CICAndMal2017, and UMD has accelerated comparative benchmarking
+of classical and deep models.
+
+\subsection{Markov chains and associative rules for malware}
+
+Markov models have a long history in malware classification: sequences of
+system calls, API calls, or opcodes are modelled as first-order or
+$k$-order transitions, and the resulting transition probabilities serve
+as features for downstream classifiers. D'Angelo et
+al.~\cite{dangelo2023association} recently extended this paradigm by
+mining $k$-spaced \emph{associative rules} between API calls, pruning
+by support and confidence, and classifying via per-class softmax ranking
+(Eq.~7 of their paper). Their federated-learning variant yields privacy
+guarantees at a small accuracy cost; we use their centralised
+formulation as our primary statistical baseline.
+
+\subsection{Sequence models and transformers}
+
+Transformers~\cite{vaswani2017attention} revolutionised natural language
+processing and have since been applied to system-call sequences for
+malware detection with strong results. However, standard softmax
+attention creates a linear composition between the value projection
+$V$ and the output projection $W_O$ — a low-rank bottleneck — and
+empirically produces ``attention sinks'' where early tokens receive
+high weight regardless of input~\cite{qiu2025gated}.
+
+\subsection{Gated attention}
+
+Qiu et al.~\cite{qiu2025gated} introduced a family of gating schemes
+for large language model attention. Among three positions they
+evaluate (G1 after SDPA output, G2 on V before SDPA, G3 after $W_O$),
+the G1 position — a head-specific sigmoid gate between the scaled
+dot-product attention output and the output projection — was
+consistently best. It introduces non-linearity, input-dependent
+sparsity, and removes the attention-sink artefact.
+We adopt the G1 formulation and initialise the gate bias to
+$-2.0$ following Qiu et al.; we observe a different converged
+sparsity regime on our task (Section~\ref{sec:results}).
+
+\subsection{Explainable malware classification}
+
+Post-hoc attribution methods such as SHAP~\cite{lundberg2017shap} and
+LIME have been applied to malware classifiers to rank features by
+importance. These methods fit a surrogate model locally around each
+prediction; the resulting explanations are approximations, not
+exactly the reasoning of the underlying classifier. In contrast, our
+gate activations are produced by the same forward pass as the
+classification decision, so they are \emph{intrinsic} to the model's
+computation and do not require a surrogate.

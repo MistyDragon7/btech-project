@@ -1,0 +1,84 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{hyperref}
+\graphicspath{{./}{figures/}}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{GAME-Mal: Gated Attention over Markov Embeddings for\\ Explainable Android Malware Classification}
+
+\author{
+  \IEEEauthorblockN{Arav Jain}
+  \IEEEauthorblockA{
+    Department of Computer Science and Engineering\\
+    \textit{[Your University Name]}\\
+    \texttt{aravjain.int@urbancompany.com}
+  }
+}
+
+\maketitle
+
+\begin{abstract}
+Android malware continues to evolve faster than classical signature-based
+defences, with modern families exploiting reflection and code obfuscation
+to evade static analysis. Dynamic analysis — recording runtime API call
+traces — exposes this behaviour, but the resulting sequences are long,
+noisy, and hard to interpret. Prior work has explored Markov-chain
+associative rules for statistical classification and, separately, deep
+attention models for sequence learning; neither approach simultaneously
+delivers high multi-class accuracy and intrinsic, per-sample
+explainability. We present \textbf{GAME-Mal}, a model that combines
+(i)~\emph{reflection-aware API resolution} that preserves the true
+callee behind \texttt{java.lang.reflect.Method.invoke}, (ii)~a
+\emph{sigmoid-gated multi-head attention transformer} following the G1
+gating placement of Qiu et al.~\cite{qiu2025gated}, and (iii)~a
+direct reproduction of the associative-rule classifier of
+D'Angelo et al.~\cite{dangelo2023association} as a baseline. The gate
+activations themselves serve as an explanation of which API calls drove
+each classification decision, yielding per-family behavioural
+fingerprints without any post-hoc attribution method. On an eight-family
+subset of the UMD Android Malware corpus (9{,}337 samples), GAME-Mal
+achieves a macro F1-score of \textbf{88.64\%} across three
+stratified folds, competitive with a Random~Forest baseline at
+\textbf{89.34\%} while improving on the associative-rule baseline
+by \textbf{17.72} percentage points of macro F1. The learned gate
+distribution is centred at a mean activation of $\approx 0.44$, with
+roughly two thirds of tokens below $0.5$, indicating moderate
+input-dependent sparsity rather than the extreme regime reported for
+language-model pretraining.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Android malware, dynamic analysis, Markov chains, associative rules,
+gated attention, transformers, explainable AI, cybersecurity.
+\end{IEEEkeywords}
+
+% ============================================================
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_methodology}
+\input{sections/04_experiments}
+\input{sections/05_results}
+\input{sections/06_explainability}
+\input{sections/07_discussion}
+\input{sections/08_conclusion}
+% ============================================================
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

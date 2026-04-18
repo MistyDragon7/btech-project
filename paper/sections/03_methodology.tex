@@ -1,0 +1,159 @@
+\section{Methodology}
+\label{sec:methodology}
+
+GAME-Mal is a three-stage pipeline: (i) reflection-aware parsing of
+Droidmon JSONL traces into API-call sequences, (ii) Markov-style
+feature extraction used by our statistical baseline, and (iii) a
+gated multi-head attention transformer that consumes the tokenised
+sequences and emits both a family prediction and a per-token
+importance distribution.
+
+\subsection{Reflection-aware API resolution}
+\label{sec:reflection}
+
+Droidmon records every framework-level API call made by a running
+APK as a JSON object with fields \texttt{class}, \texttt{method},
+and — for calls that arrive through \texttt{java.lang.reflect} —
+additional \texttt{hooked\_class} and \texttt{hooked\_method}
+fields. A naive tokeniser emitting \texttt{class.method} would
+collapse every reflective call in the trace to the generic token
+\texttt{java.lang.reflect.Method.invoke}, destroying the
+family-defining signal that malware authors hide behind reflection.
+
+We therefore apply the following rule when converting a record to a
+token $t$:
+\[
+  t =
+  \begin{cases}
+    \texttt{REFL:}\,h_c.h_m & \text{if } h_c,\, h_m \text{ present},\\
+    c.m & \text{otherwise},
+  \end{cases}
+\]
+where $c,m$ are the direct class and method and $h_c,h_m$ are the
+hooked (true) class and method. The \texttt{REFL:} prefix is retained
+deliberately: it is itself a behavioural feature — several families
+(e.g.\ DroidKungFu) invoke reflection at characteristic rates.
+
+A per-sample sequence $S = (t_1, t_2, \ldots, t_L)$ is the
+time-ordered list of these tokens. We cap $L$ at $L_{\max}=512$ via
+tail-truncation, retaining the most recent calls; preliminary runs
+showed head-truncation discarded the payload-execution phase of
+most samples.
+
+\subsection{Vocabulary and encoding}
+
+Tokens occurring in fewer than $\kappa=2$ training samples are
+mapped to a single \texttt{<UNK>} symbol, together with reserved
+\texttt{<PAD>} and \texttt{<CLS>} tokens. The resulting vocabulary
+contains $|V|=1{,}118$ symbols on our corpus. Each sequence is
+prefixed with \texttt{<CLS>}, integer-encoded, and right-padded to
+$L_{\max}$.
+
+\subsection{Markov associative-rule features}
+\label{sec:markov}
+
+Following D'Angelo et al.~\cite{dangelo2023association} we treat each
+sequence as a source for \emph{$k$-spaced associative rules}. For
+every ordered pair $(A,B)$ of tokens with a gap $k \in \{1,\ldots,K\}$
+(we use $K=10$), we emit the rule $A \xrightarrow{k} B$ and count
+its occurrences within and across samples.
+
+For each rule $R$ we compute:
+\begin{align}
+  \mathrm{supp}(R) &= \frac{\#\{\text{samples containing }R\}}{N},\\
+  \mathrm{conf}(R \mid c) &= \frac{\#\{\text{samples of class }c\text{ containing }R\}}{\#\{\text{samples containing }R\}},
+\end{align}
+where $N$ is the number of training samples. We keep a rule if
+$\mathrm{supp}(R) \geq 5\times 10^{-4}$ and
+$\max_c \mathrm{conf}(R \mid c) \geq 0.30$. On our corpus this
+prunes $\sim\!90\%$ of the rule space, leaving roughly 2{,}200 rules
+per fold. For the rule-based classifier we implement D'Angelo's
+Eq.~6 faithfully:
+\begin{equation}
+  \rho_c(S) = \sum_{R \in \mathcal{R}(S)}
+  \frac{\sigma_S(R)}{|S|}\,\gamma(R, c),
+  \label{eq:rho}
+\end{equation}
+where $\sigma_S(R)$ is the number of occurrences of rule $R$ in
+sequence $S$ and $\gamma(R, c) = \mathrm{conf}(R\mid c)$. We
+normalise $\rho$ via softmax to obtain class probabilities and
+predict $\hat{c} = \arg\max_c \rho_c$.
+
+\subsection{GAME-Mal architecture}
+\label{sec:arch}
+
+The learned component is a pre-norm transformer encoder with
+$N=2$ layers, $d_{\text{model}}=128$, $h=4$ heads, and a
+feed-forward width of $d_{\text{ff}}=256$. Dropout is set to $0.1$
+throughout. The total parameter count is 515{,}656.
+
+\paragraph{Embedding and positional encoding.} Tokens are embedded
+via a learned lookup $E \in \mathbb{R}^{|V|\times d_{\text{model}}}$,
+followed by sinusoidal positional
+encodings~\cite{vaswani2017attention}. Let $X \in
+\mathbb{R}^{L_{\max}\times d_{\text{model}}}$ be the resulting
+sequence.
+
+\paragraph{Gated multi-head attention (G1).} Following
+Qiu et al.~\cite{qiu2025gated}, we compute standard scaled
+dot-product attention per head $i\in\{1,\ldots,h\}$:
+\begin{equation}
+  A_i = \mathrm{softmax}\!\left(\frac{Q_i K_i^\top}{\sqrt{d_k}}\right) V_i,
+  \quad d_k = d_{\text{model}}/h,
+\end{equation}
+and then \emph{gate} each head's output with an input-dependent
+sigmoid before the output projection $W_O$:
+\begin{align}
+  g_i &= \sigma(X W_{g,i} + b_{g,i}),\quad g_i\in\mathbb{R}^{L_{\max}\times d_k},\\
+  A_i' &= g_i \odot A_i,\\
+  Y &= \mathrm{concat}(A_1',\ldots,A_h')\, W_O.
+  \label{eq:g1}
+\end{align}
+The gate bias $b_{g,i}$ is initialised to $-2.0$
+($\sigma(-2)\approx 0.12$) following Qiu et al.; the final learned
+distribution on our task is considerably less sparse
+(Section~\ref{sec:results}). The gate acts as a per-token,
+per-head input-dependent scaling: tokens whose $g_i$ is near zero
+are suppressed before the output projection, which both breaks the
+$V$--$W_O$ low-rank bottleneck and eliminates the attention-sink
+artefact empirically.
+
+\paragraph{Feed-forward block.} A standard two-layer GELU MLP with
+residual connections and pre-layer normalisation follows each
+attention block.
+
+\paragraph{Classification head.} We apply mean pooling over
+non-pad positions, then a single linear layer to the $|C|=8$
+family logits. Classification uses a class-weighted cross-entropy
+loss
+\begin{equation}
+  \mathcal{L} = -\sum_{i=1}^{B} w_{y_i}\log \mathrm{softmax}(z_i)_{y_i},
+\end{equation}
+with $w_c = N / (|C|\,N_c)$, partially compensating for the
+$34\times$ imbalance between the largest and smallest families.
+
+\subsection{Training protocol}
+\label{sec:training}
+
+Models are trained with AdamW
+($\beta_1{=}0.9$, $\beta_2{=}0.999$, weight decay $10^{-4}$), a peak
+learning rate of $3\times 10^{-4}$ under a cosine annealing schedule
+with 5-epoch linear warm-up, gradient clipping at $\|g\|_2=1.0$, and
+a batch size of 32. We train for up to 40 epochs with early stopping
+on the validation macro-F1 (patience of 10 epochs). Runs use mixed
+\texttt{float32} on the Apple Metal Performance Shaders (MPS)
+backend of PyTorch; all randomness is seeded per fold.
+
+\subsection{Intrinsic explainability}
+\label{sec:explain-method}
+
+Because Eq.~\ref{eq:g1} lies on the forward path of the classifier,
+the gate activations $g_i^{(\ell)}(x)$ at layer $\ell$, head $i$, for
+input token $x$ are themselves an explanation: they quantify how
+much of that token's contribution survives the bottleneck on its way
+to the classifier. We aggregate
+$\bar{g}(x) = \frac{1}{hN}\sum_{\ell,i} g_i^{(\ell)}(x)$
+over heads and layers and, for every family, report the top-$k$
+APIs ranked by mean $\bar{g}$ over true-positive samples of that
+family. This produces the per-family behavioural fingerprints of
+Section~\ref{sec:explainability} without any post-hoc surrogate.
