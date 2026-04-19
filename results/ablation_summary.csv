@@ -1,0 +1,2 @@
+model,accuracy_avg,accuracy_std,f_score_avg,f_score_std,auc_avg,auc_std
+PlainTransformer,0.9466,0.0019,0.8975,0.0046,0.9881,0.0023

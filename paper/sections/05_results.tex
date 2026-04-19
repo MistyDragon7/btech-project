@@ -145,10 +145,71 @@ Qiu et al.~\cite{qiu2025gated} for language-model pretraining.}
 \end{figure}
 
 \subsection{Ablation: does the gate help?}
+\label{sec:ablation}
 
-Training an otherwise identical transformer with the sigmoid gates
-removed (equivalent to standard multi-head attention) produced a
-validation macro-F1 of approximately $0.85$ on the first fold under
-an identical training recipe. The gated model reaches $0.88$ on the
-same split, isolating the contribution of the G1 gating mechanism
-to roughly \textbf{3} points of macro F1 on this task.
+To isolate the contribution of the G1 gating mechanism we train a
+plain multi-head-attention transformer with the sigmoid gates
+removed but all other architectural and training choices held
+fixed (same $d_{\text{model}}$, heads, layers, training recipe, and
+\emph{identical stratified folds}). Aggregate results appear in
+Table~\ref{tab:ablation}.
+
+\begin{table}[t]
+\centering
+\caption{Gated vs.\ non-gated transformer, averaged across
+3 stratified folds. All other hyperparameters and folds identical.}
+\label{tab:ablation}
+\small
+\begin{tabular}{lccc}
+\toprule
+Model & Accuracy & Macro F1 & Macro AUROC \\
+\midrule
+Plain Transformer (no gate) & $0.947 \pm 0.002$ & $0.897 \pm 0.005$ & $0.988 \pm 0.002$ \\
+\textbf{GAME-Mal} (gated)   & $0.940 \pm 0.002$ & $0.886 \pm 0.006$ & $0.984 \pm 0.002$ \\
+\midrule
+$\Delta$ (gate minus plain) & $-0.006$ & $-0.011$ & $-0.004$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ablation is trained on a slightly shorter budget
+(25~epochs, patience~7) than the main runs (40~epochs, patience~10),
+chosen such that both models had stopped improving under their
+respective early-stopping criteria at the checkpoints reported.
+
+\paragraph{Reading the ablation honestly.}
+The headline finding is the one we did \emph{not} expect: on
+this 8{,}085-sample, 8-family corpus the G1 gate does not
+improve the plain multi-head transformer in aggregate. The
+non-gated baseline reaches a macro-F1 of $0.897 \pm 0.005$
+against $0.886 \pm 0.006$ for the gated variant --- a $1.1$-pp
+gap in favour of the plain model, larger than either run's
+fold-to-fold standard deviation. Accuracy and AUROC follow the
+same direction (plain ahead by $0.6$ and $0.4$ pp respectively).
+
+We take this as a genuinely useful negative result and do not
+attempt to erase it. Two non-exclusive interpretations are
+consistent with the numbers. (a)~\emph{Scale.} Qiu et
+al.~\cite{qiu2025gated} report the gate's benefits at
+language-model pretraining scale ($\sim 10^9$ tokens), where
+attention sinks measurably harm optimisation; with
+${\sim} 8 \times 10^3$ short sequences and two transformer
+layers, the sink is a negligible fraction of the loss and the
+extra gate parameters trade off against the marginal benefit.
+(b)~\emph{Task structure.} API-call classification has a
+moderately long tail of informative tokens per sequence
+(Section~\ref{sec:gating}), so the gate's main mechanism ---
+sparsifying attention onto a few sink-free tokens --- has
+little discriminative work to do. Consistent with both
+interpretations, our gate distribution on this task is
+centred near $0.44$, far less sparse than Qiu et al.'s
+$\approx 0.12$. We therefore report the gate \emph{not} as a
+raw-accuracy win but as the architectural commitment that makes
+per-sample explanation available in a single forward pass
+(Section~\ref{sec:explainability}); the classification numbers
+it delivers are statistically indistinguishable from the much
+stronger Random Forest baseline (Table~\ref{tab:main}) and
+within noise of the plain transformer. A larger-corpus or
+longer-sequence regime, in which the sink effect dominates, may
+recover the expected win --- we treat this as an open question
+rather than a settled one.

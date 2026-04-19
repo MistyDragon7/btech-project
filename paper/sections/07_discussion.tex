@@ -4,16 +4,28 @@
 \subsection{What the numbers say}
 
 GAME-Mal does not set a new state-of-the-art in raw accuracy on
-this corpus — a well-tuned Random Forest over pruned associative
-rules reaches almost identical accuracy. The contribution is
-instead twofold: (i) the gate mechanism closes the gap between a
-sequence model and a strong tree-based baseline on a task where
-trees usually win, and (ii) it does so with a built-in,
-forward-pass-native explanation mechanism that the Random Forest
-cannot match without falling back to post-hoc methods. For
-operational triage, a 0.5--1\% accuracy cost in exchange for
-per-sample API attributions computed at inference time is a
-favourable trade.
+this corpus. A well-tuned Random Forest over pruned associative
+rules reaches an almost identical macro-F1 ($0.893$ vs.\ $0.886$)
+and, as Section~\ref{sec:ablation} establishes, a plain
+(non-gated) transformer of identical capacity marginally
+outperforms GAME-Mal on every aggregate metric (plain F1
+$0.897 \pm 0.005$ vs.\ gated $0.886 \pm 0.006$). We read these
+facts as genuine --- the gate does not, in our setting, win on
+accuracy. The contribution is instead twofold: (i)~the attention
+backbone closes the gap between a sequence model and a strong
+tree-based baseline on a task where trees usually win, and
+(ii)~the gate adds a built-in, forward-pass-native explanation
+mechanism that neither the Random Forest nor the plain
+transformer offers without additional compute (post-hoc
+attribution, gradient backprop, or reference samples). For
+operational triage, the measured cost of adding this
+explanation channel is $\approx 0.6$ percentage points of
+accuracy and $\approx 1.1$ percentage points of macro-F1; we
+argue this is a favourable trade on security-critical pipelines
+where a human analyst must validate each flagged sample, and we
+leave it to the practitioner to decide whether a different
+deployment would prefer the plain transformer on pure accuracy
+grounds.
 
 \subsection{Limitations}
 

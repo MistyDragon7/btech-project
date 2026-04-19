@@ -375,10 +375,10 @@ All methods clustered at 99%. Differences statistically insignificant. Useful on
 ## 10. Explainability: What the Gates Tell Us
 
 ### 10.1 The mechanism
-Each of the 4 heads in each of the 2 layers learns its own gate `σ(X · W_gate_head)`. After training:
-- Mean gate score settles near **0.12–0.16** (matches Qiu et al.).
-- Most tokens get gates < 0.3 (effectively muted).
-- A few tokens get gates approaching 1 — these are the family-defining API calls.
+Each of the 4 heads in each of the 2 layers learns its own gate `σ(X · W_gate_head)`. After training on our corpus:
+- **Empirical mean ≈ 0.44** (median 0.46, 66% of tokens below 0.5). This differs from the ≈0.12 mean Qiu et al. observed on language-model pretraining.
+- Interpretation: the gate learned to *scale* tokens rather than zero most of them out. On API-call classification the family signal is spread across the trace (not peaky like NLP attention), so moderate sparsity was sufficient.
+- The attention-sink artefact at position 0 disappears once gates are enabled (confirmed empirically).
 
 ### 10.2 How to read the `top_apis_per_family.json` file
 For each family, the top-15 API calls sorted by **average gate score across all samples of that family**. These are the calls the model learned to attend to when identifying that family.

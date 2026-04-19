@@ -1,18 +1,48 @@
-00:36:22 [INFO] train_final: Loading corpus...
-00:36:22 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
-00:36:25 [INFO] src.preprocessing:   Airpush: 5880 samples
-00:36:25 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
-00:36:26 [INFO] src.preprocessing:   Fusob: 166 samples
-00:36:26 [INFO] src.preprocessing:   Genpua: 312 samples
-00:36:27 [INFO] src.preprocessing:   GinMaster: 523 samples
-00:36:28 [INFO] src.preprocessing:   Jisut: 430 samples
-00:36:30 [INFO] src.preprocessing:   Opfake: 596 samples
-00:36:30 [INFO] src.preprocessing:   SmsPay: 173 samples
-00:36:30 [INFO] train_final: Loaded 8085 samples across 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
-00:36:30 [INFO] train_final: Building vocabulary (min_freq=2)...
-00:36:30 [INFO] src.preprocessing: Vocabulary size: 1109 (min_freq=2)
-00:36:30 [INFO] train_final: Vocab size: 1109
-00:36:31 [INFO] train_final: Train 7276 | Test 809
-00:36:31 [INFO] train_final: Device: mps
-00:37:45 [INFO] train_final: Epoch   1 | train=1.3977 | test=0.9253 | acc=0.7145 | f1=0.6019
-00:38:55 [INFO] train_final: Epoch   2 | train=0.6112 | test=0.5355 | acc=0.8566 | f1=0.7657
+18:20:40 [INFO] train_final: Loading corpus...
+18:20:40 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+18:20:44 [INFO] src.preprocessing:   Airpush: 5880 samples
+18:20:44 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+18:20:44 [INFO] src.preprocessing:   Fusob: 166 samples
+18:20:45 [INFO] src.preprocessing:   Genpua: 312 samples
+18:20:45 [INFO] src.preprocessing:   GinMaster: 523 samples
+18:20:47 [INFO] src.preprocessing:   Jisut: 430 samples
+18:20:48 [INFO] src.preprocessing:   Opfake: 596 samples
+18:20:48 [INFO] src.preprocessing:   SmsPay: 173 samples
+18:20:48 [INFO] train_final: Loaded 8085 samples across 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+18:20:48 [INFO] train_final: Building vocabulary (min_freq=2)...
+18:20:49 [INFO] src.preprocessing: Vocabulary size: 1109 (min_freq=2)
+18:20:49 [INFO] train_final: Vocab size: 1109
+18:20:49 [INFO] train_final: Train 7276 | Test 809
+18:20:49 [INFO] train_final: Device: mps
+18:22:04 [INFO] train_final: Epoch   1 | train=1.3976 | test=0.9769 | acc=0.7219 | f1=0.5421
+18:23:16 [INFO] train_final: Epoch   2 | train=0.6925 | test=0.7679 | acc=0.8875 | f1=0.7864
+18:24:29 [INFO] train_final: Epoch   3 | train=0.4425 | test=0.5403 | acc=0.9011 | f1=0.8077
+18:25:43 [INFO] train_final: Epoch   4 | train=0.3853 | test=0.4779 | acc=0.9048 | f1=0.8384
+18:26:50 [INFO] train_final: Epoch   5 | train=0.3217 | test=0.5221 | acc=0.9197 | f1=0.8645
+18:28:01 [INFO] train_final: Epoch   6 | train=0.2641 | test=0.6402 | acc=0.9197 | f1=0.8271
+18:29:07 [INFO] train_final: Epoch   7 | train=0.2474 | test=0.6207 | acc=0.9283 | f1=0.8471
+18:30:13 [INFO] train_final: Epoch   8 | train=0.2251 | test=0.5837 | acc=0.9271 | f1=0.8545
+18:31:19 [INFO] train_final: Epoch   9 | train=0.1865 | test=0.6719 | acc=0.9345 | f1=0.8513
+18:32:26 [INFO] train_final: Epoch  10 | train=0.1701 | test=0.8117 | acc=0.9357 | f1=0.8407
+18:33:32 [INFO] train_final: Epoch  11 | train=0.1421 | test=0.8338 | acc=0.9345 | f1=0.8351
+18:34:38 [INFO] train_final: Epoch  12 | train=0.1199 | test=0.7998 | acc=0.9357 | f1=0.8642
+18:35:44 [INFO] train_final: Epoch  13 | train=0.1166 | test=0.6945 | acc=0.9333 | f1=0.8525
+18:36:50 [INFO] train_final: Epoch  14 | train=0.0912 | test=0.8292 | acc=0.9370 | f1=0.8528
+18:37:56 [INFO] train_final: Epoch  15 | train=0.0859 | test=0.8328 | acc=0.9407 | f1=0.8704
+18:39:02 [INFO] train_final: Epoch  16 | train=0.0723 | test=0.8085 | acc=0.9431 | f1=0.8724
+18:40:10 [INFO] train_final: Epoch  17 | train=0.0736 | test=0.7685 | acc=0.9345 | f1=0.8571
+18:41:18 [INFO] train_final: Epoch  18 | train=0.0746 | test=0.9052 | acc=0.9394 | f1=0.8674
+18:42:26 [INFO] train_final: Epoch  19 | train=0.0518 | test=0.9439 | acc=0.9419 | f1=0.8659
+18:43:38 [INFO] train_final: Epoch  20 | train=0.0550 | test=0.9255 | acc=0.9444 | f1=0.8737
+18:44:45 [INFO] train_final: Epoch  21 | train=0.0422 | test=0.9464 | acc=0.9382 | f1=0.8578
+18:45:51 [INFO] train_final: Epoch  22 | train=0.0436 | test=1.0165 | acc=0.9444 | f1=0.8592
+18:46:58 [INFO] train_final: Epoch  23 | train=0.0371 | test=0.9938 | acc=0.9407 | f1=0.8622
+18:48:05 [INFO] train_final: Epoch  24 | train=0.0449 | test=0.9687 | acc=0.9431 | f1=0.8709
+18:49:11 [INFO] train_final: Epoch  25 | train=0.0372 | test=1.0624 | acc=0.9431 | f1=0.8652
+18:50:17 [INFO] train_final: Epoch  26 | train=0.0319 | test=1.0098 | acc=0.9431 | f1=0.8636
+18:51:23 [INFO] train_final: Epoch  27 | train=0.0400 | test=0.9803 | acc=0.9407 | f1=0.8617
+18:52:29 [INFO] train_final: Epoch  28 | train=0.0331 | test=1.0000 | acc=0.9419 | f1=0.8636
+18:53:35 [INFO] train_final: Epoch  29 | train=0.0355 | test=1.0219 | acc=0.9431 | f1=0.8643
+18:54:41 [INFO] train_final: Epoch  30 | train=0.0339 | test=1.0237 | acc=0.9431 | f1=0.8643
+18:54:41 [INFO] train_final: Early stopping at epoch 30 (best=20, f1=0.8737)
+18:54:41 [INFO] train_final: Saved model + metadata to /Users/aravjain/PERSONAL/btech-project/results/models (best F1=0.8737 @ epoch 20)

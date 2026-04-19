@@ -3,20 +3,32 @@
 
 We presented GAME-Mal, a malware family classifier that combines
 reflection-aware dynamic-trace parsing with a sigmoid-gated
-multi-head attention transformer. The gated architecture — G1
-position of Qiu et al.\ — not only matches a strong Random Forest
-baseline on the eight-family UMD subset but also exposes an
+multi-head attention transformer. The gated architecture --- G1
+position of Qiu et al.\ --- reaches macro F1 of $0.886$ on the
+eight-family UMD subset, statistically indistinguishable from a
+strong Random Forest baseline ($0.893$) and $17.7$ percentage
+points above a direct reproduction of the Markov associative-rule
+classifier of D'Angelo et al.\ ($0.709$), while exposing an
 intrinsic, forward-pass-native explanation of its decisions
-through its gate activations. On the minority ransomware family
-(Fusob) in particular, GAME-Mal improves macro F1 by over 0.4
-absolute points compared to a faithful reproduction of the
-Markov associative-rule classifier of D'Angelo et al., while
-producing behaviourally coherent per-family API fingerprints
-without any post-hoc attribution.
+through its gate activations. Fusob, the minority ransomware
+family, is a useful case in point: despite contributing only
+$1.8\%$ of the corpus, it achieves perfect recall under GAME-Mal
+whereas the statistical baseline collapses on it for want of
+rule-mining evidence.
 
-The broader contribution is methodological: gated attention is a
-mechanism that \emph{trades a small amount of representational
-capacity for a meaningful amount of interpretability}. On
-security-critical applications where model behaviour must be
-explainable to a human analyst, this trade is often the one
-worth making.
+The broader contribution is \emph{methodological rather than
+performance-based}. Our ablation against a plain (non-gated)
+transformer of identical capacity shows the gate does not improve
+raw accuracy at this corpus scale --- the plain baseline is
+marginally better on every metric (F1 $0.897$ vs.\ $0.886$).
+What the gate \emph{does} give is an always-on ranking signal
+over APIs available in a single forward pass, with no
+back-propagation, no reference sample, and no additional
+compute. We view this as the relevant trade: a fraction of a
+percentage point of accuracy in exchange for inference-time
+explainability. On security-critical applications where model
+behaviour must be explainable to a human analyst, this trade is
+often the one worth making --- and reporting it honestly,
+including the cases where the mechanism does not add raw
+accuracy, is what lets future work separate interpretability
+claims from performance claims.

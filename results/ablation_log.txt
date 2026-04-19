@@ -1,0 +1,110 @@
+18:55:11 [INFO] ablation: Loading corpus...
+18:55:11 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+18:55:14 [INFO] src.preprocessing:   Airpush: 5880 samples
+18:55:15 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+18:55:15 [INFO] src.preprocessing:   Fusob: 166 samples
+18:55:15 [INFO] src.preprocessing:   Genpua: 312 samples
+18:55:16 [INFO] src.preprocessing:   GinMaster: 523 samples
+18:55:17 [INFO] src.preprocessing:   Jisut: 430 samples
+18:55:19 [INFO] src.preprocessing:   Opfake: 596 samples
+18:55:19 [INFO] src.preprocessing:   SmsPay: 173 samples
+18:55:19 [INFO] ablation: Loaded 8085 samples across 8 families
+18:55:19 [INFO] src.preprocessing: Vocabulary size: 1109 (min_freq=2)
+18:55:20 [INFO] ablation: Device: mps
+18:55:20 [INFO] ablation: ============================================================
+18:55:20 [INFO] ablation: FOLD 1/3 (train=5390, test=2695)
+18:55:20 [INFO] ablation: ============================================================
+18:55:20 [INFO] ablation: Plain-transformer parameters: 481480
+18:56:26 [INFO] ablation: Epoch   1 | train=1.4517 | test=1.1539 | acc=0.7087 | f1=0.5566
+18:57:28 [INFO] ablation: Epoch   2 | train=0.8386 | test=0.5496 | acc=0.8701 | f1=0.7782
+18:58:29 [INFO] ablation: Epoch   3 | train=0.4862 | test=0.4062 | acc=0.8950 | f1=0.8313
+18:59:29 [INFO] ablation: Epoch   4 | train=0.3896 | test=0.3936 | acc=0.8876 | f1=0.8267
+19:00:26 [INFO] ablation: Epoch   5 | train=0.3235 | test=0.3519 | acc=0.9032 | f1=0.8353
+19:01:22 [INFO] ablation: Epoch   6 | train=0.2816 | test=0.2962 | acc=0.9302 | f1=0.8569
+19:02:19 [INFO] ablation: Epoch   7 | train=0.2469 | test=0.3285 | acc=0.9169 | f1=0.8501
+19:03:15 [INFO] ablation: Epoch   8 | train=0.2110 | test=0.2839 | acc=0.9284 | f1=0.8653
+19:04:11 [INFO] ablation: Epoch   9 | train=0.1944 | test=0.2579 | acc=0.9347 | f1=0.8743
+19:05:07 [INFO] ablation: Epoch  10 | train=0.1667 | test=0.2669 | acc=0.9369 | f1=0.8819
+19:06:03 [INFO] ablation: Epoch  11 | train=0.1240 | test=0.2966 | acc=0.9325 | f1=0.8768
+19:07:00 [INFO] ablation: Epoch  12 | train=0.1078 | test=0.2752 | acc=0.9403 | f1=0.8833
+19:07:56 [INFO] ablation: Epoch  13 | train=0.0937 | test=0.2879 | acc=0.9365 | f1=0.8824
+19:08:52 [INFO] ablation: Epoch  14 | train=0.0780 | test=0.2837 | acc=0.9406 | f1=0.8822
+19:09:48 [INFO] ablation: Epoch  15 | train=0.0666 | test=0.2731 | acc=0.9447 | f1=0.8886
+19:10:44 [INFO] ablation: Epoch  16 | train=0.0586 | test=0.2809 | acc=0.9440 | f1=0.8864
+19:11:41 [INFO] ablation: Epoch  17 | train=0.0565 | test=0.2908 | acc=0.9436 | f1=0.8879
+19:12:37 [INFO] ablation: Epoch  18 | train=0.0488 | test=0.2847 | acc=0.9455 | f1=0.8914
+19:13:33 [INFO] ablation: Epoch  19 | train=0.0420 | test=0.2860 | acc=0.9462 | f1=0.8925
+19:14:29 [INFO] ablation: Epoch  20 | train=0.0409 | test=0.2893 | acc=0.9458 | f1=0.8900
+19:15:25 [INFO] ablation: Epoch  21 | train=0.0429 | test=0.2892 | acc=0.9458 | f1=0.8914
+19:16:21 [INFO] ablation: Epoch  22 | train=0.0326 | test=0.2881 | acc=0.9481 | f1=0.8940
+19:17:18 [INFO] ablation: Epoch  23 | train=0.0335 | test=0.2867 | acc=0.9477 | f1=0.8941
+19:18:15 [INFO] ablation: Epoch  24 | train=0.0280 | test=0.2885 | acc=0.9492 | f1=0.8977
+19:19:11 [INFO] ablation: Epoch  25 | train=0.0366 | test=0.2888 | acc=0.9492 | f1=0.8972
+19:19:11 [INFO] ablation: FOLD 1 best: acc=0.9492 f1=0.8977 auc=0.9850
+19:19:11 [INFO] ablation: ============================================================
+19:19:11 [INFO] ablation: FOLD 2/3 (train=5390, test=2695)
+19:19:11 [INFO] ablation: ============================================================
+19:19:11 [INFO] ablation: Plain-transformer parameters: 481480
+19:20:07 [INFO] ablation: Epoch   1 | train=1.4240 | test=1.0040 | acc=0.7406 | f1=0.6070
+19:21:03 [INFO] ablation: Epoch   2 | train=0.6765 | test=0.5249 | acc=0.8583 | f1=0.7708
+19:22:00 [INFO] ablation: Epoch   3 | train=0.4758 | test=0.3226 | acc=0.9113 | f1=0.8353
+19:22:56 [INFO] ablation: Epoch   4 | train=0.3992 | test=0.3560 | acc=0.8879 | f1=0.8130
+19:23:52 [INFO] ablation: Epoch   5 | train=0.3154 | test=0.2375 | acc=0.9365 | f1=0.8774
+19:24:48 [INFO] ablation: Epoch   6 | train=0.2648 | test=0.2657 | acc=0.9217 | f1=0.8687
+19:25:44 [INFO] ablation: Epoch   7 | train=0.2291 | test=0.2087 | acc=0.9406 | f1=0.8892
+19:26:40 [INFO] ablation: Epoch   8 | train=0.2013 | test=0.2362 | acc=0.9314 | f1=0.8797
+19:27:36 [INFO] ablation: Epoch   9 | train=0.1748 | test=0.2164 | acc=0.9443 | f1=0.8922
+19:28:32 [INFO] ablation: Epoch  10 | train=0.1732 | test=0.2439 | acc=0.9321 | f1=0.8713
+19:29:29 [INFO] ablation: Epoch  11 | train=0.1560 | test=0.2204 | acc=0.9429 | f1=0.8921
+19:30:25 [INFO] ablation: Epoch  12 | train=0.1210 | test=0.2294 | acc=0.9384 | f1=0.8870
+19:31:21 [INFO] ablation: Epoch  13 | train=0.0965 | test=0.2400 | acc=0.9365 | f1=0.8735
+19:32:17 [INFO] ablation: Epoch  14 | train=0.0908 | test=0.2259 | acc=0.9436 | f1=0.9014
+19:33:13 [INFO] ablation: Epoch  15 | train=0.0728 | test=0.2298 | acc=0.9466 | f1=0.8923
+19:34:09 [INFO] ablation: Epoch  16 | train=0.0741 | test=0.2382 | acc=0.9458 | f1=0.9030
+19:35:04 [INFO] ablation: Epoch  17 | train=0.0652 | test=0.2406 | acc=0.9458 | f1=0.8995
+19:36:00 [INFO] ablation: Epoch  18 | train=0.0547 | test=0.2388 | acc=0.9451 | f1=0.9018
+19:36:56 [INFO] ablation: Epoch  19 | train=0.0530 | test=0.2415 | acc=0.9455 | f1=0.9021
+19:37:52 [INFO] ablation: Epoch  20 | train=0.0547 | test=0.2337 | acc=0.9469 | f1=0.9022
+19:38:48 [INFO] ablation: Epoch  21 | train=0.0450 | test=0.2423 | acc=0.9466 | f1=0.8982
+19:39:44 [INFO] ablation: Epoch  22 | train=0.0547 | test=0.2460 | acc=0.9458 | f1=0.9002
+19:40:40 [INFO] ablation: Epoch  23 | train=0.0484 | test=0.2402 | acc=0.9469 | f1=0.9017
+19:40:40 [INFO] ablation: Early stop at epoch 23 (best F1=0.9030)
+19:40:40 [INFO] ablation: FOLD 2 best: acc=0.9458 f1=0.9030 auc=0.9906
+19:40:40 [INFO] ablation: ============================================================
+19:40:40 [INFO] ablation: FOLD 3/3 (train=5390, test=2695)
+19:40:40 [INFO] ablation: ============================================================
+19:40:41 [INFO] ablation: Plain-transformer parameters: 481480
+19:41:36 [INFO] ablation: Epoch   1 | train=1.4616 | test=1.0332 | acc=0.7121 | f1=0.5486
+19:42:32 [INFO] ablation: Epoch   2 | train=0.7727 | test=0.4368 | acc=0.8816 | f1=0.8065
+19:43:28 [INFO] ablation: Epoch   3 | train=0.4968 | test=0.3738 | acc=0.8898 | f1=0.8230
+19:44:24 [INFO] ablation: Epoch   4 | train=0.4097 | test=0.3316 | acc=0.9009 | f1=0.8375
+19:45:20 [INFO] ablation: Epoch   5 | train=0.3262 | test=0.2907 | acc=0.9217 | f1=0.8588
+19:46:15 [INFO] ablation: Epoch   6 | train=0.2825 | test=0.2791 | acc=0.9243 | f1=0.8613
+19:47:11 [INFO] ablation: Epoch   7 | train=0.2497 | test=0.2954 | acc=0.9221 | f1=0.8566
+19:48:07 [INFO] ablation: Epoch   8 | train=0.2159 | test=0.2397 | acc=0.9391 | f1=0.8748
+19:49:03 [INFO] ablation: Epoch   9 | train=0.1880 | test=0.2622 | acc=0.9280 | f1=0.8657
+19:49:59 [INFO] ablation: Epoch  10 | train=0.1746 | test=0.2378 | acc=0.9417 | f1=0.8740
+19:50:56 [INFO] ablation: Epoch  11 | train=0.1533 | test=0.2591 | acc=0.9310 | f1=0.8696
+19:51:52 [INFO] ablation: Epoch  12 | train=0.1293 | test=0.2702 | acc=0.9262 | f1=0.8698
+19:52:48 [INFO] ablation: Epoch  13 | train=0.1179 | test=0.2691 | acc=0.9347 | f1=0.8748
+19:53:44 [INFO] ablation: Epoch  14 | train=0.1081 | test=0.2621 | acc=0.9365 | f1=0.8795
+19:54:40 [INFO] ablation: Epoch  15 | train=0.0878 | test=0.2689 | acc=0.9362 | f1=0.8831
+19:55:37 [INFO] ablation: Epoch  16 | train=0.0844 | test=0.2586 | acc=0.9388 | f1=0.8781
+19:56:33 [INFO] ablation: Epoch  17 | train=0.0700 | test=0.2535 | acc=0.9436 | f1=0.8872
+19:57:29 [INFO] ablation: Epoch  18 | train=0.0615 | test=0.2642 | acc=0.9436 | f1=0.8883
+19:58:24 [INFO] ablation: Epoch  19 | train=0.0639 | test=0.2650 | acc=0.9447 | f1=0.8882
+19:59:20 [INFO] ablation: Epoch  20 | train=0.0520 | test=0.2654 | acc=0.9447 | f1=0.8917
+20:00:16 [INFO] ablation: Epoch  21 | train=0.0634 | test=0.2760 | acc=0.9432 | f1=0.8842
+20:01:12 [INFO] ablation: Epoch  22 | train=0.0521 | test=0.2675 | acc=0.9466 | f1=0.8893
+20:02:08 [INFO] ablation: Epoch  23 | train=0.0489 | test=0.2700 | acc=0.9447 | f1=0.8897
+20:03:04 [INFO] ablation: Epoch  24 | train=0.0489 | test=0.2693 | acc=0.9458 | f1=0.8888
+20:03:59 [INFO] ablation: Epoch  25 | train=0.0473 | test=0.2692 | acc=0.9462 | f1=0.8890
+20:03:59 [INFO] ablation: FOLD 3 best: acc=0.9447 f1=0.8917 auc=0.9886
+20:03:59 [INFO] ablation: ============================================================
+20:03:59 [INFO] ablation: No-gate ablation aggregate:
+20:03:59 [INFO] ablation:   accuracy: 0.9466 (+/- 0.0019)
+20:03:59 [INFO] ablation:   sensitivity: 0.9019 (+/- 0.0062)
+20:03:59 [INFO] ablation:   precision: 0.8948 (+/- 0.0060)
+20:03:59 [INFO] ablation:   f_score: 0.8975 (+/- 0.0046)
+20:03:59 [INFO] ablation:   auc: 0.9881 (+/- 0.0023)
+20:03:59 [INFO] ablation: Saved to /Users/aravjain/PERSONAL/btech-project/results/ablation_summary.csv

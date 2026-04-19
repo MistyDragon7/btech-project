@@ -33,12 +33,13 @@ class GatedMultiHeadAttention(nn.Module):
     output = gate_scores * softmax(QK^T/sqrt(d_k)) @ V
     """
 
-    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.1):
+    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.1, use_gate: bool = True):
         super().__init__()
         assert d_model % n_heads == 0
         self.d_model = d_model
         self.n_heads = n_heads
         self.d_k = d_model // n_heads
+        self.use_gate = use_gate
 
         # QKV projections
         self.w_q = nn.Linear(d_model, d_model)
@@ -48,15 +49,18 @@ class GatedMultiHeadAttention(nn.Module):
         # Output projection
         self.w_o = nn.Linear(d_model, d_model)
 
-        # HEAD-SPECIFIC SIGMOID GATE (the key innovation from Qiu et al.)
-        # Produces gating scores with shape (batch, n_heads, seq_len, d_k)
-        # Each head gets its own gate projection
-        self.w_gate = nn.Linear(d_model, d_model)
+        if use_gate:
+            # HEAD-SPECIFIC SIGMOID GATE (the key innovation from Qiu et al.)
+            # Produces gating scores with shape (batch, n_heads, seq_len, d_k)
+            # Each head gets its own gate projection
+            self.w_gate = nn.Linear(d_model, d_model)
 
-        # Initialize gate bias negative to encourage sparsity (sigmoid(-2) ≈ 0.12)
-        # This matches the mean gating score of ~0.116 reported in Qiu et al.
-        nn.init.constant_(self.w_gate.bias, -2.0)
-        nn.init.normal_(self.w_gate.weight, std=0.02)
+            # Initialize gate bias negative to encourage sparsity (sigmoid(-2) ≈ 0.12)
+            # This matches the mean gating score of ~0.116 reported in Qiu et al.
+            nn.init.constant_(self.w_gate.bias, -2.0)
+            nn.init.normal_(self.w_gate.weight, std=0.02)
+        else:
+            self.w_gate = None
 
         self.dropout = nn.Dropout(dropout)
         self.attn_dropout = nn.Dropout(dropout)
@@ -103,16 +107,21 @@ class GatedMultiHeadAttention(nn.Module):
         # SDPA output
         sdpa_out = torch.matmul(attn_weights, V)  # (B, n_heads, N, d_k)
 
-        # ═══════════════════════════════════════════════════════
-        # GATING: Head-specific sigmoid gate after SDPA (G1)
-        # This is the core contribution adapted from Qiu et al.
-        # ═══════════════════════════════════════════════════════
-        gate_input = self.w_gate(x)  # (B, N, D)
-        gate_input = gate_input.view(B, N, self.n_heads, self.d_k).transpose(1, 2)
-        gate_scores = torch.sigmoid(gate_input)  # (B, n_heads, N, d_k)
+        if self.use_gate:
+            # ═══════════════════════════════════════════════════════
+            # GATING: Head-specific sigmoid gate after SDPA (G1)
+            # This is the core contribution adapted from Qiu et al.
+            # ═══════════════════════════════════════════════════════
+            gate_input = self.w_gate(x)  # (B, N, D)
+            gate_input = gate_input.view(B, N, self.n_heads, self.d_k).transpose(1, 2)
+            gate_scores = torch.sigmoid(gate_input)  # (B, n_heads, N, d_k)
 
-        # Apply gate: element-wise multiplication
-        gated_out = sdpa_out * gate_scores  # sparse, query-dependent filtering
+            # Apply gate: element-wise multiplication
+            gated_out = sdpa_out * gate_scores  # sparse, query-dependent filtering
+        else:
+            # Ablation: plain multi-head attention (no gating)
+            gate_scores = None
+            gated_out = sdpa_out
 
         # Concatenate heads and project
         gated_out = gated_out.transpose(1, 2).contiguous().view(B, N, D)
@@ -121,9 +130,9 @@ class GatedMultiHeadAttention(nn.Module):
 
         # Store for explainability
         if return_attention:
-            self._last_gate_scores = gate_scores.detach()
+            self._last_gate_scores = gate_scores.detach() if gate_scores is not None else None
             self._last_attn_weights = attn_weights.detach()
-            return output, attn_weights.detach(), gate_scores.detach()
+            return output, attn_weights.detach(), self._last_gate_scores
 
         return output, None, None
 
@@ -131,9 +140,9 @@ class GatedMultiHeadAttention(nn.Module):
 class GAMEMalBlock(nn.Module):
     """Single transformer block with gated attention + FFN."""
 
-    def __init__(self, d_model: int, n_heads: int, d_ff: int, dropout: float = 0.1):
+    def __init__(self, d_model: int, n_heads: int, d_ff: int, dropout: float = 0.1, use_gate: bool = True):
         super().__init__()
-        self.attention = GatedMultiHeadAttention(d_model, n_heads, dropout)
+        self.attention = GatedMultiHeadAttention(d_model, n_heads, dropout, use_gate=use_gate)
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
         self.ffn = nn.Sequential(
@@ -174,19 +183,21 @@ class GAMEMal(nn.Module):
         d_ff: int = 256,
         max_seq_len: int = 512,
         dropout: float = 0.1,
+        use_gate: bool = True,
     ):
         super().__init__()
         self.d_model = d_model
         self.num_classes = num_classes
+        self.use_gate = use_gate
 
         # Embeddings
         self.api_embedding = nn.Embedding(vocab_size, d_model, padding_idx=0)
         self.pos_embedding = nn.Embedding(max_seq_len, d_model)
         self.embed_dropout = nn.Dropout(dropout)
 
-        # Transformer blocks with gated attention
+        # Transformer blocks (with or without gated attention)
         self.blocks = nn.ModuleList([
-            GAMEMalBlock(d_model, n_heads, d_ff, dropout)
+            GAMEMalBlock(d_model, n_heads, d_ff, dropout, use_gate=use_gate)
             for _ in range(n_layers)
         ])
 

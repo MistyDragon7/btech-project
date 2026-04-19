@@ -1,0 +1,2 @@
+- [GAME-Mal B.Tech Project](project_gamemal.md) — Explainable malware classifier using gated attention + Markov chains, needs publishable results
+- [User Profile](user_arav.md) — B.Tech student, wants automated pipelines, has Apple Silicon Mac

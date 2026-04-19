@@ -59,7 +59,13 @@ by \textbf{17.72} percentage points of macro F1. The learned gate
 distribution is centred at a mean activation of $\approx 0.44$, with
 roughly two thirds of tokens below $0.5$, indicating moderate
 input-dependent sparsity rather than the extreme regime reported for
-language-model pretraining.
+language-model pretraining. An ablation against an identically-trained
+plain (non-gated) transformer shows the gate does \emph{not} improve
+raw accuracy at this corpus scale (plain F1 $0.897 \pm 0.005$
+vs.\ gated $0.886 \pm 0.006$); we therefore report the gate as the
+architectural commitment that enables single-forward-pass explanation
+rather than as a raw-accuracy contribution, and we report this
+negative finding honestly.
 \end{abstract}
 
 \begin{IEEEkeywords}

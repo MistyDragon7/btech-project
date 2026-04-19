@@ -4,7 +4,9 @@
       "Bash(find /Users/aravjain/PERSONAL/btech-project -type f ! -path \"./.git/*\" -exec file {})",
       "Bash(wc -l /Users/aravjain/PERSONAL/btech-project/extracted_data/Fusob/*.apk)",
       "Bash(wc -l /Users/aravjain/PERSONAL/btech-project/extracted_data/SmsPay/*.apk)",
-      "Bash(head -5 /Users/aravjain/PERSONAL/btech-project/extracted_data/Fusob/*.apk)"
+      "Bash(head -5 /Users/aravjain/PERSONAL/btech-project/extracted_data/Fusob/*.apk)",
+      "Bash(mkdir -p .claude/memory)",
+      "Bash(cp ~/.claude/projects/-Users-aravjain-PERSONAL-btech-project/memory/*.md .claude/memory/)"
     ]
   }
 }

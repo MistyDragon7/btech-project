@@ -1,0 +1,505 @@
+{
+  "samples_per_family": 30,
+  "per_family_overlap": {
+    "Airpush": {
+      "top_5": 0.0,
+      "top_10": 0.0
+    },
+    "DroidKungFu": {
+      "top_5": 0.0,
+      "top_10": 0.0
+    },
+    "Fusob": {
+      "top_5": 0.2,
+      "top_10": 0.2
+    },
+    "Genpua": {
+      "top_5": 0.0,
+      "top_10": 0.0
+    },
+    "GinMaster": {
+      "top_5": 0.0,
+      "top_10": 0.0
+    },
+    "Jisut": {
+      "top_5": 0.4,
+      "top_10": 0.7
+    },
+    "Opfake": {
+      "top_5": 0.0,
+      "top_10": 0.0
+    },
+    "SmsPay": {
+      "top_5": 0.0,
+      "top_10": 0.0
+    }
+  },
+  "mean_top5_overlap": 0.07500000000000001,
+  "mean_top10_overlap": 0.11249999999999999,
+  "saliency_top_apis_per_family": {
+    "Airpush": [
+      {
+        "api": "dalvik.system.DexClassLoader.dalvik.system.DexClassLoader",
+        "saliency": 2.903490401804447
+      },
+      {
+        "api": "dalvik.system.DexFile.openDexFile",
+        "saliency": 1.4801607951521873
+      },
+      {
+        "api": "android.content.ContextWrapper.startService",
+        "saliency": 1.4262431263923645
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSimOperatorName",
+        "saliency": 0.8466805255317942
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getNetworkCountryIso",
+        "saliency": 0.7996336789801717
+      },
+      {
+        "api": "android.net.wifi.WifiInfo.getMacAddress",
+        "saliency": 0.7829059131051365
+      },
+      {
+        "api": "android.webkit.WebView.addJavascriptInterface",
+        "saliency": 0.7105602423350016
+      },
+      {
+        "api": "android.app.Activity.startActivity",
+        "saliency": 0.678019013278009
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putInt",
+        "saliency": 0.5290604173114487
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findResource",
+        "saliency": 0.5237139096856117
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getNetworkOperatorName",
+        "saliency": 0.47010298643974546
+      },
+      {
+        "api": "android.app.ApplicationPackageManager.getInstalledPackages",
+        "saliency": 0.45517808981239793
+      },
+      {
+        "api": "android.app.ActivityManager.getRunningAppProcesses",
+        "saliency": 0.4015551975795201
+      },
+      {
+        "api": "android.app.ActivityManager.getRunningTasks",
+        "saliency": 0.4007531050592661
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findLibrary",
+        "saliency": 0.3911623138756979
+      }
+    ],
+    "DroidKungFu": [
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findResource",
+        "saliency": 3.5426716527768543
+      },
+      {
+        "api": "dalvik.system.DexFile.openDexFile",
+        "saliency": 2.6169463793436685
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSubscriberId",
+        "saliency": 2.3500136860779355
+      },
+      {
+        "api": "dalvik.system.DexClassLoader.dalvik.system.DexClassLoader",
+        "saliency": 2.3023626804351807
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getLine1Number",
+        "saliency": 1.896092478185892
+      },
+      {
+        "api": "REFL:UNK.values",
+        "saliency": 1.5651390893441257
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findLibrary",
+        "saliency": 1.3593282774090767
+      },
+      {
+        "api": "android.webkit.WebView.setWebChromeClient",
+        "saliency": 1.2112707406282426
+      },
+      {
+        "api": "android.net.wifi.WifiInfo.getMacAddress",
+        "saliency": 1.1039468109607697
+      },
+      {
+        "api": "android.content.ContextWrapper.openFileOutput",
+        "saliency": 1.0164860427379607
+      },
+      {
+        "api": "java.io.FileInputStream.read",
+        "saliency": 0.9252931030444157
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getNetworkOperator",
+        "saliency": 0.8722169835652623
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceSoftwareVersion",
+        "saliency": 0.7944477823647585
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getNetworkCountryIso",
+        "saliency": 0.7295172546918576
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceId",
+        "saliency": 0.7254338174107227
+      }
+    ],
+    "Fusob": [
+      {
+        "api": "android.telephony.TelephonyManager.getSubscriberId",
+        "saliency": 1.3420152246952057
+      },
+      {
+        "api": "org.apache.http.impl.client.AbstractHttpClient.execute",
+        "saliency": 0.9850771948695183
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSimOperatorName",
+        "saliency": 0.6339155334447112
+      },
+      {
+        "api": "android.util.Base64.decode",
+        "saliency": 0.4489537273016241
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceId",
+        "saliency": 0.32302634480098885
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putBoolean",
+        "saliency": 0.20486443797126414
+      },
+      {
+        "api": "android.util.Base64.encode",
+        "saliency": 0.15864351417803846
+      },
+      {
+        "api": "dalvik.system.DexFile.openDexFile",
+        "saliency": 0.15533815771341325
+      },
+      {
+        "api": "android.os.SystemProperties.get",
+        "saliency": 0.12230662200130335
+      },
+      {
+        "api": "REFL:content.nail.outsell.PannedApplication.getAssets",
+        "saliency": 0.1047696404159069
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putInt",
+        "saliency": 0.09599514804366562
+      },
+      {
+        "api": "android.webkit.WebView.addJavascriptInterface",
+        "saliency": 0.08706916645169258
+      },
+      {
+        "api": "android.location.Location.getLatitude",
+        "saliency": 0.08251509938933206
+      },
+      {
+        "api": "android.content.ContextWrapper.startActivity",
+        "saliency": 0.08188505772124516
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getLine1Number",
+        "saliency": 0.07313743380031415
+      }
+    ],
+    "Genpua": [
+      {
+        "api": "android.content.ContentResolver.registerContentObserver",
+        "saliency": 6.638427178064982
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSimOperatorName",
+        "saliency": 2.4175934553146363
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSubscriberId",
+        "saliency": 1.3951894994825125
+      },
+      {
+        "api": "java.lang.Runtime.load",
+        "saliency": 1.3812272549606859
+      },
+      {
+        "api": "dalvik.system.DexFile.openDexFile",
+        "saliency": 1.3598553461276672
+      },
+      {
+        "api": "android.app.ActivityManager.getRunningTasks",
+        "saliency": 1.357389897108078
+      },
+      {
+        "api": "dalvik.system.DexClassLoader.dalvik.system.DexClassLoader",
+        "saliency": 1.1467410584113427
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findResource",
+        "saliency": 1.0536841879288354
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceId",
+        "saliency": 0.9899364253506064
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSimCountryIso",
+        "saliency": 0.9119544508866966
+      },
+      {
+        "api": "REFL:android.support.v7.widget.FitWindowsLinearLayout.makeOptionalFitsSystemWindows",
+        "saliency": 0.7979943950970968
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findLibrary",
+        "saliency": 0.755533892971774
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putInt",
+        "saliency": 0.6389393679970918
+      },
+      {
+        "api": "java.io.FileInputStream.read",
+        "saliency": 0.6139751163621744
+      },
+      {
+        "api": "<UNK>",
+        "saliency": 0.6023217899990934
+      }
+    ],
+    "GinMaster": [
+      {
+        "api": "android.telephony.TelephonyManager.getSubscriberId",
+        "saliency": 0.9303765365515243
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findResource",
+        "saliency": 0.7212227247655392
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findLibrary",
+        "saliency": 0.5801657562454542
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getNetworkOperator",
+        "saliency": 0.5764025265816599
+      },
+      {
+        "api": "android.app.ActivityThread.handleReceiver",
+        "saliency": 0.5065730234178213
+      },
+      {
+        "api": "REFL:UNK.get",
+        "saliency": 0.49445845586251774
+      },
+      {
+        "api": "android.net.wifi.WifiInfo.getMacAddress",
+        "saliency": 0.4495540587231517
+      },
+      {
+        "api": "org.apache.http.impl.client.AbstractHttpClient.execute",
+        "saliency": 0.43934711804913895
+      },
+      {
+        "api": "java.lang.Runtime.exec",
+        "saliency": 0.3674450340784258
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putInt",
+        "saliency": 0.3028214344488723
+      },
+      {
+        "api": "android.app.Activity.startActivity",
+        "saliency": 0.29093400816033993
+      },
+      {
+        "api": "REFL:UNK.values",
+        "saliency": 0.28706632283531497
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putBoolean",
+        "saliency": 0.2796764750033617
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceId",
+        "saliency": 0.2614946615520037
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putLong",
+        "saliency": 0.2610150674793767
+      }
+    ],
+    "Jisut": [
+      {
+        "api": "android.content.ContextWrapper.startService",
+        "saliency": 0.49429821865311985
+      },
+      {
+        "api": "android.os.SystemProperties.get",
+        "saliency": 0.4198468178510666
+      },
+      {
+        "api": "android.telephony.SmsManager.sendTextMessage",
+        "saliency": 0.23754938496720224
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putInt",
+        "saliency": 0.08931406963081864
+      },
+      {
+        "api": "java.io.File.exists",
+        "saliency": 0.02522222740756007
+      },
+      {
+        "api": "android.app.ActivityManager.getRunningTasks",
+        "saliency": 0.01204492182104247
+      },
+      {
+        "api": "libcore.io.IoBridge.open",
+        "saliency": 0.011150057446702024
+      }
+    ],
+    "Opfake": [
+      {
+        "api": "android.telephony.TelephonyManager.getLine1Number",
+        "saliency": 2.2835694102104753
+      },
+      {
+        "api": "java.net.ProxySelectorImpl.select",
+        "saliency": 1.7830746240913868
+      },
+      {
+        "api": "android.app.AlarmManager.set",
+        "saliency": 1.4967565826304696
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findResource",
+        "saliency": 1.2666170504057734
+      },
+      {
+        "api": "REFL:UNK.values",
+        "saliency": 0.9875400513410568
+      },
+      {
+        "api": "android.content.ContextWrapper.openFileOutput",
+        "saliency": 0.8235859175523123
+      },
+      {
+        "api": "android.content.ContextWrapper.startService",
+        "saliency": 0.6651771394535899
+      },
+      {
+        "api": "REFL:android.app.Application.getSystemService",
+        "saliency": 0.6142930936896138
+      },
+      {
+        "api": "java.net.URL.openConnection",
+        "saliency": 0.5767503946500999
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSubscriberId",
+        "saliency": 0.5592761413243256
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+        "saliency": 0.4974644118254738
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceId",
+        "saliency": 0.4919438552072582
+      },
+      {
+        "api": "android.app.ActivityThread.handleReceiver",
+        "saliency": 0.4681361857801676
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putLong",
+        "saliency": 0.4596848636865616
+      },
+      {
+        "api": "REFL:android.graphics.drawable.BitmapDrawable.setTargetDensity",
+        "saliency": 0.39453717732491594
+      }
+    ],
+    "SmsPay": [
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findResource",
+        "saliency": 3.674017369747162
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSubscriberId",
+        "saliency": 2.1303375971643894
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getSimOperatorName",
+        "saliency": 2.1001028642058372
+      },
+      {
+        "api": "REFL:UNK.get",
+        "saliency": 1.9656294268720291
+      },
+      {
+        "api": "dalvik.system.DexClassLoader.dalvik.system.DexClassLoader",
+        "saliency": 1.3394708719902806
+      },
+      {
+        "api": "android.app.NotificationManager.notify",
+        "saliency": 1.3164808973670006
+      },
+      {
+        "api": "dalvik.system.DexFile.openDexFile",
+        "saliency": 0.992518595286778
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putLong",
+        "saliency": 0.8792840330676722
+      },
+      {
+        "api": "android.os.Process.killProcess",
+        "saliency": 0.8772194005548954
+      },
+      {
+        "api": "android.app.SharedPreferencesImpl$EditorImpl.putBoolean",
+        "saliency": 0.7194646604169729
+      },
+      {
+        "api": "android.net.wifi.WifiInfo.getMacAddress",
+        "saliency": 0.6951257637322902
+      },
+      {
+        "api": "dalvik.system.BaseDexClassLoader.findLibrary",
+        "saliency": 0.6865514206296918
+      },
+      {
+        "api": "org.apache.http.impl.client.AbstractHttpClient.execute",
+        "saliency": 0.5410836291898574
+      },
+      {
+        "api": "android.telephony.TelephonyManager.getDeviceId",
+        "saliency": 0.4141068020785177
+      },
+      {
+        "api": "android.content.ContextWrapper.startService",
+        "saliency": 0.41215234978072757
+      }
+    ]
+  }
+}

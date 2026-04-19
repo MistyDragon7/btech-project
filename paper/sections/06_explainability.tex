@@ -98,14 +98,60 @@ caveat: gate activations rank tokens by their marginal contribution
 to classification, and that contribution need not coincide with the
 token's human-readable semantic importance.
 
-\paragraph{(iv) Compared to a post-hoc baseline.} We ran SHAP
-(KernelExplainer) on a small sample of test points and found that
-while SHAP and gate-activation rankings agree on the presence of
-reflection and network-setup calls at the top of most families'
-importance lists, they disagree on the ordering for the families
-with subtler signals (Jisut, SmsPay). The gate-based explanation is
-roughly two orders of magnitude faster to produce since it is read
-directly off the forward pass with no surrogate-model fitting.
+\paragraph{(iv) Compared to an input-gradient baseline, the two
+attribution methods largely disagree.} We compare gate-activation
+rankings against an input-gradient saliency baseline
+(GradientInput: $\|\nabla_E \mathrm{logit}_c \odot E\|_1$ at the
+embedding output, averaged across correctly-classified samples of
+each family, 30 samples per family). Per-family top-$k$ overlaps
+are reported in Table~\ref{tab:attrib-overlap}. The mean top-5
+overlap is only $0.08$ and mean top-10 is $0.11$:
+six of eight families have \emph{zero} top-5 overlap between the
+two rankings, with Jisut the clear exception (top-5 $0.4$, top-10
+$0.7$). Qualitatively, input-gradient saliency concentrates on
+a consistent set of code-loading and device-identifier primitives
+across families --- \texttt{BaseDexClassLoader.findResource},
+\texttt{DexFile.openDexFile}, \texttt{DexClassLoader}, and
+\texttt{TelephonyManager.getSubscriberId} recur across most
+families' top-5 --- while gate activations surface per-family,
+often reflection-routed tokens. We read this not as one method
+being ``right'' and the other ``wrong,'' but as the two explainers
+answering different questions: input-gradient asks \emph{which
+embedding dimensions move the logit}, which is dominated by the
+handful of APIs whose embeddings the classifier has learned to
+point sharply at a class; the gate asks \emph{which tokens the
+attention layer chose to emphasise}, which is dominated by
+context-specific, per-family cues. We therefore do \emph{not}
+claim the gate output is a validated attribution — it is a cheap
+intrinsic ranking, available in a single forward pass, that ranks
+APIs differently than post-hoc gradient attribution. Both views
+are useful for analyst triage; neither is ground truth.
+
+\begin{table}[htbp]
+\centering
+\caption{Top-$k$ API overlap: gate-activation ranking vs.\
+input-gradient saliency (30 correctly-classified samples per
+family). Six of eight families have zero top-5 overlap, indicating
+the two attribution methods largely rank different APIs.}
+\label{tab:attrib-overlap}
+\small
+\begin{tabular}{lcc}
+\toprule
+Family & Top-5 overlap & Top-10 overlap \\
+\midrule
+Airpush      & 0.00 & 0.00 \\
+DroidKungFu  & 0.00 & 0.00 \\
+Opfake       & 0.00 & 0.00 \\
+Jisut        & 0.40 & 0.70 \\
+GinMaster    & 0.00 & 0.00 \\
+Genpua       & 0.00 & 0.00 \\
+SmsPay       & 0.00 & 0.00 \\
+Fusob        & 0.20 & 0.20 \\
+\midrule
+\textbf{Mean} & \textbf{$0.08$} & \textbf{$0.11$} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[t]
 \centering
@@ -119,11 +165,20 @@ directly off the forward pass at classification time.}
 \subsection{Practical reading}
 
 We read these results as supporting a \emph{narrow} form of
-intrinsic explainability: the gates reliably surface the
+intrinsic explainability. The gates reliably surface the
 \emph{mechanism} the classifier exploits (reflection, obfuscation,
-network behaviour), and this is genuinely useful for triage and
+per-family context), and this is genuinely useful for triage and
 feature auditing. They do not, however, straightforwardly map onto
-the human concept of ``the API that makes this sample malicious.''
-For the latter, gate activations are best viewed as a first-pass
-\emph{ranking} signal to drive deeper manual analysis, rather than
-as a standalone ground-truth attribution.
+the human concept of ``the API that makes this sample malicious,''
+nor do they line up with an independent post-hoc attribution
+method --- six of eight families have zero top-5 overlap with
+input-gradient saliency (Table~\ref{tab:attrib-overlap}). Rather
+than treating either ranking as ground truth, we advocate using
+both: the gate ranking as a cheap, always-available intrinsic
+view of \emph{what the attention layer emphasised}, and
+input-gradient saliency (at additional cost of one backward pass
+per class) as a complementary view of \emph{which embeddings
+most move the logit}. The divergence between the two is itself
+diagnostically useful, signalling that the classifier is
+combining evidence from a broader set of tokens than any single
+attribution method captures.

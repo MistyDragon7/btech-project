@@ -7,5 +7,8 @@
   "d_ff": 256,
   "max_seq_len": 512,
   "dropout": 0.1,
-  "notes": "Checkpoint saved at epoch 2 of a paused 30-epoch run (F1=0.77). For the published 3-fold results (F1=0.886), rerun scripts/train_final.py to completion."
+  "best_epoch": 20,
+  "best_f1": 0.873680845217784,
+  "train_size": 7276,
+  "test_size": 809
 }

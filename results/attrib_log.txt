@@ -1,0 +1,32 @@
+18:55:02 [INFO] attrib: Device: mps
+18:55:02 [INFO] attrib: Loading model from /Users/aravjain/PERSONAL/btech-project/results/models
+18:55:02 [INFO] attrib: Loading corpus...
+18:55:02 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+18:55:05 [INFO] src.preprocessing:   Airpush: 5880 samples
+18:55:06 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+18:55:06 [INFO] src.preprocessing:   Fusob: 166 samples
+18:55:06 [INFO] src.preprocessing:   Genpua: 312 samples
+18:55:07 [INFO] src.preprocessing:   GinMaster: 523 samples
+18:55:08 [INFO] src.preprocessing:   Jisut: 430 samples
+18:55:10 [INFO] src.preprocessing:   Opfake: 596 samples
+18:55:10 [INFO] src.preprocessing:   SmsPay: 173 samples
+18:55:10 [INFO] attrib: [Airpush] Computing saliency over 30 samples...
+18:55:12 [INFO] attrib:   overlap @5=0.00  @10=0.00
+18:55:12 [INFO] attrib: [DroidKungFu] Computing saliency over 30 samples...
+18:55:13 [INFO] attrib:   overlap @5=0.00  @10=0.00
+18:55:13 [INFO] attrib: [Fusob] Computing saliency over 30 samples...
+18:55:13 [INFO] attrib:   overlap @5=0.20  @10=0.20
+18:55:13 [INFO] attrib: [Genpua] Computing saliency over 30 samples...
+18:55:13 [INFO] attrib:   overlap @5=0.00  @10=0.00
+18:55:13 [INFO] attrib: [GinMaster] Computing saliency over 30 samples...
+18:55:13 [INFO] attrib:   overlap @5=0.00  @10=0.00
+18:55:13 [INFO] attrib: [Jisut] Computing saliency over 30 samples...
+18:55:14 [INFO] attrib:   overlap @5=0.40  @10=0.70
+18:55:14 [INFO] attrib: [Opfake] Computing saliency over 30 samples...
+18:55:14 [INFO] attrib:   overlap @5=0.00  @10=0.00
+18:55:14 [INFO] attrib: [SmsPay] Computing saliency over 30 samples...
+18:55:14 [INFO] attrib:   overlap @5=0.00  @10=0.00
+18:55:14 [INFO] attrib: ============================================================
+18:55:14 [INFO] attrib: Mean top-5 overlap (gate vs input-gradient):  0.08
+18:55:14 [INFO] attrib: Mean top-10 overlap (gate vs input-gradient): 0.11
+18:55:14 [INFO] attrib: Saved to /Users/aravjain/PERSONAL/btech-project/results/attribution_comparison.json
