@@ -1,0 +1,14 @@
+{
+  "min_support": 0.0001,
+  "min_confidence": 0.8,
+  "class_weights": "uniform",
+  "accuracy_mean": 0.8289631671479665,
+  "accuracy_std": 0.025651051271888693,
+  "f_score_mean": 0.7249816766403064,
+  "f_score_std": 0.027208669134233747,
+  "auc_mean": 0.9476834553745048,
+  "auc_std": 0.007991703771964929,
+  "precision_mean": 0.7389248033854271,
+  "sensitivity_mean": 0.7487106906838298,
+  "n_rules_mean": 3191.3333333333335
+}

@@ -139,15 +139,48 @@ class MarkovPruningClassifier:
     Uses support/confidence-based pruning and softmax ranking.
     """
 
-    def __init__(self, min_support=0.001, min_confidence=0.3):
+    def __init__(self, min_support=0.001, min_confidence=0.3, class_weights=None):
+        """
+        class_weights: one of
+            None / "uniform"  -> w_c = 1 for every c (current behaviour)
+            "prior"           -> w_c = N_c / N   (class frequency; rewards majority)
+            "inverse"         -> w_c = N / (|C| * N_c) (inverse frequency; rewards minority)
+            np.ndarray of shape (num_classes,) -> used as-is.
+        Broadcast element-wise into rho before softmax.
+        """
         self.min_support = min_support
         self.min_confidence = min_confidence
+        self.class_weights_spec = class_weights
         self.class_support = None
         self.class_confidence = None
+        self.class_weights = None  # resolved at fit() time
         self.selected_rules = None
         self.num_classes = None
 
-    def fit(self, class_graphs, num_classes):
+    def _resolve_class_weights(self, labels, num_classes):
+        import numpy as _np
+        spec = self.class_weights_spec
+        if spec is None or spec == "uniform":
+            return _np.ones(num_classes, dtype=_np.float64)
+        if isinstance(spec, str):
+            y = _np.asarray(labels)
+            counts = _np.array([max((y == c).sum(), 1) for c in range(num_classes)],
+                               dtype=_np.float64)
+            N = counts.sum()
+            if spec == "prior":
+                return counts / N
+            if spec == "inverse":
+                return N / (num_classes * counts)
+            raise ValueError(f"Unknown class_weights spec: {spec!r}")
+        # Array-like
+        arr = _np.asarray(spec, dtype=_np.float64)
+        if arr.shape != (num_classes,):
+            raise ValueError(
+                f"class_weights array must be shape ({num_classes},), got {arr.shape}"
+            )
+        return arr
+
+    def fit(self, class_graphs, num_classes, labels=None):
         from src.markov import compute_support_confidence, prune_rules
 
         self.num_classes = num_classes
@@ -156,6 +189,13 @@ class MarkovPruningClassifier:
                                           self.min_support, self.min_confidence)
         self.class_support = {r: support[r] for r in self.selected_rules}
         self.class_confidence = {r: confidence[r] for r in self.selected_rules}
+        # Resolve class weights. "prior"/"inverse" need label counts.
+        if labels is None and isinstance(self.class_weights_spec, str) \
+                and self.class_weights_spec in ("prior", "inverse"):
+            raise ValueError(
+                f"class_weights={self.class_weights_spec!r} requires labels= in fit()"
+            )
+        self.class_weights = self._resolve_class_weights(labels, num_classes)
 
     def predict(self, encoded_sequences, max_spacing=10):
         from src.markov import extract_rules
@@ -174,7 +214,7 @@ class MarkovPruningClassifier:
                 if rule not in rule_set:
                     continue
                 sigma_norm = count / seq_len
-                rho += sigma_norm * self.class_confidence[rule]
+                rho += sigma_norm * self.class_confidence[rule] * self.class_weights
 
             # Softmax classification (Eq. 7)
             if rho.sum() == 0:
@@ -200,7 +240,7 @@ class MarkovPruningClassifier:
                 if rule not in rule_set:
                     continue
                 sigma_norm = count / seq_len
-                rho += sigma_norm * self.class_confidence[rule]
+                rho += sigma_norm * self.class_confidence[rule] * self.class_weights
 
             if rho.sum() == 0:
                 probs = np.ones(self.num_classes) / self.num_classes
