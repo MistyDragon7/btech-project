@@ -16,9 +16,26 @@ SECTIONS = REPO_ROOT / "paper" / "sections"
 
 ABLATION_JSON = REPO_ROOT / "results" / "ablation_summary.json"
 ATTRIB_JSON = REPO_ROOT / "results" / "attribution_comparison.json"
+MATCHED_GATED_JSON = REPO_ROOT / "results" / "gated_matched_summary.json"
 
-# GAME-Mal reference numbers (3-fold aggregate)
-GAME_MAL = {"accuracy": (0.9405, 0.0024), "f_score": (0.8864, 0.0063), "auc": (0.9841, 0.0019)}
+
+def _load_gated_reference() -> dict:
+    """Read the matched-prep gated 3-fold aggregate so ablation deltas
+    are computed against an apples-to-apples baseline (same 8,085-sample
+    len>=30 subset as the non-gated ablation). Falls back to the old
+    9,337-sample numbers only if the matched run has not been produced."""
+    if MATCHED_GATED_JSON.exists():
+        with open(MATCHED_GATED_JSON) as f:
+            m = json.load(f)["aggregate"]
+        return {
+            "accuracy": (m["accuracy"]["mean"], m["accuracy"]["std"]),
+            "f_score": (m["f_score"]["mean"], m["f_score"]["std"]),
+            "auc": (m["auc"]["mean"], m["auc"]["std"]),
+        }
+    return {"accuracy": (0.9405, 0.0024), "f_score": (0.8864, 0.0063), "auc": (0.9841, 0.0019)}
+
+
+GAME_MAL = _load_gated_reference()
 
 
 def fmt(m: float, s: float) -> str:

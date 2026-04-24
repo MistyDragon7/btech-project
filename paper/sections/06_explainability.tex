@@ -45,7 +45,7 @@ Jisut &
 \texttt{java.io.File.exists} (0.40),
 \texttt{ActivityManager.getRunningTasks} (0.38),
 \texttt{os.SystemProperties.get} (0.38),
-\texttt{SmsManager.sendTextMessage} (0.22 --- top-ranked SMS API) \\[0.4em]
+\texttt{android.content.ContentResolver.query} (0.37) \\[0.4em]
 Opfake &
 \texttt{REFL:(obfuscated).getClass} (0.64),
 \texttt{REFL:(obfuscated).getSystemService} (0.59),
@@ -102,8 +102,8 @@ token's human-readable semantic importance.
 attribution methods largely disagree.} We compare gate-activation
 rankings against an input-gradient saliency baseline
 (GradientInput: $\|\nabla_E \mathrm{logit}_c \odot E\|_1$ at the
-embedding output, averaged across correctly-classified samples of
-each family, 30 samples per family). Per-family top-$k$ overlaps
+embedding output, averaged across samples of each family,
+30 samples per family). Per-family top-$k$ overlaps
 are reported in Table~\ref{tab:attrib-overlap}. The mean top-5
 overlap is only $0.08$ and mean top-10 is $0.11$:
 six of eight families have \emph{zero} top-5 overlap between the
@@ -130,8 +130,8 @@ are useful for analyst triage; neither is ground truth.
 \begin{table}[htbp]
 \centering
 \caption{Top-$k$ API overlap: gate-activation ranking vs.\
-input-gradient saliency (30 correctly-classified samples per
-family). Six of eight families have zero top-5 overlap, indicating
+input-gradient saliency (30 samples per family, selected by true
+label). Six of eight families have zero top-5 overlap, indicating
 the two attribution methods largely rank different APIs.}
 \label{tab:attrib-overlap}
 \small

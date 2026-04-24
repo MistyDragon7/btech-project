@@ -1,0 +1,2 @@
+model,accuracy_avg,accuracy_std,f_score_avg,f_score_std,auc_avg,auc_std
+GatedGAMEMal,0.9427,0.0016,0.8831,0.0042,0.9844,0.0010

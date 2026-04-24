@@ -6,9 +6,12 @@
 We use an eight-family subset of the UMD Android Malware corpus,
 restricted to families with at least 150 droidmon-instrumented
 samples after deduplication and successful trace extraction
-(Table~\ref{tab:dataset}). After a minimum-length filter of
-30~API~calls, the corpus contains \textbf{9{,}337~samples}
-spanning families that together cover four dominant malicious
+(Table~\ref{tab:dataset}). The base corpus contains
+\textbf{9{,}337~samples} (after a default length $\geq 5$ filter
+applied at load time); the transformer ablation and matched-gated
+runs additionally apply a length $\geq 30$ filter, leaving
+\textbf{8{,}085~samples}. The corpus spans families that together
+cover four dominant malicious
 behaviours: ad-injection (Airpush, Opfake), premium-SMS fraud
 (Jisut, Genpua, SmsPay), ransomware (Fusob), and generic
 trojans with dropper/rootkit behaviour (DroidKungFu, GinMaster).
@@ -21,13 +24,13 @@ trojans with dropper/rootkit behaviour (DroidKungFu, GinMaster).
 \toprule
 Family & \# samples & Share (\%) \\
 \midrule
-Airpush      & 5{,}956 & 63.8 \\
-DroidKungFu  & 1{,}315 & 14.1 \\
-Opfake       &   615 & 6.6  \\
-Jisut        &   534 & 5.7  \\
-GinMaster    &   529 & 5.7  \\
-Genpua       &   313 & 3.4  \\
-SmsPay       &   174 & 1.9  \\
+Airpush      & 5{,}880 & 63.0 \\
+DroidKungFu  & 1{,}257 & 13.5 \\
+Opfake       &   596 & 6.4  \\
+GinMaster    &   523 & 5.6  \\
+Jisut        &   430 & 4.6  \\
+Genpua       &   312 & 3.3  \\
+SmsPay       &   173 & 1.9  \\
 Fusob        &   166 & 1.8  \\
 \midrule
 \textbf{Total} & \textbf{9{,}337} & 100.0 \\
@@ -72,7 +75,7 @@ evaluation. Reported numbers are means over the three folds.
 
 We report \textbf{accuracy}, \textbf{macro-averaged F1-score},
 and \textbf{macro-averaged one-vs-rest AUROC}. Macro-averaging
-prevents the majority class (Airpush at 63.8\%) from dominating
+prevents the majority class (Airpush at 63.0\%) from dominating
 the headline numbers. All deep models are evaluated with the
 checkpoint that achieved the highest validation macro-F1 during
 training, not the last-epoch checkpoint.

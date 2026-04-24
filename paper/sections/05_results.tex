@@ -53,12 +53,12 @@ Class share reported for context.}
 \toprule
 Family & Share & Precision & Recall & F1 \\
 \midrule
-Airpush      & 63.8\% & 0.975 & 0.959 & 0.967 \\
-DroidKungFu  & 14.1\% & 0.866 & 0.924 & 0.894 \\
-Opfake       & 6.6\%  & 0.970 & 0.965 & 0.967 \\
-Jisut        & 5.7\%  & 0.940 & 0.986 & 0.963 \\
-GinMaster    & 5.7\%  & 0.903 & 0.856 & 0.879 \\
-Genpua       & 3.4\%  & 0.778 & 0.740 & 0.759 \\
+Airpush      & 63.0\% & 0.975 & 0.959 & 0.967 \\
+DroidKungFu  & 13.5\% & 0.866 & 0.924 & 0.894 \\
+Opfake       & 6.4\%  & 0.970 & 0.965 & 0.967 \\
+GinMaster    & 5.6\%  & 0.903 & 0.856 & 0.879 \\
+Jisut        & 4.6\%  & 0.940 & 0.986 & 0.963 \\
+Genpua       & 3.3\%  & 0.778 & 0.740 & 0.759 \\
 SmsPay       & 1.9\%  & 0.691 & 0.810 & 0.746 \\
 Fusob        & 1.8\%  & 0.965 & 1.000 & 0.982 \\
 \bottomrule
@@ -76,11 +76,11 @@ samples from which to mine confident rules.
 
 Second, the two families where GAME-Mal struggles are Genpua and
 SmsPay, both of which share behavioural signatures (premium-SMS
-fraud) with Jisut. Inspection of the confusion matrix confirms
+fraud and SMS-themed droppers) with Jisut. Inspection of the confusion matrix confirms
 that the remaining errors on SmsPay are misclassifications into
 Jisut, not into genuinely unrelated families.
 
-Third, the majority class (Airpush, 64\% of the data) does not
+Third, the majority class (Airpush, 63\% of the data) does not
 dominate the classifier at the expense of minority families: its
 F1 is high (0.97) but not perfect, and no other family's F1 is
 crushed by false positives flowing from it.
@@ -147,17 +147,22 @@ Qiu et al.~\cite{qiu2025gated} for language-model pretraining.}
 \subsection{Ablation: does the gate help?}
 \label{sec:ablation}
 
-To isolate the contribution of the G1 gating mechanism we train a
-plain multi-head-attention transformer with the sigmoid gates
-removed but all other architectural and training choices held
-fixed (same $d_{\text{model}}$, heads, layers, training recipe, and
-\emph{identical stratified folds}). Aggregate results appear in
+To isolate the contribution of the G1 gating mechanism we train
+two transformers on the \emph{same} length-filtered subset
+($\geq 30$ tokens, 8{,}085~samples), with the \emph{same}
+stratified 3-fold splits, the \emph{same} architectural
+dimensions, the \emph{same} training budget (25 epochs,
+patience 7) and the \emph{same} class-weighted cross-entropy
+objective. The only difference is whether the sigmoid gate of
+Eq.~\ref{eq:g1} is applied. Aggregate results appear in
 Table~\ref{tab:ablation}.
 
 \begin{table}[t]
 \centering
-\caption{Gated vs.\ non-gated transformer, averaged across
-3 stratified folds. All other hyperparameters and folds identical.}
+\caption{Gated vs.\ non-gated transformer. Both models trained
+on the same 8{,}085-sample len-$\geq30$ subset under the same
+stratified 3-fold splits and identical training recipe; the
+\emph{only} difference is the presence of the sigmoid gate.}
 \label{tab:ablation}
 \small
 \begin{tabular}{lccc}
@@ -165,27 +170,32 @@ Table~\ref{tab:ablation}.
 Model & Accuracy & Macro F1 & Macro AUROC \\
 \midrule
 Plain Transformer (no gate) & $0.947 \pm 0.002$ & $0.897 \pm 0.005$ & $0.988 \pm 0.002$ \\
-\textbf{GAME-Mal} (gated)   & $0.940 \pm 0.002$ & $0.886 \pm 0.006$ & $0.984 \pm 0.002$ \\
+\textbf{GAME-Mal} (gated)   & $0.943 \pm 0.002$ & $0.883 \pm 0.004$ & $0.984 \pm 0.001$ \\
 \midrule
-$\Delta$ (gate minus plain) & $-0.006$ & $-0.011$ & $-0.004$ \\
+$\Delta$ (gate minus plain) & $-0.004$ & $-0.014$ & $-0.004$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The ablation is trained on a slightly shorter budget
-(25~epochs, patience~7) than the main runs (40~epochs, patience~10),
-chosen such that both models had stopped improving under their
-respective early-stopping criteria at the checkpoints reported.
+The matched budget (25~epochs, patience~7) is shorter than the
+main-table run (40~epochs, patience~10); both models had
+stopped improving at the reported checkpoints under their
+respective early-stopping criteria. The matched-prep gated
+numbers ($0.943/0.883/0.984$) are within fold stddev of the
+main-table gated numbers ($0.940/0.886/0.984$, Table~\ref{tab:main},
+which used the same 3-fold protocol but without the len-$\geq30$
+filter on 9{,}337 samples), so the matched prep does not move
+GAME-Mal materially.
 
 \paragraph{Reading the ablation honestly.}
-The headline finding is the one we did \emph{not} expect: on
-this 8{,}085-sample, 8-family corpus the G1 gate does not
-improve the plain multi-head transformer in aggregate. The
-non-gated baseline reaches a macro-F1 of $0.897 \pm 0.005$
-against $0.886 \pm 0.006$ for the gated variant --- a $1.1$-pp
-gap in favour of the plain model, larger than either run's
-fold-to-fold standard deviation. Accuracy and AUROC follow the
-same direction (plain ahead by $0.6$ and $0.4$ pp respectively).
+The headline finding is the one we did \emph{not} expect: under
+strict apples-to-apples matching, the G1 gate does not improve
+the plain multi-head transformer on this corpus. The non-gated
+baseline reaches a macro-F1 of $0.897 \pm 0.005$ against
+$0.883 \pm 0.004$ for the gated variant --- a $1.4$-pp gap in
+favour of the plain model, larger than either run's fold-to-fold
+standard deviation. Accuracy and AUROC follow the same
+direction (plain ahead by $0.4$ pp each).
 
 We take this as a genuinely useful negative result and do not
 attempt to erase it. Two non-exclusive interpretations are
