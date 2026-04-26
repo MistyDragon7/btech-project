@@ -53,10 +53,10 @@ class Cfg:
     d_ff = 256
     dropout = 0.15
     batch_size = 32
-    epochs = 50
+    epochs = 100
     lr = 5e-4
     weight_decay = 1e-4
-    patience = 12
+    patience = 20
     n_folds = 3
     seed = 42
     use_gate = False  # KEY DIFFERENCE: no gate
