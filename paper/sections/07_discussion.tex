@@ -36,11 +36,16 @@ sufficiently different to shift the picture. A multi-corpus study
 is a natural next step.
 
 \paragraph{Sequence truncation.} Droidmon traces can exceed
-$10^4$ API calls; we cap at 512 via tail-truncation. While we
-verified empirically that this preserves the payload-execution
-phase for the families studied, longer context would benefit
-multi-stage malware and is a natural fit for recent long-context
-attention variants.
+$10^4$ API calls; we cap at 512 via \emph{head}-truncation. The
+sweep over $L_{\max} \in \{256, 512, 768\} \times \{$head, tail$\}$
+showed that head-truncation dominates tail at every length, and
+that increasing $L_{\max}$ beyond 512 yields no statistically
+significant improvement (768/head: $0.8867 \pm 0.003$ vs.
+512/head: $0.8875 \pm 0.012$). The early phase of the trace —
+registration, reflection resolution, and SDK initialisation — appears
+to carry the bulk of the family signal on this corpus. Long-context
+attention variants would still help on multi-stage malware whose
+discriminating events occur late, which is left to future work.
 
 \paragraph{Reproducibility of gate explanations.} Gate activations
 are deterministic given a fixed model, but different random seeds

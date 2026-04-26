@@ -75,11 +75,18 @@ def compute_per_class_metrics(
         spec = tn / (tn + fp) if (tn + fp) > 0 else 0
         prec = tp / (tp + fp) if (tp + fp) > 0 else 0
         f1 = 2 * prec * sens / (prec + sens) if (prec + sens) > 0 else 0
-        auc_val = (sens + spec) / 2
+        # NOTE: this is the macro-averaged balanced accuracy of a one-vs-rest
+        # split, NOT a true AUC. Earlier versions of this function mis-labelled
+        # the field as "auc"; we keep that key for backward-compatibility but
+        # also expose the correct name "balanced_accuracy".
+        bal_acc = (sens + spec) / 2
 
         result[name] = {
             "accuracy": acc, "sensitivity": sens, "specificity": spec,
-            "precision": prec, "auc": auc_val, "f_score": f1,
+            "precision": prec,
+            "balanced_accuracy": bal_acc,
+            "auc": bal_acc,  # deprecated alias — see note above
+            "f_score": f1,
         }
     return result
 
@@ -196,6 +203,15 @@ class MarkovPruningClassifier:
                 f"class_weights={self.class_weights_spec!r} requires labels= in fit()"
             )
         self.class_weights = self._resolve_class_weights(labels, num_classes)
+        # Majority-class fallback: when a test sample contains no selected
+        # rule, predict() previously returned 0 (Airpush), silently biasing
+        # the baseline toward the majority. We now record the training-set
+        # majority class and use it as a principled fallback.
+        if labels is not None:
+            counts = np.bincount(np.asarray(labels), minlength=num_classes)
+            self._fallback_class = int(counts.argmax())
+        else:
+            self._fallback_class = 0
 
     def predict(self, encoded_sequences, max_spacing=10):
         from src.markov import extract_rules
@@ -218,8 +234,9 @@ class MarkovPruningClassifier:
 
             # Softmax classification (Eq. 7)
             if rho.sum() == 0:
-                # No rules matched — fall back to class-prior (uniform)
-                predictions.append(0)
+                # No selected rule fired in this sample — fall back to the
+                # training-set majority class (set in fit()).
+                predictions.append(getattr(self, "_fallback_class", 0))
                 continue
             rho_exp = np.exp(rho - rho.max())  # numerical stability
             probs = rho_exp / rho_exp.sum()

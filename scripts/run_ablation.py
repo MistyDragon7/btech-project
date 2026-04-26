@@ -52,6 +52,8 @@ class Cfg:
 
 
 def main() -> None:
+    torch.manual_seed(Cfg.seed)
+    np.random.seed(Cfg.seed)
     log.info("Loading corpus...")
     sequences, labels, family_names = load_dataset(REPO_ROOT / "extracted_data")
     keep = [i for i, s in enumerate(sequences) if len(s) >= 30]

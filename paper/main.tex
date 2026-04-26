@@ -52,20 +52,26 @@ activations themselves serve as an explanation of which API calls drove
 each classification decision, yielding per-family behavioural
 fingerprints without any post-hoc attribution method. On an eight-family
 subset of the UMD Android Malware corpus (9{,}337 samples), GAME-Mal
-achieves a macro F1-score of \textbf{88.64\%} across three
-stratified folds, competitive with a Random~Forest baseline at
-\textbf{89.34\%} while improving on the associative-rule baseline
-by \textbf{17.72} percentage points of macro F1. The learned gate
-distribution is centred at a mean activation of $\approx 0.44$, with
-roughly two thirds of tokens below $0.5$, indicating moderate
-input-dependent sparsity rather than the extreme regime reported for
-language-model pretraining. An ablation against an identically-trained
-plain (non-gated) transformer shows the gate does \emph{not} improve
-raw accuracy at this corpus scale (plain F1 $0.897 \pm 0.005$
-vs.\ gated $0.886 \pm 0.006$); we therefore report the gate as the
+achieves a macro F1-score of \textbf{88.36\%} across three
+stratified folds at the configuration selected by an explicit
+sequence-length / truncation sweep ($L_{\max}{=}512$, head-truncation),
+competitive with a Random~Forest baseline at \textbf{89.34\%} while
+improving on the associative-rule baseline by \textbf{17.5}
+percentage points of macro F1. The learned gate distribution is
+centred at a mean activation of $\approx 0.44$, with roughly two
+thirds of tokens below $0.5$, indicating moderate input-dependent
+sparsity rather than the extreme regime reported for language-model
+pretraining. An ablation against an identically-trained plain
+(non-gated) transformer shows the gate does \emph{not} improve raw
+accuracy at this corpus scale (plain F1 $0.897 \pm 0.005$ vs.\
+gated $0.884 \pm 0.006$). We therefore report the gate as the
 architectural commitment that enables single-forward-pass explanation
-rather than as a raw-accuracy contribution, and we report this
-negative finding honestly.
+rather than as a raw-accuracy contribution, and we validate the
+explanation empirically with a deletion test that masks the top-$k$
+highest-gate tokens per sample and measures the drop in true-class
+probability against a random-mask control. Code, weights, and the
+full sweep / ablation / deletion artefacts are released at
+\url{https://github.com/MistyDragon7/btech-project}.
 \end{abstract}
 
 \begin{IEEEkeywords}

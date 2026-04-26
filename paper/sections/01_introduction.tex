@@ -66,12 +66,22 @@ classification). Our contributions are:
   \item An \textbf{intrinsic explainability} mechanism: the gate
   activations themselves rank APIs by importance per sample, yielding
   per-family behavioural fingerprints without any post-hoc method.
+  We further \emph{validate faithfulness} via a deletion test:
+  masking the top-$k$ highest-gate tokens drops the true-class
+  probability significantly more than masking $k$ random tokens.
+
+  \item An empirically-selected, reproducible \textbf{configuration
+  policy}: a $\{256, 512, 768\} \times \{$head, tail$\}$
+  sequence-length / truncation sweep selects $L_{\max}{=}512$ with
+  head-truncation; the per-config 3-fold metrics are published so
+  the choice is auditable rather than arbitrary.
 
   \item A \textbf{reproducible experimental pipeline} that runs
   four sklearn baselines (Random Forest, Linear SVM, Decision Tree,
-  Gaussian Naïve Bayes), a faithful reproduction of
-  D'Angelo et al.'s rule-voting classifier, and GAME-Mal under
-  identical stratified $k$-fold splits.
+  Gaussian Naïve Bayes), a faithful reproduction of D'Angelo et al.'s
+  rule-voting classifier, a 2-layer BiLSTM as a non-attention
+  sequence-model baseline, and GAME-Mal under identical stratified
+  $k$-fold splits and seeds (both numpy and torch).
 \end{itemize}
 
 The remainder of the paper is organised as follows.

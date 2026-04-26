@@ -1,0 +1,684 @@
+{
+  "_about": "Heuristic semantic grouping of the gate-ranked top-15 APIs per family. Buckets: network, filesystem, telephony_sms, reflection_obfuscation, crypto, process_runtime, other. Classification is by substring matching and is approximate; review individual labels for fine-grained claims.",
+  "top_k": 15,
+  "buckets": [
+    "network",
+    "filesystem",
+    "telephony_sms",
+    "reflection_obfuscation",
+    "crypto",
+    "process_runtime",
+    "other"
+  ],
+  "by_family": {
+    "Airpush": {
+      "apis": [
+        {
+          "api": "REFL:UNK._activity_pause",
+          "gate_score": 0.5774537324905396,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "java.net.URL.openConnection",
+          "gate_score": 0.5647929310798645,
+          "bucket": "network"
+        },
+        {
+          "api": "android.content.ContentValues.put",
+          "gate_score": 0.5448338389396667,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "<UNK>",
+          "gate_score": 0.5398411154747009,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:android.webkit.WebSettingsClassic.getUserAgentString",
+          "gate_score": 0.5307451486587524,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onContentChanged",
+          "gate_score": 0.5214241743087769,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.webkit.WebView.setWebViewClient",
+          "gate_score": 0.5184418559074402,
+          "bucket": "network"
+        },
+        {
+          "api": "REFL:UNK.getExternalStorageDirectory",
+          "gate_score": 0.5169373750686646,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "libcore.io.IoBridge.open",
+          "gate_score": 0.5166361331939697,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.5166310667991638,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.5155815482139587,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:com.android.internal.os.BatteryStatsImpl.getGlobalWifiRunningTime",
+          "gate_score": 0.5149078965187073,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.telephony.TelephonyManager.getDeviceId",
+          "gate_score": 0.5123764872550964,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "android.util.Base64.decode",
+          "gate_score": 0.5120007991790771,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:com.android.internal.os.BatteryStatsImpl.getBluetoothOnTime",
+          "gate_score": 0.5010169744491577,
+          "bucket": "reflection_obfuscation"
+        }
+      ],
+      "bucket_histogram": {
+        "reflection_obfuscation": 6,
+        "network": 2,
+        "filesystem": 2,
+        "other": 4,
+        "telephony_sms": 1
+      }
+    },
+    "DroidKungFu": {
+      "apis": [
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.setNextADCount",
+          "gate_score": 0.5784684419631958,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.baidu.android.pushservice.internal.CustomPushNotificationBuilder.writeObject",
+          "gate_score": 0.5586543679237366,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "java.net.URL.openConnection",
+          "gate_score": 0.5440655946731567,
+          "bucket": "network"
+        },
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.getIP",
+          "gate_score": 0.5440632700920105,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "<UNK>",
+          "gate_score": 0.5370059609413147,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.setLoopTimes",
+          "gate_score": 0.530758261680603,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.webkit.WebView.setWebViewClient",
+          "gate_score": 0.5295367240905762,
+          "bucket": "network"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onTitleChanged",
+          "gate_score": 0.5280591249465942,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.setOfflineADCount",
+          "gate_score": 0.5262991189956665,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.content.ContentValues.put",
+          "gate_score": 0.5247704386711121,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.5184230804443359,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.516886830329895,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onContentChanged",
+          "gate_score": 0.5102413296699524,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.telephony.TelephonyManager.getDeviceId",
+          "gate_score": 0.49104318022727966,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "REFL:UNK.getUidRxBytes",
+          "gate_score": 0.4879719614982605,
+          "bucket": "reflection_obfuscation"
+        }
+      ],
+      "bucket_histogram": {
+        "reflection_obfuscation": 8,
+        "network": 2,
+        "other": 2,
+        "filesystem": 2,
+        "telephony_sms": 1
+      }
+    },
+    "Fusob": {
+      "apis": [
+        {
+          "api": "android.telephony.TelephonyManager.getDeviceId",
+          "gate_score": 0.5747572183609009,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "<UNK>",
+          "gate_score": 0.5715517401695251,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.5533614158630371,
+          "bucket": "other"
+        },
+        {
+          "api": "android.webkit.WebView.setWebViewClient",
+          "gate_score": 0.5272449851036072,
+          "bucket": "network"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.5244287848472595,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "java.net.ProxySelectorImpl.select",
+          "gate_score": 0.5219597816467285,
+          "bucket": "other"
+        },
+        {
+          "api": "libcore.io.IoBridge.open",
+          "gate_score": 0.5058115124702454,
+          "bucket": "other"
+        },
+        {
+          "api": "android.util.Base64.decode",
+          "gate_score": 0.4993612468242645,
+          "bucket": "other"
+        },
+        {
+          "api": "android.telephony.TelephonyManager.getLine1Number",
+          "gate_score": 0.46480587124824524,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "java.io.File.exists",
+          "gate_score": 0.4613751769065857,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "REFL:android.telephony.TelephonyManager.getDeviceId",
+          "gate_score": 0.4507441222667694,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.app.ApplicationPackageManager.getInstalledPackages",
+          "gate_score": 0.4336085915565491,
+          "bucket": "other"
+        },
+        {
+          "api": "android.os.SystemProperties.get",
+          "gate_score": 0.43091270327568054,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:UNK.getCameraInfo",
+          "gate_score": 0.42197147011756897,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.webkit.WebView.addJavascriptInterface",
+          "gate_score": 0.4156593978404999,
+          "bucket": "network"
+        }
+      ],
+      "bucket_histogram": {
+        "telephony_sms": 2,
+        "other": 7,
+        "network": 2,
+        "filesystem": 2,
+        "reflection_obfuscation": 2
+      }
+    },
+    "Genpua": {
+      "apis": [
+        {
+          "api": "REFL:com.google.appinventor.components.runtime.Label.FontItalic",
+          "gate_score": 0.5742027759552002,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "java.net.URL.openConnection",
+          "gate_score": 0.562495231628418,
+          "bucket": "network"
+        },
+        {
+          "api": "REFL:com.google.appinventor.components.runtime.Label.Width",
+          "gate_score": 0.5624707937240601,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.google.appinventor.components.runtime.AdMob.AdUnitID",
+          "gate_score": 0.5618712306022644,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.google.appinventor.components.runtime.Button.Text",
+          "gate_score": 0.5509001016616821,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.content.ContentValues.put",
+          "gate_score": 0.544209361076355,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.util.Base64.decode",
+          "gate_score": 0.5428941249847412,
+          "bucket": "other"
+        },
+        {
+          "api": "libcore.io.IoBridge.open",
+          "gate_score": 0.5423349738121033,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:com.google.appinventor.components.runtime.HorizontalArrangement.BackgroundColor",
+          "gate_score": 0.541674017906189,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:UNK.getUidRxBytes",
+          "gate_score": 0.5415211915969849,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:UNK.getTotalRxBytes",
+          "gate_score": 0.5410119295120239,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:android.app.SharedPreferencesImpl$EditorImpl.apply",
+          "gate_score": 0.5397826433181763,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.5393378138542175,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.5345619320869446,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onContentChanged",
+          "gate_score": 0.5332300662994385,
+          "bucket": "reflection_obfuscation"
+        }
+      ],
+      "bucket_histogram": {
+        "reflection_obfuscation": 9,
+        "network": 1,
+        "filesystem": 2,
+        "other": 3
+      }
+    },
+    "GinMaster": {
+      "apis": [
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.getTextColor",
+          "gate_score": 0.5604995489120483,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onAttachedToWindow",
+          "gate_score": 0.5562383532524109,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onContentChanged",
+          "gate_score": 0.5548871159553528,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "java.net.URL.openConnection",
+          "gate_score": 0.5530750155448914,
+          "bucket": "network"
+        },
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.setNextADCount",
+          "gate_score": 0.5438022613525391,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.530415415763855,
+          "bucket": "other"
+        },
+        {
+          "api": "android.content.ContentValues.put",
+          "gate_score": 0.5282842516899109,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.webkit.WebView.setWebViewClient",
+          "gate_score": 0.5274013876914978,
+          "bucket": "network"
+        },
+        {
+          "api": "REFL:android.webkit.WebSettingsClassic.getUserAgentString",
+          "gate_score": 0.5249912738800049,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.wqmobile.sdk.model.AppSettings.getIP",
+          "gate_score": 0.5237215161323547,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.telephony.TelephonyManager.getDeviceId",
+          "gate_score": 0.5175748467445374,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "REFL:com.alipay.mobile.common.logging.impl.TraceLoggerImpl.error",
+          "gate_score": 0.5172064304351807,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:com.papaya.view.WebAlertDialog.setText",
+          "gate_score": 0.5153576135635376,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "<UNK>",
+          "gate_score": 0.5086199641227722,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.5079105496406555,
+          "bucket": "filesystem"
+        }
+      ],
+      "bucket_histogram": {
+        "reflection_obfuscation": 8,
+        "network": 2,
+        "other": 2,
+        "filesystem": 2,
+        "telephony_sms": 1
+      }
+    },
+    "Jisut": {
+      "apis": [
+        {
+          "api": "libcore.io.IoBridge.open",
+          "gate_score": 0.4322848320007324,
+          "bucket": "other"
+        },
+        {
+          "api": "java.io.File.exists",
+          "gate_score": 0.40127530694007874,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.app.ActivityManager.getRunningTasks",
+          "gate_score": 0.37866830825805664,
+          "bucket": "other"
+        },
+        {
+          "api": "android.os.SystemProperties.get",
+          "gate_score": 0.37785592675209045,
+          "bucket": "other"
+        },
+        {
+          "api": "android.content.ContentResolver.query",
+          "gate_score": 0.37348389625549316,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putInt",
+          "gate_score": 0.30951789021492004,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.content.ContextWrapper.startActivity",
+          "gate_score": 0.2882956266403198,
+          "bucket": "other"
+        },
+        {
+          "api": "android.content.ContextWrapper.startService",
+          "gate_score": 0.2639855444431305,
+          "bucket": "other"
+        },
+        {
+          "api": "android.telephony.SmsManager.sendTextMessage",
+          "gate_score": 0.21622255444526672,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "android.app.ActivityManager.killBackgroundProcesses",
+          "gate_score": 0.20255810022354126,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.Activity.startActivity",
+          "gate_score": 0.1955060213804245,
+          "bucket": "other"
+        },
+        {
+          "api": "java.lang.Runtime.exec",
+          "gate_score": 0.18164755403995514,
+          "bucket": "process_runtime"
+        }
+      ],
+      "bucket_histogram": {
+        "other": 7,
+        "filesystem": 3,
+        "telephony_sms": 1,
+        "process_runtime": 1
+      }
+    },
+    "Opfake": {
+      "apis": [
+        {
+          "api": "REFL:ynlxcd.cwductjwjc.admyusbyfes.getClass",
+          "gate_score": 0.6402113437652588,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:gvvwtjh.btvamydntnm.orkwplsket.getSystemService",
+          "gate_score": 0.5921106934547424,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:android.app.SharedPreferencesImpl.edit",
+          "gate_score": 0.5848795771598816,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:vbkoxh.cswnpr.vmbatqef.getClass",
+          "gate_score": 0.5789734721183777,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:tp5x.WGt12.Y6Cg03N.loadAndDecode",
+          "gate_score": 0.5604575276374817,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "<UNK>",
+          "gate_score": 0.5588268637657166,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.5552582144737244,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "REFL:android.app.AlarmManager.set",
+          "gate_score": 0.5549761056900024,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.content.ContentValues.put",
+          "gate_score": 0.5479253530502319,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "REFL:org.kxml2.io.KXmlParser.getAttributeName",
+          "gate_score": 0.5421571135520935,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:libcore.net.url.JarURLConnectionImpl$JarURLConnectionInputStream.read",
+          "gate_score": 0.5420568585395813,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:mejfudpoww.jieggdekc.sxeqdkxvvl.getSystemService",
+          "gate_score": 0.5367133617401123,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.5277922749519348,
+          "bucket": "other"
+        },
+        {
+          "api": "libcore.io.IoBridge.open",
+          "gate_score": 0.5274308919906616,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:tp5x.WGt12.Y6Cg03N.showScreen",
+          "gate_score": 0.5258835554122925,
+          "bucket": "reflection_obfuscation"
+        }
+      ],
+      "bucket_histogram": {
+        "reflection_obfuscation": 10,
+        "other": 3,
+        "filesystem": 2
+      }
+    },
+    "SmsPay": {
+      "apis": [
+        {
+          "api": "java.net.URL.openConnection",
+          "gate_score": 0.5684936046600342,
+          "bucket": "network"
+        },
+        {
+          "api": "<UNK>",
+          "gate_score": 0.5558357238769531,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:UNK.sendStaticMessage",
+          "gate_score": 0.5485770106315613,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:android.app.ActivityManagerProxy.getMemoryInfo",
+          "gate_score": 0.5466449856758118,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "REFL:java.net.PlainSocketImpl.getInputStream",
+          "gate_score": 0.5453700423240662,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.util.Base64.decode",
+          "gate_score": 0.5437964200973511,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:UNK.getUidRxBytes",
+          "gate_score": 0.5432251691818237,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.content.ContentValues.put",
+          "gate_score": 0.541170597076416,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.app.ContextImpl.registerReceiver",
+          "gate_score": 0.5369910597801208,
+          "bucket": "other"
+        },
+        {
+          "api": "REFL:com.adobe.air.AndroidActivityWrapper.onContentChanged",
+          "gate_score": 0.5359171032905579,
+          "bucket": "reflection_obfuscation"
+        },
+        {
+          "api": "android.webkit.WebView.setWebViewClient",
+          "gate_score": 0.5358224511146545,
+          "bucket": "network"
+        },
+        {
+          "api": "libcore.io.IoBridge.open",
+          "gate_score": 0.5329441428184509,
+          "bucket": "other"
+        },
+        {
+          "api": "android.app.SharedPreferencesImpl$EditorImpl.putString",
+          "gate_score": 0.5302073955535889,
+          "bucket": "filesystem"
+        },
+        {
+          "api": "android.telephony.TelephonyManager.getDeviceId",
+          "gate_score": 0.5222601294517517,
+          "bucket": "telephony_sms"
+        },
+        {
+          "api": "REFL:android.app.SharedPreferencesImpl$EditorImpl.apply",
+          "gate_score": 0.5204673409461975,
+          "bucket": "reflection_obfuscation"
+        }
+      ],
+      "bucket_histogram": {
+        "network": 2,
+        "other": 4,
+        "reflection_obfuscation": 6,
+        "filesystem": 2,
+        "telephony_sms": 1
+      }
+    }
+  }
+}

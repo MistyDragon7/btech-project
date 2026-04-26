@@ -156,9 +156,31 @@ def prepare_splits(
 
 
 def pad_sequences(encoded_seqs: List[List[int]], max_len: int) -> np.ndarray:
-    """Pad/truncate sequences to fixed length."""
+    """Pad/truncate sequences to fixed length (head truncation: keeps seq[:max_len])."""
     result = np.zeros((len(encoded_seqs), max_len), dtype=np.int64)
     for i, seq in enumerate(encoded_seqs):
         length = min(len(seq), max_len)
         result[i, :length] = seq[:length]
+    return result
+
+
+def pad_with_truncation(
+    encoded_seqs: List[List[int]],
+    max_len: int,
+    truncation: str = "head",
+) -> np.ndarray:
+    """Pad/truncate to fixed length with selectable truncation side.
+
+    truncation="head": keep seq[:max_len] (drop the tail)
+    truncation="tail": keep seq[-max_len:] (drop the head — keep most recent calls)
+    """
+    if truncation not in ("head", "tail"):
+        raise ValueError(f"truncation must be 'head' or 'tail', got {truncation!r}")
+    result = np.zeros((len(encoded_seqs), max_len), dtype=np.int64)
+    for i, seq in enumerate(encoded_seqs):
+        length = min(len(seq), max_len)
+        if truncation == "tail":
+            result[i, :length] = seq[-length:]
+        else:
+            result[i, :length] = seq[:length]
     return result

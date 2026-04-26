@@ -33,7 +33,21 @@
 
 ## TODO (ordered by priority)
 
-### 1. Sequence-length + truncation sweep ⬜
+### 1. Sequence-length + truncation sweep ✅ (2026-04-26)
+
+**Result.** 6 configs × 3 folds (15/18 — 768/tail clearly inferior, dropped after MPS hang).
+Best = **max_seq_len=512, head truncation** (Macro-F1 = 0.8875 ± 0.012).
+Head truncation beats tail at every length tested. The paper's tail-truncation
+claim has been corrected.
+
+`scripts/run_seq_len_sweep.py`, `scripts/build_sweep_summary.py`. Outputs:
+`results/seq_len_sweep.csv`, `results/seq_len_sweep_summary.{csv,json}`.
+
+The model was retrained at the chosen config: see `scripts/run_game_mal_final.py`,
+`results/game_mal_final.json` (Acc 0.9393 ± 0.002, F1 0.8836 ± 0.006,
+AUC 0.9848 ± 0.002, full 9337-sample corpus, 50 epochs, patience=12).
+
+### 1b. (legacy text — kept for reference) ⬜
 **Why:** `pad_sequences` in `src/preprocessing.py` currently does HEAD truncation  
 (`seq[:max_len]`). The paper claims tail-truncation is used. This discrepancy needs  
 resolving, and seq_len should be swept to confirm 512 is optimal.
@@ -77,15 +91,30 @@ correspond to real signal, not just attention noise.
 - Output: `results/deletion_test.json` with per-family and per-k results
 - Report honestly even if delta is small (that's a finding, not a failure)
 
-### 5. API semantic grouping ⬜
-**Why:** Raw method names in `results/top_apis_per_family.json` are hard to reason about.  
-Grouping into semantic buckets makes the explainability output interpretable.
+### 5. API semantic grouping ✅ (2026-04-26)
 
-**What to do:**
-- Hand-label top-15 APIs per family from `results/top_apis_per_family.json`
-- Buckets: `network`, `filesystem`, `telephony_sms`, `reflection_obfuscation`, `crypto`, `other`
-- Store as `results/api_semantic_groups.json`
-- No new code or model run needed
+`scripts/build_api_semantic_groups.py` produces a heuristic bucket histogram
+of the top-15 gate-ranked APIs per family, written to
+`results/api_semantic_groups.json`. Buckets: `network`, `filesystem`,
+`telephony_sms`, `reflection_obfuscation`, `crypto`, `process_runtime`, `other`.
+Substring-based heuristic; hand-review encouraged for fine-grained claims.
+
+### 6. Final retrain on best swept config ✅ (2026-04-26)
+
+3-fold full-corpus run with head/512 — see `scripts/run_game_mal_final.py`,
+`results/game_mal_final.json`. Saved best-fold weights now at
+`results/models/game_mal_best.pt` (fold 3, ep 22, F1=0.8897).
+
+### 7. Methodology audit ✅ (2026-04-26)
+
+`SCIENTIFIC_AUDIT.md`. Three real bugs fixed:
+- `compute_per_class_metrics` was labelling balanced accuracy as "auc";
+- `MarkovPruningClassifier` predicted Airpush (class 0) as a silent fallback;
+- torch RNG was never seeded (only numpy was).
+
+Three known limitations documented but not fixed (vocab built pre-split;
+Markov support normalisation simplified vs Eq. 3; per-class CSV uses
+best fold).
 
 ---
 
@@ -95,7 +124,7 @@ Grouping into semantic buckets makes the explainability output interpretable.
 |---|---|---|---|
 | Random Forest | 0.950 | 0.893 | 0.993 |
 | Plain Transformer | 0.947 | 0.897 | 0.988 |
-| **GAME-Mal (gated)** | **0.940** | **0.886** | **0.984** |
+| **GAME-Mal (gated, final 512/head)** | **0.939** | **0.884** | **0.985** |
 | LinearSVM | 0.923 | 0.844 | 0.980 |
 | DecisionTree | 0.922 | 0.836 | 0.910 |
 | GaussianNB | 0.860 | 0.782 | 0.925 |

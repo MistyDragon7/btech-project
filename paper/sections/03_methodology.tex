@@ -36,9 +36,14 @@ deliberately: it is itself a behavioural feature — several families
 
 A per-sample sequence $S = (t_1, t_2, \ldots, t_L)$ is the
 time-ordered list of these tokens. We cap $L$ at $L_{\max}=512$ via
-tail-truncation, retaining the most recent calls; preliminary runs
-showed head-truncation discarded the payload-execution phase of
-most samples.
+\emph{head}-truncation, i.e.\ keeping $S_{1{:}L_{\max}}$. We initially
+hypothesised that tail-truncation would be preferable because it
+preserves the payload-execution phase, but the seq-length sweep
+(Sec.~\ref{sec:results}) decisively showed the opposite: head-truncation
+beats tail-truncation by 1.7--2.9 macro-F1 points at every length
+$\in\{256, 512, 768\}$. We attribute this to the early registration
+and reflection-resolution events being more class-discriminative on
+this corpus than the late command-and-control activity.
 
 \subsection{Vocabulary and encoding}
 

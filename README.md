@@ -16,12 +16,18 @@ A B.Tech research project combining:
 | DecisionTree   |  0.923   |  0.836   |  0.910      |
 | LinearSVM      |  0.923   |  0.844   |  0.980      |
 | MarkovPruning  |  0.829   |  0.709   |  0.942      |
-| **GAME-Mal**   | **0.940**| **0.886**| **0.984**   |
+| **GAME-Mal**   | **0.939**| **0.884**| **0.985**   |
 | RandomForest   |  0.950   |  0.893   |  0.993      |
 
 GAME-Mal matches the Random Forest baseline on all macro metrics within one
-fold-std, while improving macro F1 by **+17.7 points** over the D'Angelo
+fold-std, while improving macro F1 by **+17.5 points** over the D'Angelo
 associative-rule baseline and providing intrinsic per-sample explanations.
+
+The reported numbers are the final retrained model (`scripts/run_game_mal_final.py`)
+with the optimal config from the sequence-length sweep:
+$L_{\max}=512$, **head**-truncation, dropout=0.15, lr=5e-4, 50 epochs,
+patience=12, seed=42 (numpy + torch). See `SCIENTIFIC_AUDIT.md` for the
+list of methodology issues identified and fixed in this iteration.
 
 ## Repo layout
 
@@ -36,8 +42,20 @@ associative-rule baseline and providing intrinsic per-sample explanations.
 │   └── explain.py            # gate-activation aggregation
 ├── run_experiments.py        # full 3-fold pipeline
 ├── scripts/
-│   ├── data_extractor.py     # raw-corpus extraction
-│   └── train_final.py        # single final model + weight saving
+│   ├── data_extractor.py             # raw-corpus extraction
+│   ├── train_final.py                # single final model + weight saving
+│   ├── run_game_mal_final.py         # 3-fold final retrain at best config
+│   ├── run_seq_len_sweep.py          # max_seq_len × {head,tail} grid
+│   ├── run_bilstm.py                 # BiLSTM 3-fold sequence baseline
+│   ├── run_deletion_test.py          # gate-mask faithfulness test
+│   ├── run_markov_sweep.py           # MarkovPruning hyperparameter sweep
+│   ├── run_gated_matched.py          # matched-prep gated ablation
+│   ├── run_ablation.py               # plain-transformer ablation
+│   ├── compare_attributions.py       # gate vs GradientInput overlap
+│   ├── regen_per_class.py            # rebuild per-class CSV with corrected fields
+│   ├── build_api_semantic_groups.py  # heuristic bucket histograms
+│   ├── aggregate_final_results.py    # FINAL_REPORT.md
+│   └── analyze_project.py            # PROJECT_ANALYSIS.md (coherence audit)
 ├── results/
 │   ├── results_summary.csv   # 3-fold aggregate metrics
 │   ├── game_mal_per_class.csv
@@ -66,6 +84,12 @@ python3 -u run_experiments.py
 
 # Single-fold final model with weight saving (~1 h)
 python3 -u scripts/train_final.py
+
+# 3-fold retrain at the swept-best (max_seq_len, truncation), 50 epochs
+python3 -u scripts/run_game_mal_final.py
+
+# Sequence-length / truncation sweep (slow on long lengths via MPS)
+python3 -u scripts/run_seq_len_sweep.py
 ```
 
 The raw corpus (`extracted_data/`) is not checked in — see `scripts/data_extractor.py`

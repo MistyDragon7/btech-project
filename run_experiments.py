@@ -106,6 +106,12 @@ def run_pipeline(skip_baselines=False, quick=False):
     figures_dir.mkdir(exist_ok=True)
 
     np.random.seed(Config.seed)
+    # Reproducibility: torch RNG was previously unseeded.
+    try:
+        import torch as _torch
+        _torch.manual_seed(Config.seed)
+    except Exception:
+        pass
 
     # ════════════════════════════════════════════════════════════════
     # STEP 1: Load data
