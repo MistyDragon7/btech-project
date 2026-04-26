@@ -321,15 +321,42 @@ def run_transformer_shap(seqs, labels):
     wrapper.eval()
 
     print("  Running GradientExplainer (this may take ~2 min) …")
+    num_cls = len(FAMILY_NAMES)
     explainer = shap.GradientExplainer(wrapper, back_emb)
-    # shap_values: list[n_classes] of (n_test, seq_len, d_model)
+    # shap_values returns either:
+    #   (a) list of n_classes arrays each (n_test, seq_len, d_model)  — older shap
+    #   (b) single ndarray (n_test, seq_len, d_model)                 — single-output or shap 0.49+
     shap_vals = explainer.shap_values(test_emb)
 
-    # Reduce d_model dimension: L2 norm over embedding dims → (n_classes, n_test, seq_len)
-    shap_per_pos = np.array([
-        np.linalg.norm(sv, axis=-1)   # (n_test, seq_len)
-        for sv in shap_vals
-    ])  # (n_classes, n_test, seq_len)
+    if isinstance(shap_vals, list) and len(shap_vals) == num_cls:
+        # Case (a): one array per class
+        print(f"  shap_vals: list of {len(shap_vals)} arrays, each shape {np.array(shap_vals[0]).shape}")
+        shap_per_pos = np.stack([
+            np.linalg.norm(np.array(sv), axis=-1)   # (n_test, seq_len)
+            for sv in shap_vals
+        ], axis=0)  # (n_classes, n_test, seq_len)
+    else:
+        # Case (b): single array — no per-class breakdown available,
+        # broadcast global magnitude to all classes
+        sv_arr = np.array(shap_vals) if not isinstance(shap_vals, np.ndarray) else shap_vals
+        print(f"  shap_vals: single array shape {sv_arr.shape} — broadcasting to all classes")
+        if sv_arr.ndim == 4 and sv_arr.shape[0] == num_cls:
+            # (n_classes, n_test, seq_len, d_model)
+            sv_norm = np.linalg.norm(sv_arr, axis=-1)            # (n_classes, n_test, seq_len)
+        elif sv_arr.ndim == 4 and sv_arr.shape[1] == num_cls:
+            # (n_test, n_classes, seq_len, d_model)
+            sv_norm = np.linalg.norm(sv_arr, axis=-1).transpose(1, 0, 2)
+        elif sv_arr.ndim == 4 and sv_arr.shape[-1] == num_cls:
+            # (n_test, seq_len, d_model, n_classes) — shap 0.49 GradientExplainer actual format
+            sv_norm = np.linalg.norm(sv_arr, axis=2)             # (n_test, seq_len, n_classes)
+            sv_norm = sv_norm.transpose(2, 0, 1)                 # (n_classes, n_test, seq_len)
+        elif sv_arr.ndim == 3:
+            # (n_test, seq_len, d_model) — global, no class split
+            sv_norm_global = np.linalg.norm(sv_arr, axis=-1)    # (n_test, seq_len)
+            sv_norm = np.stack([sv_norm_global] * num_cls, axis=0)
+        else:
+            raise ValueError(f"Unexpected shap_vals shape: {sv_arr.shape}")
+        shap_per_pos = sv_norm  # (n_classes, n_test, seq_len)
 
     # ── Figure C: per-family mean SHAP over sequence positions ─────────────
     print("  Plotting transformer SHAP summary …")

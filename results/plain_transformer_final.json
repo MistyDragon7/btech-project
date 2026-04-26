@@ -1,0 +1,50 @@
+{
+  "model": "PlainTransformer",
+  "use_gate": false,
+  "n_folds": 3,
+  "max_seq_len": 512,
+  "truncation": "head",
+  "epochs": 100,
+  "patience": 20,
+  "lr": 0.0005,
+  "dropout": 0.15,
+  "fold_results": [
+    {
+      "fold": 1,
+      "best_epoch": 8,
+      "accuracy": 0.9257950530035336,
+      "sensitivity": 0.8701140956646776,
+      "precision": 0.8753103472435226,
+      "f_score": 0.8697424892889138,
+      "auc": 0.9805269690360603
+    },
+    {
+      "fold": 2,
+      "best_epoch": 32,
+      "accuracy": 0.9447300771208226,
+      "sensitivity": 0.8837075861915871,
+      "precision": 0.8862266280136399,
+      "f_score": 0.8840294459435795,
+      "auc": 0.9850065187084672
+    },
+    {
+      "fold": 3,
+      "best_epoch": 36,
+      "accuracy": 0.9450514138817481,
+      "sensitivity": 0.9060989147737593,
+      "precision": 0.8978510236550066,
+      "f_score": 0.8997125867633134,
+      "auc": 0.984868557114341
+    }
+  ],
+  "accuracy_mean": 0.9385255146687014,
+  "accuracy_std": 0.009002751615838018,
+  "sensitivity_mean": 0.8866401988766747,
+  "sensitivity_std": 0.014836373421401091,
+  "precision_mean": 0.8864626663040563,
+  "precision_std": 0.009203706095108795,
+  "f_score_mean": 0.884494840665269,
+  "f_score_std": 0.012239665840794993,
+  "auc_mean": 0.9834673482862896,
+  "auc_std": 0.0020799248306525076
+}

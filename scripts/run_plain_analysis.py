@@ -94,7 +94,10 @@ def run_analysis():
         weight=torch.from_numpy(class_w).to(device))
 
     te_loader = create_dataloader(X_te, y_te, batch_size=64, shuffle=False)
-    _, metrics, y_true, y_pred = evaluate(model, te_loader, criterion, device, num_cls)
+    # evaluate() returns (loss, metrics, y_pred_argmax, y_score_probs)
+    _, metrics, y_pred, _ = evaluate(model, te_loader, criterion, device, num_cls)
+    y_true = y_te.astype(int)               # actual labels from the test split
+    y_pred = np.array(y_pred).flatten().astype(int)
 
     # ── Per-class report ────────────────────────────────────────────────────
     report = classification_report(
