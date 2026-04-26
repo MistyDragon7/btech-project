@@ -24,6 +24,18 @@ echo "✓ Plain transformer retrain complete."
 
 echo ""
 echo "========================================"
+echo " Step 1b: Per-class analysis + confusion matrix"
+echo "========================================"
+python3 "$REPO/scripts/run_plain_analysis.py" \
+    2>&1 | tee "$LOG_DIR/plain_analysis.log"
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: per-class analysis failed — continuing to SHAP."
+fi
+echo "✓ Per-class analysis complete."
+
+echo ""
+echo "========================================"
 echo " Step 2: SHAP analysis (RF + Transformer)"
 echo "========================================"
 python3 "$REPO/scripts/shap_analysis.py" \
