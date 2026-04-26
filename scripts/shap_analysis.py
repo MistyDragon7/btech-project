@@ -122,15 +122,20 @@ class TransformerFromEmbedding(torch.nn.Module):
 
     def forward(self, embed: torch.Tensor) -> torch.Tensor:
         """
-        embed: (B, seq_len, d_model) — already embedded + positional
+        embed: (B, seq_len, d_model) — token embeddings only (no positional).
+        Padding positions are exact zero (padding_idx=0 in nn.Embedding).
+        Positional embeddings are added here so the pad mask works correctly.
         Returns logits: (B, num_classes)
         """
         B, N, D = embed.shape
-        # Padding mask: positions where all embedding dims are zero
-        pad_mask = (embed.abs().sum(dim=-1) == 0)
+        # Detect padding before adding positional embeddings (zero = padding)
+        pad_mask = (embed.abs().sum(dim=-1) == 0)  # (B, N)
 
-        h = self.model.embed_dropout(embed)
-        info = {"gate_scores": [], "attn_weights": []}
+        # Add positional embeddings (mirrors GAMEMal.forward exactly)
+        positions = torch.arange(N, device=embed.device).unsqueeze(0).expand(B, -1)
+        h = embed + self.model.pos_embedding(positions)
+
+        h = self.model.embed_dropout(h)
         for block in self.model.blocks:
             h, _, _ = block(h, pad_mask, return_attention=False)
         h = self.model.final_norm(h)
@@ -140,12 +145,12 @@ class TransformerFromEmbedding(torch.nn.Module):
 
 
 def get_embeddings(model: GAMEMal, token_ids: torch.Tensor) -> torch.Tensor:
-    """Compute embedding + positional encoding for a batch of token id sequences."""
-    B, N = token_ids.shape
-    positions = torch.arange(N, device=token_ids.device).unsqueeze(0).expand(B, -1)
+    """Return token embeddings only (no positional).
+    Padding positions (token_id=0) map to exact-zero vectors via padding_idx=0,
+    letting TransformerFromEmbedding correctly detect them as padding.
+    Positional embeddings are added inside the wrapper's forward()."""
     with torch.no_grad():
-        emb = model.api_embedding(token_ids) + model.pos_embedding(positions)
-    return emb  # (B, N, d_model)
+        return model.api_embedding(token_ids)  # (B, N, d_model)
 
 # ── Part 1: RF SHAP ────────────────────────────────────────────────────────
 
@@ -156,7 +161,10 @@ def run_rf_shap(seqs, labels):
 
     np.random.seed(SEED)
     splits = prepare_splits(seqs, labels.tolist(), n_folds=3, seed=SEED)
-    train_idx, test_idx = splits[2]   # use fold 3 (best fold)
+    # Use the same best fold as the saved model
+    _pt_cfg = MODELS / "plain_transformer_config.json"
+    _best_fold = json.load(open(_pt_cfg))["best_fold"] if _pt_cfg.exists() else 2
+    train_idx, test_idx = splits[_best_fold]
 
     train_seqs = [seqs[i] for i in train_idx]
     test_seqs  = [seqs[i] for i in test_idx]
@@ -284,7 +292,9 @@ def run_transformer_shap(seqs, labels):
     max_seq = cfg["max_seq_len"]
 
     splits = prepare_splits(seqs, labels.tolist(), n_folds=3, seed=SEED)
-    train_idx, test_idx = splits[2]   # fold 3
+    _pt_cfg = MODELS / "plain_transformer_config.json"
+    _best_fold = json.load(open(_pt_cfg))["best_fold"] if _pt_cfg.exists() else 2
+    train_idx, test_idx = splits[_best_fold]
 
     train_seqs = [seqs[i] for i in train_idx]
     test_seqs  = [seqs[i] for i in test_idx]
