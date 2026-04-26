@@ -1,0 +1,47 @@
+========================================
+ Step 1: Retrain plain transformer (3-fold, 50 epochs)
+========================================
+15:20:42 [INFO] plain_transformer_final: Plain transformer config: max_seq_len=512  truncation=head  use_gate=False
+15:20:42 [INFO] plain_transformer_final: Loading FULL corpus (len>=5)...
+15:20:42 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+15:20:47 [INFO] src.preprocessing:   Airpush: 5880 samples
+15:20:48 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+15:20:48 [INFO] src.preprocessing:   Fusob: 166 samples
+15:20:48 [INFO] src.preprocessing:   Genpua: 312 samples
+15:20:49 [INFO] src.preprocessing:   GinMaster: 523 samples
+15:20:51 [INFO] src.preprocessing:   Jisut: 430 samples
+15:20:52 [INFO] src.preprocessing:   Opfake: 596 samples
+15:20:53 [INFO] src.preprocessing:   SmsPay: 173 samples
+15:20:53 [INFO] plain_transformer_final: Loaded 9337 samples across 8 families
+15:20:53 [INFO] src.preprocessing: Vocabulary size: 1118 (min_freq=2)
+15:20:54 [INFO] plain_transformer_final: Device: mps   vocab_size=1118
+15:20:54 [INFO] plain_transformer_final: ============================================================
+15:20:54 [INFO] plain_transformer_final: FOLD 1/3   train=6224  test=3113
+15:20:54 [INFO] plain_transformer_final: ============================================================
+15:22:20 [INFO] plain_transformer_final:   ep=  1 train=1.3409 val=0.7823 acc=0.7893 f1=0.6876
+15:27:37 [INFO] plain_transformer_final:   ep=  5 train=0.3359 val=0.3408 acc=0.9052 f1=0.8204
+15:33:41 [INFO] plain_transformer_final:   ep= 10 train=0.1769 val=0.3117 acc=0.9248 f1=0.8550
+15:39:41 [INFO] plain_transformer_final:   ep= 15 train=0.0932 val=0.3818 acc=0.9219 f1=0.8551
+15:45:31 [INFO] plain_transformer_final:   ep= 20 train=0.0726 val=0.4119 acc=0.9232 f1=0.8533
+15:45:31 [INFO] plain_transformer_final:   early stop ep=20 best_f1=0.8686 @ ep=8
+15:45:31 [INFO] plain_transformer_final: FOLD 1 -> acc=0.9255 f1=0.8686 auc=0.9806 (best ep=8)
+15:45:31 [INFO] plain_transformer_final: ============================================================
+15:45:31 [INFO] plain_transformer_final: FOLD 2/3   train=6225  test=3112
+15:45:31 [INFO] plain_transformer_final: ============================================================
+15:46:41 [INFO] plain_transformer_final:   ep=  1 train=1.3814 val=0.9523 acc=0.6983 f1=0.6244
+15:51:11 [INFO] plain_transformer_final:   ep=  5 train=0.3365 val=0.3797 acc=0.8981 f1=0.8309
+15:56:40 [INFO] plain_transformer_final:   ep= 10 train=0.1791 val=0.3282 acc=0.9103 f1=0.8427
+16:02:08 [INFO] plain_transformer_final:   ep= 15 train=0.1401 val=0.3231 acc=0.9322 f1=0.8701
+16:07:36 [INFO] plain_transformer_final:   ep= 20 train=0.0776 val=0.3552 acc=0.9325 f1=0.8655
+16:13:03 [INFO] plain_transformer_final:   ep= 25 train=0.0587 val=0.4015 acc=0.9402 f1=0.8720
+16:18:28 [INFO] plain_transformer_final:   ep= 30 train=0.0343 val=0.4042 acc=0.9377 f1=0.8779
+16:23:53 [INFO] plain_transformer_final:   ep= 35 train=0.0395 val=0.4081 acc=0.9425 f1=0.8817
+16:29:17 [INFO] plain_transformer_final:   ep= 40 train=0.0361 val=0.4166 acc=0.9425 f1=0.8848
+16:34:42 [INFO] plain_transformer_final:   ep= 45 train=0.0266 val=0.4250 acc=0.9425 f1=0.8863
+16:40:09 [INFO] plain_transformer_final:   ep= 50 train=0.0253 val=0.4257 acc=0.9425 f1=0.8863
+16:40:09 [INFO] plain_transformer_final: FOLD 2 -> acc=0.9425 f1=0.8864 auc=0.9869 (best ep=48)
+16:40:09 [INFO] plain_transformer_final: ============================================================
+16:40:09 [INFO] plain_transformer_final: FOLD 3/3   train=6225  test=3112
+16:40:09 [INFO] plain_transformer_final: ============================================================
+16:41:15 [INFO] plain_transformer_final:   ep=  1 train=1.3441 val=0.8702 acc=0.7561 f1=0.5954
+16:45:51 [INFO] plain_transformer_final:   ep=  5 train=0.3771 val=0.3586 acc=0.8965 f1=0.8351

@@ -1,0 +1,18 @@
+Loading plain transformer …
+Loading data …
+Running inference on best fold (3/3), n=3112 …
+Saved per-class CSV: /Users/aravjain/PERSONAL/btech-project/results/plain_transformer_per_class.csv
+  Airpush          P=0.968  R=0.973  F1=0.970  n=1960
+  DroidKungFu      P=0.907  R=0.883  F1=0.895  n=419
+  Fusob            P=1.000  R=1.000  F1=1.000  n=55
+  Genpua           P=0.826  R=0.731  F1=0.775  n=104
+  GinMaster        P=0.908  R=0.856  F1=0.882  n=174
+  Jisut            P=0.934  R=0.986  F1=0.960  n=144
+  Opfake           P=0.995  R=0.975  F1=0.985  n=198
+  SmsPay           P=0.645  R=0.845  F1=0.731  n=58
+Saved confusion matrix: /Users/aravjain/PERSONAL/btech-project/results/figures/confusion_plain_transformer.png
+
+Plain Transformer 3-fold summary:
+  acc  = 0.9385 ± 0.0090
+  F1   = 0.8845 ± 0.0122
+  AUC  = 0.9835 ± 0.0021

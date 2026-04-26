@@ -1,0 +1,19 @@
+Loading models …
+  Loaded plain model from plain_transformer_best.pt
+  Loaded gated model from game_mal_best.pt
+Loading data …
+  9337 samples across 8 families
+Building Figure 1: mean rollout per family …
+  Saved: /Users/aravjain/PERSONAL/btech-project/results/figures/rollout_per_family.png
+Building Figure 2: top tokens by rollout …
+  Saved: /Users/aravjain/PERSONAL/btech-project/results/figures/rollout_top_tokens.png
+Building Figure 3: sample rollout heatmap …
+  Saved: /Users/aravjain/PERSONAL/btech-project/results/figures/rollout_sample_heatmap.png
+Building Figure 4: rollout vs gate score …
+  Saved: /Users/aravjain/PERSONAL/btech-project/results/figures/rollout_vs_gate.png
+
+All rollout figures saved to results/figures/:
+  rollout_per_family.png
+  rollout_sample_heatmap.png
+  rollout_top_tokens.png
+  rollout_vs_gate.png
