@@ -4,31 +4,50 @@
 We presented GAME-Mal, a malware family classifier that combines
 reflection-aware dynamic-trace parsing with a sigmoid-gated
 multi-head attention transformer. The gated architecture --- G1
-position of Qiu et al.\ --- reaches macro F1 of $0.886$ on the
-eight-family UMD subset, statistically indistinguishable from a
-strong Random Forest baseline ($0.893$) and $17.7$ percentage
-points above a direct reproduction of the Markov associative-rule
-classifier of D'Angelo et al.\ ($0.709$), while exposing an
-intrinsic, forward-pass-native explanation of its decisions
-through its gate activations. Fusob, the minority ransomware
-family, is a useful case in point: despite contributing only
-$1.8\%$ of the corpus, it achieves perfect recall under GAME-Mal
-whereas the statistical baseline collapses on it for want of
-rule-mining evidence.
+position of Qiu et al.\ --- reaches macro F1 of $0.884$ on the
+eight-family UMD subset, $15.9$ percentage points above the
+best-swept reproduction of the Markov associative-rule classifier
+of D'Angelo et al.\ ($0.725$), while exposing an intrinsic,
+forward-pass-native explanation of its decisions through its gate
+activations. Fusob, the minority ransomware family, is a useful
+case in point: despite contributing only $1.8\%$ of the corpus,
+it achieves perfect recall under GAME-Mal whereas the statistical
+baseline collapses on it for want of rule-mining evidence.
 
-The broader contribution is \emph{methodological rather than
-performance-based}. Our ablation against a plain (non-gated)
-transformer of identical capacity shows the gate does not improve
-raw accuracy at this corpus scale --- the plain baseline is
-marginally better on every metric (F1 $0.897$ vs.\ $0.886$).
-What the gate \emph{does} give is an always-on ranking signal
-over APIs available in a single forward pass, with no
-back-propagation, no reference sample, and no additional
-compute. We view this as the relevant trade: a fraction of a
-percentage point of accuracy in exchange for inference-time
-explainability. On security-critical applications where model
-behaviour must be explainable to a human analyst, this trade is
-often the one worth making --- and reporting it honestly,
-including the cases where the mechanism does not add raw
-accuracy, is what lets future work separate interpretability
-claims from performance claims.
+The full benchmark picture is more nuanced than the headline gap
+suggests. A 2-layer BiLSTM trained under the same protocol
+reaches macro F1 of $0.894 \pm 0.003$ --- narrowly ahead of
+GAME-Mal and statistically tied with a Random Forest over the
+same Markov rule features ($0.893 \pm 0.010$). The gated
+transformer does not lead on raw accuracy at this corpus scale.
+Our matched-prep ablation confirms the gate itself does not
+add accuracy: a plain (non-gated) transformer of identical
+capacity reaches F1 $0.897$, marginally above GAME-Mal's
+$0.883$.
+
+The broader contribution is therefore \emph{methodological rather
+than performance-based}. What the gate gives is an always-on
+ranking signal over APIs, available in a single forward pass
+with no back-propagation, no reference sample, and no additional
+compute. The deletion-test faithfulness analysis
+(Section~\ref{sec:deletion}) qualifies this claim: the gate
+shows clear signal at $k = 20$ (gate-mask degrades true-class
+probability by $1.04$ pp more than random-mask) and for families
+with moderate confidence (DroidKungFu: $+4.77$ pp at $k = 20$),
+but the effect is negligible at $k \in \{5, 10\}$ in aggregate,
+partly because Fusob and Jisut achieve baseline probabilities
+of $> 0.9999$ --- a ceiling effect that makes any deletion test
+uninformative. We therefore describe the gate as providing
+\emph{partial faithfulness}: a useful, cheap per-family ranking
+of which tokens the attention layer emphasised, without a
+strong claim that every individual top-ranked token is
+independently causally responsible for the prediction.
+
+We view the core trade as: $\approx 1$ pp macro-F1 in exchange
+for inference-time explainability. On security-critical pipelines
+where a human analyst must validate every flagged sample, that
+trade is often the one worth making. Reporting it honestly ---
+including the cases where the gate does not add accuracy and
+where the faithfulness validation is partial --- is what lets
+future work build on these findings without inheriting inflated
+claims.

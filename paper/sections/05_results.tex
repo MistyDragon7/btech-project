@@ -22,21 +22,27 @@ DecisionTree        & $0.923 \pm 0.001$ & $0.836 \pm 0.004$ & $0.910 \pm 0.002$ 
 LinearSVM           & $0.923 \pm 0.001$ & $0.844 \pm 0.009$ & $\underline{0.980} \pm 0.005$ \\
 MarkovPruning~\cite{dangelo2023association} & $0.829 \pm 0.010$ & $0.709 \pm 0.007$ & $0.942 \pm 0.005$ \\
 \midrule
-\textbf{GAME-Mal (ours)} & $\underline{0.939} \pm 0.002$ & $\underline{0.884} \pm 0.006$ & $\underline{0.985} \pm 0.002$ \\
+\textbf{GAME-Mal (ours)} & $0.939 \pm 0.002$ & $0.884 \pm 0.006$ & $0.985 \pm 0.002$ \\
+BiLSTM              & $\underline{0.948} \pm 0.004$ & $\underline{0.894} \pm 0.003$ & $\underline{0.992} \pm 0.001$ \\
 RandomForest        & $\mathbf{0.950} \pm 0.003$ & $\mathbf{0.893} \pm 0.010$ & $\mathbf{0.993} \pm 0.001$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-GAME-Mal matches the Random Forest baseline on every macro metric
-to within one standard deviation, while beating the direct D'Angelo
-reproduction by \textbf{11.0} percentage points of accuracy and
-\textbf{17.5} percentage points of macro F1. The gap to the Random
-Forest is $1.1$ points of accuracy and $0.9$ points of macro F1 —
-smaller than the F1 standard deviation across folds. These numbers
-correspond to the final retrained model with $L_{\max}=512$ and
-head-truncation, the configuration selected by the seq-length sweep
-in Sec.~\ref{sec:seqlen}.
+GAME-Mal beats the direct D'Angelo reproduction by \textbf{11.0}
+percentage points of accuracy and \textbf{17.5} percentage points
+of macro F1. The top of the table is tightly contested: a 2-layer
+BiLSTM ($0.894 \pm 0.003$) and a Random Forest ($0.893 \pm 0.010$)
+both narrowly edge GAME-Mal ($0.884 \pm 0.006$) on macro F1, with
+gaps smaller than the RF fold standard deviation. All three are
+statistically indistinguishable under this 3-fold protocol. The
+raw-accuracy headline therefore does not differentiate GAME-Mal from
+BiLSTM or RF; the distinguishing contribution is the gate's
+inference-time explanation (Section~\ref{sec:explainability}), which
+neither the BiLSTM nor the Random Forest provides without additional
+post-hoc computation. These numbers correspond to the final retrained
+model with $L_{\max}=512$ and head-truncation, the configuration
+selected by the seq-length sweep in Sec.~\ref{sec:seqlen}.
 
 \subsection{Per-family behaviour}
 

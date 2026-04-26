@@ -162,6 +162,86 @@ directly off the forward pass at classification time.}
 \label{fig:fusob}
 \end{figure}
 
+\subsection{Deletion-test faithfulness}
+\label{sec:deletion}
+
+To validate whether the gate scores correspond to real predictive
+signal rather than noise, we run a deletion test: for 30 held-out
+samples per family, we mask the top-$k$ highest-gate tokens to
+\texttt{<PAD>} and re-run inference, measuring the mean drop in
+the true-class predicted probability. We compare against masking
+$k$ uniformly-random tokens from the same samples. A gate-based
+explanation is considered \emph{faithful} if
+\[
+  \Delta_{\text{gate}}(k) > \Delta_{\text{random}}(k)
+\]
+at each $k$, where $\Delta_\cdot = P(\text{true class}\mid\text{full}) -
+P(\text{true class}\mid\text{masked})$.
+
+Table~\ref{tab:deletion} reports the overall results across all
+$8 \times 30 = 240$ samples.
+
+\begin{table}[t]
+\centering
+\caption{Deletion-test faithfulness. Mean drop in true-class
+probability after masking top-$k$ gate-selected tokens vs.\ $k$
+random tokens (positive = larger drop = more faithful).}
+\label{tab:deletion}
+\small
+\begin{tabular}{lrrr}
+\toprule
+$k$ & $\Delta_{\text{gate}}$ & $\Delta_{\text{random}}$ &
+      $\Delta_{\text{gate}} - \Delta_{\text{random}}$ \\
+\midrule
+5  & $-0.0005$ & $+0.0018$ & $-0.0022$ \\
+10 & $+0.0006$ & $+0.0043$ & $-0.0038$ \\
+20 & $+0.0123$ & $+0.0019$ & $\mathbf{+0.0104}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading the result honestly.}
+The picture is mixed and merits careful decomposition.
+
+At $k=20$ the gate-based mask is more disruptive than the random
+mask by $1.04$ pp (positive, desired direction). At $k \in \{5, 10\}$
+the gap is near zero and slightly negative, meaning that at small
+$k$ randomly-chosen tokens are \emph{marginally} more important than
+the gate's top choices.
+
+Two factors confound a clean positive result across all $k$:
+
+\paragraph{(i) Probability-ceiling saturation.} Fusob and Jisut
+achieve baseline true-class probabilities of $0.9999$ in this test
+split. Masking any small set of tokens barely moves a probability
+that is already within $10^{-4}$ of its maximum; the absolute
+$\Delta$ values for both families are $< 10^{-4}$ for both gate
+and random masks at every $k$. The test simply cannot distinguish
+faithful from unfaithful attributions for models this confident.
+Excluding these two families from the overall average, the
+per-family pattern for the remaining six families shows
+$\Delta_{\text{gate}} - \Delta_{\text{random}} > 0$ for four
+families (DroidKungFu, Genpua, Airpush, SmsPay) at $k = 20$,
+with DroidKungFu showing the strongest signal ($+4.77$ pp at $k=20$).
+
+\paragraph{(ii) Distributed signal at small $k$.} At $k = 5$ the
+gate's selections amount to $< 1\%$ of a 512-token sequence.
+For a model whose family signal is spread broadly across the trace
+(Section~\ref{sec:gating}), removing five individually-ranked
+tokens is not sufficient to noticeably perturb the aggregate
+representation, and the gap between gate-selected and random-selected
+tokens is correspondingly small.
+
+\paragraph{Conclusion.} We characterise the gate as providing
+\emph{partial faithfulness}: clearest at larger $k$ and for
+families with moderate confidence (DroidKungFu, Genpua), but not
+demonstrably better than random at small $k$ in aggregate. We do
+not claim the gate is a fully validated attribution mechanism.
+Its practical value remains as a zero-cost, always-available
+ranking of \emph{which tokens the attention layer emphasised},
+which is useful for analyst triage even absent a strong
+faithfulness guarantee.
+
 \subsection{Practical reading}
 
 We read these results as supporting a \emph{narrow} form of

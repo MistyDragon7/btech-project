@@ -41,6 +41,21 @@ def fmt_pm(mean: float, std: float, places: int = 4) -> str:
     return f"{mean:.{places}f} ± {std:.{places}f}"
 
 
+def _jget(d: dict, key: str, default=None):
+    """Get a metric from either a flat dict (key='f_score_mean') or
+    a nested aggregate dict (key='f_score_mean' → aggregate.f_score.mean)."""
+    if d is None:
+        return default
+    if key in d:
+        return float(d[key])
+    # nested: "f_score_mean" → aggregate → f_score → mean
+    metric, stat = key.rsplit("_", 1)   # e.g. "f_score", "mean"
+    try:
+        return float(d["aggregate"][metric][stat])
+    except (KeyError, TypeError):
+        return default
+
+
 def main() -> None:
     summary = load_csv(RESULTS / "results_summary.csv")
     summary_by_method = {r["Method"]: r for r in summary}
@@ -152,8 +167,8 @@ def main() -> None:
     lines.append("## 4. Ablation — does the gate help on this corpus?")
     lines.append("")
     if abl and matched:
-        plain = float(abl["f_score_mean"])
-        gated = float(matched["f_score_mean"])
+        plain = _jget(abl, "f_score_mean")
+        gated = _jget(matched, "f_score_mean")
         delta = (gated - plain) * 100
         lines.append(
             f"Matched-prep 3-fold (8,085 samples, identical preprocessing): "
@@ -240,8 +255,8 @@ def main() -> None:
         lines.append("")
     if sparsity:
         lines.append(
-            f"Gate sparsity stats: mean={sparsity.get('mean'):.3f}, "
-            f"std={sparsity.get('std'):.3f}. Far less sparse than "
+            f"Gate sparsity stats: mean={sparsity.get('mean_gate_score', sparsity.get('mean')):.3f}, "
+            f"std={sparsity.get('std_gate_score', sparsity.get('std')):.3f}. Far less sparse than "
             f"Qiu et al. (2025)'s LM pretraining value of ~0.12 — "
             f"on a small classification task, the gate behaves more "
             f"as a soft re-weighting than a hard selector."
@@ -322,10 +337,10 @@ def main() -> None:
     lines.append("## 8. BiLSTM sequence-model baseline")
     lines.append("")
     if bilstm and "GAME-Mal" in summary_by_method:
-        b_f1 = float(bilstm["f_score_mean"])
+        b_f1 = _jget(bilstm, "f_score_mean")
         g_f1 = float(summary_by_method["GAME-Mal"]["f_score_avg"])
         lines.append(
-            f"BiLSTM F1 = {fmt_pm(b_f1, float(bilstm['f_score_std']))}, "
+            f"BiLSTM F1 = {fmt_pm(b_f1, _jget(bilstm, 'f_score_std'))}, "
             f"GAME-Mal F1 = {g_f1:.4f}. "
             f"The transformer family (gated or plain) should match or "
             f"exceed BiLSTM on a sequence classification task of this "
@@ -349,7 +364,7 @@ def main() -> None:
             "supported."
         )
     if abl and matched:
-        d = float(matched["f_score_mean"]) - float(abl["f_score_mean"])
+        d = _jget(matched, "f_score_mean") - _jget(abl, "f_score_mean")
         bullets.append(
             f"The gate's effect on macro-F1 is modest "
             f"({d * 100:+.2f} pp under matched preprocessing). The paper "
