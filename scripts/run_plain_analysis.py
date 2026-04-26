@@ -48,9 +48,13 @@ def load_plain_model():
         d_ff=cfg["d_ff"], max_seq_len=cfg["max_seq_len"], dropout=0.0,
         use_gate=False,
     )
-    state = torch.load(MODELS / "plain_transformer_best.pt",
-                       map_location="cpu", weights_only=False)
-    model.load_state_dict(state)
+    ckpt = torch.load(MODELS / "plain_transformer_best.pt",
+                      map_location="cpu", weights_only=False)
+    state = ckpt.get("model_state_dict", ckpt)
+    own = model.state_dict()
+    state = {k: v for k, v in state.items() if k in own and own[k].shape == v.shape}
+    own.update(state)
+    model.load_state_dict(own)
     model.eval()
     return model, vobj, cfg
 
