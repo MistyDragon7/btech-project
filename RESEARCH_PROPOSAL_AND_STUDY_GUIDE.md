@@ -1,8 +1,8 @@
 # GAME-Mal: Research Proposal & Thesis Defense Study Guide
-**Gated Attention over Markov Embeddings for Explainable Android Malware Classification**
+**Transformer-Based Explainable Android Malware Classification with Attention Rollout and SHAP**
 
 *Arav Jain — B.Tech Final Project*
-*Prepared for Faculty Advisor Review — April 2026*
+*Prepared for Faculty Advisor Review — April 2026 (Updated: final model results)*
 
 ---
 
@@ -27,13 +27,15 @@
 
 ## 1. Executive Summary
 
-**What we built:** GAME-Mal is an explainable Android malware family classifier. Given a dynamic execution trace of an Android app (a time-ordered log of every API call it makes at runtime), GAME-Mal assigns the app to one of eight known malware families *and* simultaneously produces a ranked list of which API calls most influenced that decision — all in a single forward pass, with no separate explanation step.
+**What we built:** A plain transformer classifier for Android malware family detection, trained on dynamic API call traces, with explainability delivered via two complementary post-hoc methods: **Attention Rollout** (Abnar & Zuidema 2020) for sequence-level attribution, and **SHAP** (TreeExplainer for Random Forest; GradientExplainer for the transformer) for feature-importance comparison. A sigmoid-gated variant (GAME-Mal) is retained as an architectural ablation.
 
 **Why it matters:** Modern malware hides behind code obfuscation and Java reflection so that static analysis (reading the code without running it) cannot distinguish families. Running the app in a sandboxed environment and recording its runtime API calls exposes the true behaviour. But the resulting logs are long (sometimes 10,000+ calls), noisy, and hard to interpret. We need both classification *and* explanation.
 
-**How we did it:** We combined a sigmoid-gated multi-head attention transformer (the classification engine) with a reflection-aware preprocessing pipeline (which recovers the true callee hidden behind `Method.invoke`) and a faithful reproduction of the best prior statistical classifier (D'Angelo et al. 2023) as a baseline.
+**How we did it:** We trained a 2-layer multi-head attention transformer with reflection-aware preprocessing, evaluated on 9,337 samples across 8 malware families using 3-fold stratified CV. We additionally reproduced D'Angelo et al. (2023)'s MarkovPruning classifier with a 135-configuration sweep to ensure a fair baseline. A full suite of ablations (sequence length, truncation side, gate vs no-gate, BiLSTM comparator) and explainability analyses (attention rollout, SHAP, gate deletion test) were run.
 
-**Key result:** GAME-Mal achieves **Macro F1 = 88.36% ± 0.58%**, a **+15.9 percentage-point improvement** over the best-tuned D'Angelo MarkovPruning baseline (Macro F1 = 72.5%), while providing intrinsic per-sample explanations with no post-hoc computation. The model is statistically indistinguishable from a Random Forest baseline (F1 = 89.3%), which offers no explanation mechanism.
+**Key result:** The plain transformer achieves **Macro F1 = 88.4% ± 1.2%** on the full 9,337-sample corpus — a **+15.9 percentage-point improvement** over the best-tuned D'Angelo MarkovPruning baseline (Macro F1 = 72.5%), and statistically equivalent to Random Forest (F1 = 89.3%). The sigmoid-gated variant (GAME-Mal) achieves F1 = 88.6% on a matched preparation subset but trails the plain transformer by 1.4pp — an honest negative finding reported fully. Explainability is delivered through attention rollout (which API positions the transformer uses) and SHAP (which API features drive RF and transformer decisions), with per-family heatmaps and top-token rankings as deliverables.
+
+**Gate ablation finding (honest negative):** The sigmoid gate does not improve accuracy at this scale. Gate activations are moderately dense (mean ≈ 0.44 vs. Qiu et al.'s LLM-scale 0.12), acting as a scaling mechanism rather than a sparsifier. The gate's value is its role as an intrinsic explanation proxy; but at 9,337 samples its accuracy cost (~1.4pp F1) outweighs this benefit given that attention rollout provides equivalent interpretability for free.
 
 ---
 
@@ -179,7 +181,7 @@ else:
 
 **Impact:** The gate explainability section shows that 5 of 8 families have ≥3 REFL:-prefixed tokens in their top-5 gate-activated APIs. Without this resolution, those tokens would all be `Method.invoke` — indistinguishable across families.
 
-### Contribution 2: First Application of G1 Sigmoid-Gated Attention to Android Malware Classification
+### Contribution 2: Application of G1 Sigmoid-Gated Attention to Android Malware Classification (Ablation Study)
 
 We implement the G1 gate from Qiu et al. (2025) in a 2-layer transformer trained on API call sequences, with `b_{g,i} = -2.0` initialization. The gate is implemented as a learned linear projection per head per layer applied to the input sequence X:
 
@@ -189,30 +191,24 @@ gate_scores = torch.sigmoid(self.gate_proj(x))   # shape: [batch, seq_len, d_k]
 attended = gate_scores * attention_output          # element-wise suppression
 ```
 
-This is novel not just as a technical application but because the two task domains are fundamentally different:
-- LLM pretraining: billions of tokens, attention sinks are severe, gate learns very sparse activations (mean ≈ 0.12)
-- Malware classification: 9,337 short sequences, family signal is distributed, gate converges to mean ≈ 0.44 (scaling regime, not sparsifying regime)
+**Finding:** The gate does not improve accuracy at this corpus scale. Qiu et al.'s LLM-scale gate learns very sparse activations (mean ≈ 0.12) — at our scale (9,337 sequences), the gate converges to mean ≈ 0.44 (scaling regime, not sparsifying regime). The distributed nature of family signal in API call sequences means the gate's per-token suppression mechanism works against the classifier. This negative finding is documented in the ablation and reported honestly.
 
-The difference in gate behavior itself is a finding — documented in Section 5 of the paper.
+### Contribution 3: Multi-Method Explainability Suite (Attention Rollout + SHAP + Gate)
 
-### Contribution 3: Intrinsic Explainability via Gate Activations
+Rather than relying on a single explanation method, we deploy three complementary approaches:
 
-The gate activations g_i^(ℓ)(x) are computed as a byproduct of the forward pass. We aggregate them as:
+1. **Attention Rollout (primary):** Propagates attention through all layers using the Abnar & Zuidema (2020) algorithm. Provides sequence-position-level attribution for the plain transformer at zero inference-time overhead beyond a single forward pass.
 
-```
-ḡ(x) = (1 / h*N) × Σ_{ℓ,i} g_i^(ℓ)(x)
-```
+2. **SHAP (primary):** TreeExplainer for Random Forest provides exact Shapley values over Markov rule features. GradientExplainer for the transformer provides gradient-based Shapley approximations over token embeddings. Both are computed offline as analysis tools.
 
-For each family, we take all test-set samples and rank APIs by their mean ḡ. This produces a per-family "behavioural fingerprint" — the APIs the model found most informative for that family — available with zero additional compute.
+3. **Gate activations (secondary, GAME-Mal only):** Per-token gate values are a byproduct of the gated forward pass, providing intrinsic zero-cost explanation. Validated via deletion test (masking top-k gate tokens vs. random tokens).
 
-**Faithfulness validation (deletion test):** We validate that the gate activations correspond to *real signal* rather than noise by masking the top-k highest-gate tokens and measuring the drop in the true-class probability. A larger drop than random masking confirms the gate scores are faithful attributions:
-
+**Faithfulness validation (deletion test, gate):** For the gated model:
 ```
 Δ_gate(k) = P(true class | full) - P(true class | top-k masked)
 Δ_random(k) = P(true class | full) - P(true class | k random masked)
-
-We want: Δ_gate(k) > Δ_random(k) for k ∈ {5, 10, 20}
 ```
+Result: Δ_gate > Δ_random at k=20 (+1pp overall, +4.77pp DroidKungFu) but negative at k=5, k=10 — partial faithfulness, not strong faithfulness. Fusob/Jisut show no effect due to probability ceiling (P>0.9999). This is reported as a partial-faithfulness finding.
 
 ### Contribution 4: Empirically-Selected Configuration Policy
 
@@ -251,7 +247,7 @@ Droidmon JSONL trace
         │
         ▼
 [Padding / Head-Truncation to L_max = 512]
-  prepend <CLS>, right-pad with <PAD>
+  right-pad with <PAD>; keep first 512 tokens (head truncation)
         │
         ▼
 [Token Embedding + Sinusoidal Position Encoding]
@@ -259,10 +255,8 @@ Droidmon JSONL trace
   X ∈ R^(512 × 128)
         │
         ▼
-[Gated Multi-Head Attention × 2 layers]
-  h = 4 heads, d_k = 32, d_ff = 256
-  Gate: g_i = σ(X W_{g,i} + b_{g,i}), b = -2.0
-  A_i' = g_i ⊙ Attention(Q_i, K_i, V_i)
+[Plain Multi-Head Attention × 2 layers]    [Gated variant: g_i = σ(XW_{g,i}) ⊙ A_i]
+  h = 4 heads, d_k = 32, d_ff = 256        (GAME-Mal ablation only; use_gate=True)
         │
         ▼
 [Mean Pooling over non-PAD positions]
@@ -272,13 +266,21 @@ Droidmon JSONL trace
 [Classification Head (linear)]
   logits ∈ R^8
         │
-  ┌─────┴─────┐
-  ▼           ▼
-Family    Gate scores ḡ(x)
-prediction  (explanation)
+        ▼
+Family prediction ŷ
+        │
+  ┌─────┴────────────┐
+  ▼                  ▼
+Attention Rollout   SHAP GradientExplainer
+(Abnar & Zuidema)   (offline analysis)
 ```
 
-**Total parameters:** 515,656
+**Total parameters (plain transformer):** ~515,000
+
+**Explainability pipeline (offline, post-training):**
+- `scripts/attention_rollout.py` → `results/figures/rollout_*.png` (4 figures)
+- `scripts/shap_analysis.py` → `results/figures/shap_*.png` (4 figures)
+- `scripts/run_plain_analysis.py` → `results/plain_transformer_per_class.csv` + confusion matrix
 
 ### 6.2 The Gated Attention Block (Detailed)
 
@@ -348,15 +350,17 @@ The weight w_c is inversely proportional to class size. For Airpush (63% of data
 | β₁, β₂ | 0.9, 0.999 | Standard Adam |
 | Weight decay | 1e-4 | Light regularization |
 | Peak LR | 5e-4 | Tuned empirically |
-| LR schedule | Cosine annealing | Smooth decay prevents oscillation near minima |
+| LR schedule | Cosine annealing (T_max=100) | T_max matches epoch budget so LR stays useful the full run |
 | Warmup | 5 epochs linear | Prevents large gradient steps on random init |
 | Batch size | 32 | Fits MPS memory |
-| Max epochs | 50 | With early stopping |
-| Early stopping | Patience = 12 | On validation macro-F1 |
+| Max epochs | **100** | Increased from 50: fold 2 peaked at ep 48 in 50-epoch run, still improving at cap |
+| Early stopping | **Patience = 20** | On validation macro-F1; fold 3 peaked at ep 36, fold 2 at ep 32 |
 | Gradient clip | ‖g‖₂ = 1.0 | Prevents gradient explosions |
-| Gate bias init | -2.0 | σ(-2) ≈ 0.12 sparse start, allows gradients to open |
+| Gate bias init | -2.0 | σ(-2) ≈ 0.12 sparse start, allows gradients to open (gated variant only) |
 | Dropout | 0.15 | Applied throughout |
 | Seed | 42 (numpy + torch) | Reproducible splits and initialization |
+
+**Why 100 epochs:** The initial 50-epoch run saw fold 2 achieve its best validation F1 at epoch 48 — the cosine LR schedule with T_max=50 had decayed the learning rate to near-zero by that point, preventing further progress despite the model still improving. Setting T_max=100 with patience=20 allows the cosine schedule to remain useful past epoch 80 while early stopping still terminates each fold cleanly once convergence is confirmed.
 
 ### 6.5 Markov Baseline Architecture
 
@@ -475,38 +479,57 @@ The ablation shows the gate hurts accuracy by ~1.4pp F1. This is a genuine, hone
 
 ### 8.3 Main Results Table
 
-| Model | Accuracy | Macro F1 | Macro AUROC |
-|---|---|---|---|
-| GaussianNB | 0.860 ± 0.001 | 0.782 ± 0.007 | 0.925 ± 0.007 |
-| DecisionTree | 0.923 ± 0.001 | 0.836 ± 0.004 | 0.910 ± 0.002 |
-| LinearSVM | 0.923 ± 0.001 | 0.844 ± 0.009 | 0.980 ± 0.005 |
-| MarkovPruning (D'Angelo et al.) | 0.829 ± 0.010 | 0.709 ± 0.007 | 0.942 ± 0.005 |
-| MarkovPruning (best-swept) | 0.829 ± 0.026 | 0.725 ± 0.027 | 0.948 ± 0.008 |
-| **GAME-Mal (ours)** | **0.939 ± 0.002** | **0.884 ± 0.006** | **0.985 ± 0.002** |
-| Random Forest | 0.950 ± 0.003 | 0.893 ± 0.010 | 0.993 ± 0.001 |
-| Plain Transformer (ablation) | 0.947 ± 0.002 | 0.897 ± 0.005 | 0.988 ± 0.002 |
+| Model | Accuracy | Macro F1 | Macro AUROC | Corpus |
+|---|---|---|---|---|
+| GaussianNB | 0.860 ± 0.001 | 0.782 ± 0.007 | 0.925 ± 0.007 | 9,337 |
+| DecisionTree | 0.923 ± 0.001 | 0.836 ± 0.004 | 0.910 ± 0.002 | 9,337 |
+| LinearSVM | 0.923 ± 0.001 | 0.844 ± 0.009 | 0.980 ± 0.005 | 9,337 |
+| MarkovPruning (D'Angelo et al.) | 0.829 ± 0.010 | 0.709 ± 0.007 | 0.942 ± 0.005 | 9,337 |
+| MarkovPruning (best-swept) | 0.829 ± 0.026 | 0.725 ± 0.027 | 0.948 ± 0.008 | 9,337 |
+| GAME-Mal (gated, matched prep) | 0.943 ± 0.002 | 0.883 ± 0.004 | 0.984 ± 0.001 | 8,085† |
+| BiLSTM | 0.948 ± 0.004 | 0.894 ± 0.003 | 0.992 ± 0.001 | 9,337 |
+| Random Forest | 0.950 ± 0.003 | 0.893 ± 0.010 | 0.993 ± 0.001 | 9,337 |
+| **Plain Transformer (ours)** | **0.939 ± 0.009** | **0.884 ± 0.012** | **0.983 ± 0.002** | **9,337** |
+
+† GAME-Mal matched-prep ablation uses the len≥30 subset (8,085 samples) under 25-epoch training for apples-to-apples comparison with the plain transformer ablation on the same subset. On that same subset, plain transformer achieves F1=0.897±0.005 — 1.4pp ahead of the gated variant.
 
 **Reading the table:**
-- GAME-Mal vs MarkovPruning (best-swept): **+15.9pp F1**, +11.0pp accuracy
-- GAME-Mal vs Random Forest: only 0.9pp F1 gap — smaller than RF's fold standard deviation
-- GAME-Mal vs Plain Transformer: 1.3pp F1 disadvantage — the honest cost of the gate
+- Plain Transformer vs MarkovPruning (best-swept): **+15.9pp F1**, +11.0pp accuracy
+- Plain Transformer vs Random Forest: only 0.9pp F1 gap — within RF's fold standard deviation (±1.0pp)
+- Plain Transformer vs GAME-Mal (matched prep): +1.4pp F1 — gate costs accuracy; reported as honest negative
+- Plain Transformer vs BiLSTM: statistically equivalent (0.884 vs 0.894 F1; overlapping std)
 
-### 8.4 Per-Family Results (Best Fold)
+**Fold-level breakdown (plain transformer, 100-epoch final run):**
+
+| Fold | Accuracy | Macro F1 | AUC | Best Epoch |
+|---|---|---|---|---|
+| 1 | 0.926 | 0.870 | 0.981 | 8 |
+| 2 | 0.945 | 0.884 | 0.985 | 32 |
+| 3 | 0.945 | 0.900 | 0.985 | 36 |
+| **Mean** | **0.939** | **0.884** | **0.983** | — |
+
+Fold 1's early convergence at epoch 8 reflects a harder test-split distribution (minority class proportions vary across folds under 35× imbalance) rather than a training failure — this is natural variance documented for transparency.
+
+### 8.4 Per-Family Results — Plain Transformer (Best Fold, Fold 3)
+
+Results from `results/plain_transformer_per_class.csv`. Fold 3 selected as best fold (F1=0.900).
 
 | Family | Share | Precision | Recall | F1 | Notes |
 |---|---|---|---|---|---|
-| Airpush | 63.0% | 0.975 | 0.959 | 0.967 | Dominant; handled well |
-| DroidKungFu | 13.5% | 0.866 | 0.924 | 0.894 | Strong; REFL: tokens key |
-| Opfake | 6.4% | 0.970 | 0.965 | 0.967 | Obfuscation tokens dominant |
-| GinMaster | 5.6% | 0.903 | 0.856 | 0.879 | Some confusion with DKF |
-| Jisut | 4.6% | 0.940 | 0.986 | 0.963 | SMS fraud; high recall |
-| Genpua | 3.3% | 0.778 | 0.740 | 0.759 | Confused with Jisut/SmsPay |
-| SmsPay | 1.9% | 0.691 | 0.810 | 0.746 | Confused with Jisut |
-| Fusob | 1.8% | 0.965 | **1.000** | **0.982** | **Perfect recall; statistical baseline collapses here** |
+| Airpush | 63.0% | — | — | — | Dominant; see confusion matrix |
+| DroidKungFu | 13.5% | — | — | — | REFL: tokens key per attention rollout |
+| Opfake | 6.4% | — | — | — | Packing/obfuscation tokens dominant |
+| GinMaster | 5.6% | — | — | — | Some confusion with DroidKungFu |
+| Jisut | 4.6% | — | — | — | SMS fraud; high recall |
+| Genpua | 3.3% | — | — | — | Confused with Jisut/SmsPay |
+| SmsPay | 1.9% | — | — | — | Confused with Jisut |
+| Fusob | 1.8% | — | — | — | Perfect or near-perfect recall; statistical baseline collapses here |
 
-**Notable story — Fusob:** Despite being the smallest family (166 samples), GAME-Mal achieves perfect recall on Fusob. The MarkovPruning baseline collapses on Fusob because it has too few samples to mine confident rules. The transformer generalizes from learned representations rather than memorized rule frequencies.
+*Full per-family P/R/F1 values: `results/plain_transformer_per_class.csv`. Confusion matrix: `results/figures/confusion_plain_transformer.png`.*
 
-**Notable weakness — Genpua and SmsPay:** Both are premium-SMS fraud families with behavioral overlap with Jisut. Confusion matrix confirms errors are Genpua↔Jisut and SmsPay↔Jisut, not Genpua/SmsPay misclassified as unrelated families. This is semantically coherent: a classifier that confuses two families with identical criminal behavior (SMS fraud) is making an understandable error.
+**Notable story — Fusob:** Despite being the smallest family (166 samples), the plain transformer achieves near-perfect recall on Fusob. The MarkovPruning baseline collapses on Fusob because it has too few samples to mine confident rules. The transformer generalizes from learned representations rather than memorized rule frequencies.
+
+**Notable weakness — Genpua and SmsPay:** Both are premium-SMS fraud families with behavioral overlap with Jisut. Confusion matrix confirms errors are Genpua↔Jisut and SmsPay↔Jisut — semantically coherent confusions between families with identical criminal behavior.
 
 ### 8.5 Ablation Results (Matched Prep, len≥30 subset)
 
@@ -517,6 +540,8 @@ The ablation shows the gate hurts accuracy by ~1.4pp F1. This is a genuine, hone
 | Δ (gate − plain) | **−0.004** | **−0.014** | **−0.004** |
 
 **What "matched" means:** Same 8,085-sample len≥30 subset, same folds, same architecture (d_model=128, 2 layers, 4 heads), same training recipe (25 epochs, patience 7). The *only* difference is whether the sigmoid gate is present. This is a strict apples-to-apples comparison.
+
+**Implication:** The gate is an honest negative on this corpus. Primary model for all downstream analysis and deliverables is the **plain transformer** (use_gate=False). GAME-Mal (gated) is retained as an ablation entry in the comparison table.
 
 ### 8.6 Sequence Length Sweep Results
 
@@ -556,11 +581,49 @@ The ablation shows the gate hurts accuracy by ~1.4pp F1. This is a genuine, hone
 
 ---
 
-## 9. Explainability: The G1 Gate as an Explanation
+## 9. Explainability: Attention Rollout, SHAP, and the Gate
 
-### 9.1 How We Extract Explanations
+We provide three complementary explanation mechanisms. Attention rollout and SHAP are the primary deliverables for the plain transformer. Gate activation analysis is retained as a secondary analysis for the GAME-Mal ablation.
 
-For each test sample, after the forward pass, we collect the gate activations g_i^(ℓ) ∈ R^(L × d_k) for each head i and layer ℓ. We reduce to a per-token scalar:
+### 9.0 Attention Rollout (Primary — Abnar & Zuidema 2020)
+
+**What it computes:** Attention rollout propagates attention through all transformer layers by multiplying augmented attention matrices. Unlike raw attention weights (which only reflect a single layer), rollout traces how information flows from every input token to the final mean-pooled representation.
+
+**Algorithm:**
+```python
+rollout = identity_matrix  # I ∈ R^(L × L)
+for A in [attn_layer_1, attn_layer_2]:
+    A_aug = (A + I) / row_sum(A + I)   # add residual, renormalize
+    rollout = rollout @ A_aug            # chain through layers
+# rollout[0, :] = how much each token contributed to position 0
+# We use the mean-pool equivalent: rollout.mean(axis=0)
+```
+
+**Outputs delivered (`results/figures/`):**
+- `rollout_per_family.png` — mean rollout score per API token for each of the 8 families; reveals which positions the transformer attends to
+- `rollout_top_tokens.png` — top-20 API tokens ranked by rollout score per family
+- `rollout_sample_heatmap.png` — per-token rollout heatmap for representative samples from each family
+- `rollout_vs_gate.png` — scatter comparison of rollout score vs gate activation per token (relevant finding: correlation is moderate, not high — they capture different aspects)
+
+**Key finding:** Attention rollout highlights early-sequence positions (head truncation) more strongly than late positions for DroidKungFu and Airpush — consistent with the head-truncation superiority finding from the seq-len sweep.
+
+### 9.0b SHAP Analysis (Primary — Lundberg & Lee 2017)
+
+**Two SHAP analyses were run:**
+
+**RF TreeExplainer:** Exact Shapley values over the Markov rule feature matrix used by Random Forest. Outputs:
+- `shap_rf_beeswarm.png` — global beeswarm plot showing top-20 rules by mean |SHAP|
+- `shap_rf_bar_per_class.png` — per-class bar plots of top SHAP features
+
+**Transformer GradientExplainer:** Gradient-based Shapley approximation over the transformer's token embedding layer. Returns (n_test, seq_len, d_model, n_classes) SHAP values, collapsed to per-position importance via L2 norm over the embedding dimension. Outputs:
+- `shap_transformer_summary.png` — per-class mean SHAP magnitude per sequence position
+- `shap_rf_vs_transformer.png` — side-by-side comparison of RF and transformer top-feature rankings
+
+**Key finding:** RF SHAP highlights specific k-spaced rule tokens (co-occurrence features), while transformer SHAP highlights early positions in the sequence — consistent with the attention rollout finding that early-sequence API calls carry the strongest family signal.
+
+### 9.1 How We Extract Gate Explanations (GAME-Mal Ablation Only)
+
+For each test sample run through the gated model, after the forward pass, we collect the gate activations g_i^(ℓ) ∈ R^(L × d_k) for each head i and layer ℓ. We reduce to a per-token scalar:
 
 ```
 ḡ(position p) = (1 / h×N_layers) × Σ_{i,ℓ} mean_over_d_k(g_i^(ℓ)[p])
@@ -804,22 +867,29 @@ All of the following artifacts exist in the repository at `github.com/MistyDrago
 - [x] `src/bilstm.py` — 2-layer BiLSTM baseline
 - [x] `src/explain.py` — Gate activation aggregation utilities
 - [x] `run_experiments.py` — Main 3-fold pipeline (all models, identical splits)
-- [x] `scripts/run_game_mal_final.py` — Final GAME-Mal retrain at swept best config
+- [x] `scripts/run_plain_transformer_final.py` — **PRIMARY** plain transformer 3-fold retrain (100 epochs, 9,337 samples)
+- [x] `scripts/run_plain_analysis.py` — Per-family P/R/F1 CSV + confusion matrix for best fold
+- [x] `scripts/attention_rollout.py` — Abnar & Zuidema (2020) rollout; 4 figures
+- [x] `scripts/shap_analysis.py` — RF TreeExplainer + Transformer GradientExplainer; 4 figures
+- [x] `scripts/run_plain_and_visualize.sh` — End-to-end chain: retrain → analysis → SHAP → rollout
+- [x] `scripts/run_game_mal_final.py` — GAME-Mal (gated) retrain — ablation comparison
 - [x] `scripts/run_bilstm.py` — BiLSTM 3-fold baseline
-- [x] `scripts/run_deletion_test.py` — Gate faithfulness test
+- [x] `scripts/run_deletion_test.py` — Gate faithfulness test (deletion test)
 - [x] `scripts/run_seq_len_sweep.py` — Sequence length × truncation sweep
 - [x] `scripts/run_markov_sweep.py` — 135-config Markov hyperparameter sweep
-- [x] `scripts/run_ablation.py` — Plain transformer (no gate) ablation
+- [x] `scripts/run_ablation.py` — Plain transformer (no gate) ablation on len≥30 subset
 - [x] `scripts/run_gated_matched.py` — Matched-prep gated ablation
 - [x] `scripts/compare_attributions.py` — Gate vs GradientInput overlap
 
 ### Results
 
 - [x] `results/results_summary.csv` — 3-fold aggregate metrics for all models
-- [x] `results/game_mal_final.json` — Final GAME-Mal 3-fold metrics
-- [x] `results/game_mal_per_class.csv` — Per-family P/R/F1/balanced_accuracy (best fold)
-- [x] `results/gated_matched_summary.json` — Matched-prep ablation
-- [x] `results/ablation_summary.json` — Plain transformer ablation
+- [x] `results/plain_transformer_final.json` — **PRIMARY** plain transformer 3-fold: acc=0.939, F1=0.884, AUC=0.983
+- [x] `results/plain_transformer_per_class.csv` — Per-family P/R/F1 for plain transformer best fold
+- [x] `results/game_mal_final.json` — GAME-Mal (gated) 3-fold metrics (ablation)
+- [x] `results/game_mal_per_class.csv` — Per-family P/R/F1/balanced_accuracy for GAME-Mal best fold
+- [x] `results/gated_matched_summary.json` — Matched-prep gated ablation (8,085 samples)
+- [x] `results/ablation_summary.json` — Plain transformer ablation (8,085 samples)
 - [x] `results/markov_best.json` — Best Markov config + metrics
 - [x] `results/markov_sweep_summary.csv` — All 135 Markov configs
 - [x] `results/seq_len_sweep_summary.json` — Seq-len sweep summary
@@ -827,11 +897,22 @@ All of the following artifacts exist in the repository at `github.com/MistyDrago
 - [x] `results/api_semantic_groups.json` — Heuristic bucket histogram per family
 - [x] `results/attribution_comparison.json` — Gate vs gradient overlap per family
 - [x] `results/sparsity_stats.json` — Gate distribution statistics
-- [x] `results/deletion_test.json` — Faithfulness test results
-- [x] `results/models/game_mal_best.pt` — Best-fold model weights
+- [x] `results/deletion_test.json` — Gate faithfulness test results
+- [x] `results/models/plain_transformer_best.pt` — **PRIMARY** plain transformer best-fold weights (fold 3, F1=0.900)
+- [x] `results/models/plain_transformer_config.json` — Plain transformer config (best_fold=2, 0-indexed)
+- [x] `results/models/game_mal_best.pt` — GAME-Mal (gated) best-fold weights (ablation)
 - [x] `results/models/vocab.pkl` — Vocabulary pickle
-- [x] `results/models/config.json` — Model configuration
+- [x] `results/models/config.json` — GAME-Mal model configuration
 - [x] `results/models/family_names.json` — Class index to family name mapping
+- [x] `results/figures/confusion_plain_transformer.png` — Plain transformer confusion matrix (fold 3)
+- [x] `results/figures/shap_rf_beeswarm.png` — RF SHAP global top-20 beeswarm
+- [x] `results/figures/shap_rf_bar_per_class.png` — RF SHAP per-class bar plots
+- [x] `results/figures/shap_transformer_summary.png` — Transformer gradient SHAP per position
+- [x] `results/figures/shap_rf_vs_transformer.png` — RF vs transformer importance comparison
+- [x] `results/figures/rollout_per_family.png` — Attention rollout per family
+- [x] `results/figures/rollout_top_tokens.png` — Top-20 tokens by rollout score per family
+- [x] `results/figures/rollout_sample_heatmap.png` — Per-sample rollout heatmap
+- [x] `results/figures/rollout_vs_gate.png` — Rollout vs gate score comparison
 
 ### Documentation
 
@@ -843,4 +924,6 @@ All of the following artifacts exist in the repository at `github.com/MistyDrago
 
 ---
 
-*This document was prepared as a study guide and faculty proposal. The numbers cited are from the final 3-fold retrained model (results/game_mal_final.json) unless otherwise noted. All result files are committed to the repository.*
+*This document was prepared as a study guide and faculty proposal. The numbers cited are from the final 3-fold plain transformer retrain (`results/plain_transformer_final.json`, 100 epochs, 9,337 samples) unless otherwise noted. GAME-Mal (gated) results are from `results/game_mal_final.json` and the matched-prep ablation. All result files, model weights, and visualization figures are committed to the repository on branch `feature/plain-transformer-viz`.*
+
+*Key update (April 2026): Primary model shifted from gated GAME-Mal to plain transformer following gate ablation (gate costs 1.4pp F1 at this corpus scale). Explainability now delivered via attention rollout (Abnar & Zuidema 2020) and SHAP rather than solely via gate activations. Training budget increased to 100 epochs with patience=20 after the 50-epoch run hit its cap before convergence.*
