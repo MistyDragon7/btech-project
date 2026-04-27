@@ -1,0 +1,50 @@
+{
+  "model": "MarkovTransformer",
+  "n_folds": 3,
+  "max_seq_len": 512,
+  "truncation": "head",
+  "epochs": 100,
+  "patience": 20,
+  "lr": 0.0005,
+  "dropout": 0.15,
+  "freeze_epochs": 5,
+  "fold_results": [
+    {
+      "fold": 1,
+      "best_epoch": 92,
+      "accuracy": 0.9296498554449084,
+      "sensitivity": 0.870555502590825,
+      "precision": 0.8479083160258767,
+      "f_score": 0.8586410664793809,
+      "auc": 0.9732955344955798
+    },
+    {
+      "fold": 2,
+      "best_epoch": 66,
+      "accuracy": 0.9215938303341902,
+      "sensitivity": 0.8721102285763715,
+      "precision": 0.8355925485504744,
+      "f_score": 0.8527012885401721,
+      "auc": 0.9741573546070843
+    },
+    {
+      "fold": 3,
+      "best_epoch": 65,
+      "accuracy": 0.929305912596401,
+      "sensitivity": 0.8710286040564927,
+      "precision": 0.8560836879639784,
+      "f_score": 0.8630598246261545,
+      "auc": 0.9793822452762979
+    }
+  ],
+  "accuracy_mean": 0.9268498661251665,
+  "accuracy_std": 0.003719230059011164,
+  "sensitivity_mean": 0.8712314450745632,
+  "sensitivity_std": 0.0006507183627818625,
+  "precision_mean": 0.8465281841801099,
+  "precision_std": 0.008422203652635065,
+  "f_score_mean": 0.8581340598819024,
+  "f_score_std": 0.004244023973272272,
+  "auc_mean": 0.975611711459654,
+  "auc_std": 0.0026892845917318884
+}
