@@ -28,6 +28,7 @@ import json
 import logging
 import pickle
 import sys
+import argparse
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -54,8 +55,8 @@ K_LIST = [5, 10, 20]
 PAD_IDX = 0
 
 
-def load_model(device: torch.device):
-    with open(MODEL_DIR / "plain_transformer_config.json") as f:
+def load_model(device: torch.device, model_prefix: str = "plain_transformer"):
+    with open(MODEL_DIR / f"{model_prefix}_config.json") as f:
         cfg = json.load(f)
     with open(MODEL_DIR / "vocab.pkl", "rb") as f:
         v = pickle.load(f)
@@ -74,7 +75,7 @@ def load_model(device: torch.device):
         max_seq_len=cfg["max_seq_len"],
         dropout=cfg["dropout"],
     ).to(device)
-    state = torch.load(MODEL_DIR / "plain_transformer_best.pt", map_location=device)
+    state = torch.load(MODEL_DIR / f"{model_prefix}_best.pt", map_location=device)
     model.load_state_dict(state)
     model.eval()
     return model, api2idx, family_names, cfg["max_seq_len"]
@@ -150,6 +151,11 @@ def mask_random(seq: np.ndarray, k: int, rng: np.random.Generator) -> np.ndarray
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_prefix", type=str, default="plain_transformer", 
+                        help="Prefix for model to test, e.g. plain_transformer or markov_transformer")
+    args = parser.parse_args()
+
     device = torch.device(
         "mps"
         if torch.backends.mps.is_available()
@@ -159,7 +165,7 @@ def main() -> None:
     )
     log.info("Device: %s", device)
 
-    model, api2idx, family_names, max_len = load_model(device)
+    model, api2idx, family_names, max_len = load_model(device, args.model_prefix)
     unk = api2idx.get("<UNK>", 1)
 
     log.info("Loading corpus...")
@@ -262,7 +268,7 @@ def main() -> None:
             "that the model genuinely relies on (faithful explanation)."
         ),
     }
-    out_path = REPO_ROOT / "results" / "deletion_test.json"
+    out_path = REPO_ROOT / "results" / f"{args.model_prefix}_deletion_test.json"
     with open(out_path, "w") as f:
         json.dump(out, f, indent=2)
     log.info("Saved %s", out_path)

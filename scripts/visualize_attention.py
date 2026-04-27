@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import pickle
 import sys
+import argparse
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -49,8 +50,8 @@ DEVICE = (
 print(f"Using device: {DEVICE}")
 
 
-def load_model_and_vocab():
-    cfg = json.loads((MODELS / "plain_transformer_config.json").read_text())
+def load_model_and_vocab(model_prefix: str = "plain_transformer"):
+    cfg = json.loads((MODELS / f"{model_prefix}_config.json").read_text())
     with open(MODELS / "vocab.pkl", "rb") as f:
         vocab_obj = pickle.load(f)
 
@@ -74,7 +75,7 @@ def load_model_and_vocab():
         max_seq_len=cfg["max_seq_len"],
         dropout=0.0,
     )
-    ckpt = torch.load(MODELS / "plain_transformer_best.pt", map_location="cpu")
+    ckpt = torch.load(MODELS / f"{model_prefix}_best.pt", map_location="cpu")
     state = ckpt.get("model_state_dict", ckpt)
     model.load_state_dict(state)
     model.to(DEVICE)
@@ -125,7 +126,7 @@ def cls_attention_score(
     return scores
 
 
-def fig1_per_family_heatmap(model, all_seqs, family_names, vocab, vocab_inv, cfg):
+def fig1_per_family_heatmap(model, all_seqs, family_names, vocab, vocab_inv, cfg, model_prefix: str):
     """
     Heatmap: top-20 tokens per family vs transformer layers (CLS attention).
     """
@@ -198,13 +199,13 @@ def fig1_per_family_heatmap(model, all_seqs, family_names, vocab, vocab_inv, cfg
         plt.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
 
     plt.tight_layout()
-    out = FIGURES / "cls_attn_heatmap_per_family.png"
+    out = FIGURES / f"{model_prefix}_cls_attn_heatmap_per_family.png"
     plt.savefig(out, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"  Saved: {out}")
 
 
-def fig2_head_specialisation(model, all_seqs, family_names, vocab, vocab_inv, cfg):
+def fig2_head_specialisation(model, all_seqs, family_names, vocab, vocab_inv, cfg, model_prefix: str):
     """
     Head specialisation based on CLS attention per head.
     """
@@ -293,13 +294,13 @@ def fig2_head_specialisation(model, all_seqs, family_names, vocab, vocab_inv, cf
     )
 
     plt.tight_layout()
-    out = FIGURES / "cls_attention_head_specialisation.png"
+    out = FIGURES / f"{model_prefix}_cls_attention_head_specialisation.png"
     plt.savefig(out, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"  Saved: {out}")
 
 
-def fig3_cls_attention_sink(model, all_seqs, family_names, vocab, cfg):
+def fig3_cls_attention_sink(model, all_seqs, family_names, vocab, cfg, model_prefix: str):
     """
     Mean CLS attention per position (averaged over layers/heads/samples).
     """
@@ -334,18 +335,23 @@ def fig3_cls_attention_sink(model, all_seqs, family_names, vocab, cfg):
     plt.ylabel("Mean CLS attention")
     plt.tight_layout()
 
-    out = FIGURES / "cls_attention_sink.png"
+    out = FIGURES / f"{model_prefix}_cls_attention_sink.png"
     plt.savefig(out, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"  Saved: {out}")
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_prefix", type=str, default="plain_transformer",
+                        help="Prefix for model files (e.g. plain_transformer or markov_transformer)")
+    args = parser.parse_args()
+
     torch.manual_seed(42)
     np.random.seed(42)
 
     print("Loading model and vocab …")
-    model, vocab, family_names, cfg = load_model_and_vocab()
+    model, vocab, family_names, cfg = load_model_and_vocab(args.model_prefix)
     vocab_inv = {v: k for k, v in vocab.items()}
 
     print("Loading data …")
@@ -362,9 +368,9 @@ def main():
         f"{len(all_seqs)} families."
     )
 
-    fig1_per_family_heatmap(model, all_seqs, family_names, vocab, vocab_inv, cfg)
-    fig2_head_specialisation(model, all_seqs, family_names, vocab, vocab_inv, cfg)
-    fig3_cls_attention_sink(model, all_seqs, family_names, vocab, cfg)
+    fig1_per_family_heatmap(model, all_seqs, family_names, vocab, vocab_inv, cfg, args.model_prefix)
+    fig2_head_specialisation(model, all_seqs, family_names, vocab, vocab_inv, cfg, args.model_prefix)
+    fig3_cls_attention_sink(model, all_seqs, family_names, vocab, cfg, args.model_prefix)
 
     print("\nAll figures saved to results/figures/:")
     for p in sorted(FIGURES.glob("cls_*.png")):
