@@ -7,7 +7,7 @@ Runs the complete experimental pipeline:
 1. Load and preprocess droidmon logs
 2. Build Markov chain features
 3. Train & evaluate baseline models (RF, SVM, DT, GNB, Markov+Pruning)
-4. Train & evaluate GAME-Mal (gated attention model)
+4. Train & evaluate Transformer classifier (CLS attention)
 5. Run explainability analysis
 6. Generate all tables and figures for the paper
 
@@ -32,21 +32,31 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.preprocessing import load_dataset, APIVocabulary, prepare_splits, pad_sequences
-from src.markov import (
-    extract_rules, build_class_graphs, compute_support_confidence,
-    prune_rules, build_rule_feature_matrix,
-)
 from src.baselines import (
-    BASELINE_MODELS, train_evaluate_baseline, compute_metrics,
-    compute_per_class_metrics, MarkovPruningClassifier,
+    BASELINE_MODELS,
+    MarkovPruningClassifier,
+    compute_metrics,
+    compute_per_class_metrics,
+    train_evaluate_baseline,
 )
-from src.train import train_game_mal
 from src.explain import (
-    extract_gate_scores, get_top_apis_per_family, compute_sparsity_stats,
-    plot_top_apis, plot_gate_score_distribution, plot_training_history,
+    compute_sparsity_stats,
+    extract_cls_attention_scores,
+    get_top_apis_per_family,
     plot_confusion_matrix,
+    plot_gate_score_distribution,
+    plot_top_apis,
+    plot_training_history,
 )
+from src.markov import (
+    build_class_graphs,
+    build_rule_feature_matrix,
+    compute_support_confidence,
+    extract_rules,
+    prune_rules,
+)
+from src.preprocessing import APIVocabulary, load_dataset, pad_sequences, prepare_splits
+from src.train import train_transformer
 
 logging.basicConfig(
     level=logging.INFO,
@@ -58,6 +68,7 @@ logger = logging.getLogger("GAME-Mal")
 
 # ── Configuration ───────────────────────────────────────────────────────────
 
+
 class Config:
     # Data
     data_root = PROJECT_ROOT / "extracted_data"
@@ -68,7 +79,7 @@ class Config:
     min_support = 0.0005
     min_confidence = 0.3
 
-    # GAME-Mal model
+    # Transformer model
     d_model = 128
     n_heads = 4
     n_layers = 2
@@ -96,6 +107,7 @@ def quick_config():
 
 # ── Main pipeline ───────────────────────────────────────────────────────────
 
+
 def run_pipeline(skip_baselines=False, quick=False):
     if quick:
         quick_config()
@@ -109,6 +121,7 @@ def run_pipeline(skip_baselines=False, quick=False):
     # Reproducibility: torch RNG was previously unseeded.
     try:
         import torch as _torch
+
         _torch.manual_seed(Config.seed)
     except Exception:
         pass
@@ -124,8 +137,12 @@ def run_pipeline(skip_baselines=False, quick=False):
     labels = np.array(labels)
     num_classes = len(family_names)
 
-    logger.info("Total samples: %d | Classes: %d (%s)",
-                len(sequences), num_classes, family_names)
+    logger.info(
+        "Total samples: %d | Classes: %d (%s)",
+        len(sequences),
+        num_classes,
+        family_names,
+    )
     for i, name in enumerate(family_names):
         count = (labels == i).sum()
         logger.info("  %s: %d samples (%.1f%%)", name, count, 100 * count / len(labels))
@@ -153,9 +170,12 @@ def run_pipeline(skip_baselines=False, quick=False):
     if Config.n_folds == 1:
         # Quick mode: simple 70/30 split
         from sklearn.model_selection import train_test_split
+
         train_idx, test_idx = train_test_split(
-            np.arange(len(labels)), test_size=0.3,
-            stratify=labels, random_state=Config.seed
+            np.arange(len(labels)),
+            test_size=0.3,
+            stratify=labels,
+            random_state=Config.seed,
         )
         splits = [(train_idx, test_idx)]
     else:
@@ -164,7 +184,10 @@ def run_pipeline(skip_baselines=False, quick=False):
     # ════════════════════════════════════════════════════════════════
     # STEP 4: Run experiments across folds
     # ════════════════════════════════════════════════════════════════
-    all_results = {name: [] for name in list(BASELINE_MODELS.keys()) + ["MarkovPruning", "GAME-Mal"]}
+    all_results = {
+        name: []
+        for name in list(BASELINE_MODELS.keys()) + ["MarkovPruning", "GAME-Mal"]
+    }
     best_game_mal_model = None
     best_game_mal_fold = None
     best_game_mal_f1 = 0.0
@@ -173,8 +196,13 @@ def run_pipeline(skip_baselines=False, quick=False):
 
     for fold_idx, (train_idx, test_idx) in enumerate(splits):
         logger.info("=" * 60)
-        logger.info("FOLD %d/%d (train=%d, test=%d)",
-                     fold_idx + 1, len(splits), len(train_idx), len(test_idx))
+        logger.info(
+            "FOLD %d/%d (train=%d, test=%d)",
+            fold_idx + 1,
+            len(splits),
+            len(train_idx),
+            len(test_idx),
+        )
         logger.info("=" * 60)
 
         train_seqs = [encoded_sequences[i] for i in train_idx]
@@ -189,13 +217,22 @@ def run_pipeline(skip_baselines=False, quick=False):
             train_seqs, y_train.tolist(), num_classes, Config.max_spacing
         )
         support, confidence = compute_support_confidence(class_graphs, num_classes)
-        selected_rules = prune_rules(support, confidence,
-                                     Config.min_support, Config.min_confidence)
-        logger.info("Rules: %d total, %d selected (%.1fs)",
-                     len(global_rules), len(selected_rules), time.time() - t0)
+        selected_rules = prune_rules(
+            support, confidence, Config.min_support, Config.min_confidence
+        )
+        logger.info(
+            "Rules: %d total, %d selected (%.1fs)",
+            len(global_rules),
+            len(selected_rules),
+            time.time() - t0,
+        )
 
-        X_train_markov = build_rule_feature_matrix(train_seqs, selected_rules, Config.max_spacing)
-        X_test_markov = build_rule_feature_matrix(test_seqs, selected_rules, Config.max_spacing)
+        X_train_markov = build_rule_feature_matrix(
+            train_seqs, selected_rules, Config.max_spacing
+        )
+        X_test_markov = build_rule_feature_matrix(
+            test_seqs, selected_rules, Config.max_spacing
+        )
 
         # ── Baseline models ─────────────────────────────────────────
         if not skip_baselines:
@@ -208,31 +245,41 @@ def run_pipeline(skip_baselines=False, quick=False):
                 all_results[name].append(metrics)
 
                 if fold_idx == 0:
-                    plot_confusion_matrix(y_test, y_pred, family_names,
-                                          f"{name}", figures_dir)
+                    plot_confusion_matrix(
+                        y_test, y_pred, family_names, f"{name}", figures_dir
+                    )
 
             # Markov + Pruning classifier
             logger.info("--- Markov+Pruning Classifier ---")
-            markov_clf = MarkovPruningClassifier(Config.min_support, Config.min_confidence)
+            markov_clf = MarkovPruningClassifier(
+                Config.min_support, Config.min_confidence
+            )
             markov_clf.fit(class_graphs, num_classes)
             y_pred_markov = markov_clf.predict(test_seqs, Config.max_spacing)
             y_score_markov = markov_clf.predict_proba(test_seqs, Config.max_spacing)
-            markov_metrics = compute_metrics(y_test, y_pred_markov, y_score_markov, num_classes)
+            markov_metrics = compute_metrics(
+                y_test, y_pred_markov, y_score_markov, num_classes
+            )
             all_results["MarkovPruning"].append(markov_metrics)
-            logger.info("MarkovPruning: Acc=%.4f F1=%.4f AUC=%.4f",
-                        markov_metrics["accuracy"], markov_metrics["f_score"], markov_metrics["auc"])
+            logger.info(
+                "MarkovPruning: Acc=%.4f F1=%.4f AUC=%.4f",
+                markov_metrics["accuracy"],
+                markov_metrics["f_score"],
+                markov_metrics["auc"],
+            )
 
             if fold_idx == 0:
-                plot_confusion_matrix(y_test, y_pred_markov, family_names,
-                                      "MarkovPruning", figures_dir)
+                plot_confusion_matrix(
+                    y_test, y_pred_markov, family_names, "MarkovPruning", figures_dir
+                )
 
         # ── GAME-Mal ────────────────────────────────────────────────
-        logger.info("--- GAME-Mal (Gated Attention) ---")
+        logger.info("--- Transformer (CLS) ---")
 
         X_train_padded = pad_sequences(train_seqs, Config.max_seq_len)
         X_test_padded = pad_sequences(test_seqs, Config.max_seq_len)
 
-        model, metrics, history, y_pred_gm = train_game_mal(
+        model, metrics, history, y_pred_gm = train_transformer(
             vocab_size=len(vocab),
             num_classes=num_classes,
             X_train=X_train_padded,
@@ -252,8 +299,12 @@ def run_pipeline(skip_baselines=False, quick=False):
             patience=Config.patience,
         )
         all_results["GAME-Mal"].append(metrics)
-        logger.info("GAME-Mal: Acc=%.4f F1=%.4f AUC=%.4f",
-                     metrics["accuracy"], metrics["f_score"], metrics["auc"])
+        logger.info(
+            "GAME-Mal: Acc=%.4f F1=%.4f AUC=%.4f",
+            metrics["accuracy"],
+            metrics["f_score"],
+            metrics["auc"],
+        )
 
         if metrics["f_score"] > best_game_mal_f1:
             best_game_mal_f1 = metrics["f_score"]
@@ -267,8 +318,9 @@ def run_pipeline(skip_baselines=False, quick=False):
             }
 
         if fold_idx == 0:
-            plot_confusion_matrix(y_test, y_pred_gm, family_names,
-                                  "GAME-Mal", figures_dir)
+            plot_confusion_matrix(
+                y_test, y_pred_gm, family_names, "GAME-Mal", figures_dir
+            )
 
     # ════════════════════════════════════════════════════════════════
     # STEP 5: Aggregate results
@@ -294,10 +346,16 @@ def run_pipeline(skip_baselines=False, quick=False):
             row[f"{key}_std"] = std.get(key, 0)
         summary_rows.append(row)
 
-        logger.info("%15s | Acc=%.4f(+/-%.4f) | F1=%.4f(+/-%.4f) | AUC=%.4f(+/-%.4f)",
-                     method, avg["accuracy"], std["accuracy"],
-                     avg["f_score"], std["f_score"],
-                     avg["auc"], std["auc"])
+        logger.info(
+            "%15s | Acc=%.4f(+/-%.4f) | F1=%.4f(+/-%.4f) | AUC=%.4f(+/-%.4f)",
+            method,
+            avg["accuracy"],
+            std["accuracy"],
+            avg["f_score"],
+            std["f_score"],
+            avg["auc"],
+            std["auc"],
+        )
 
     summary_df = pd.DataFrame(summary_rows)
     summary_df.to_csv(output_dir / "results_summary.csv", index=False)
@@ -311,10 +369,17 @@ def run_pipeline(skip_baselines=False, quick=False):
     logger.info("=" * 60)
 
     if best_game_mal_model is not None and best_fold_data is not None:
-        import torch
         import pickle
-        device = torch.device("mps" if torch.backends.mps.is_available()
-                              else "cuda" if torch.cuda.is_available() else "cpu")
+
+        import torch
+
+        device = torch.device(
+            "mps"
+            if torch.backends.mps.is_available()
+            else "cuda"
+            if torch.cuda.is_available()
+            else "cpu"
+        )
         best_game_mal_model.to(device)
 
         # ── Persist model weights, vocab, and config ────────────────
@@ -322,33 +387,47 @@ def run_pipeline(skip_baselines=False, quick=False):
         models_dir.mkdir(parents=True, exist_ok=True)
         torch.save(best_game_mal_model.state_dict(), models_dir / "game_mal_best.pt")
         with open(models_dir / "vocab.pkl", "wb") as f:
-            pickle.dump({"api2idx": vocab.api2idx, "idx2api": vocab.idx2api,
-                         "min_freq": vocab.min_freq}, f)
+            pickle.dump(
+                {
+                    "api2idx": vocab.api2idx,
+                    "idx2api": vocab.idx2api,
+                    "min_freq": vocab.min_freq,
+                },
+                f,
+            )
         with open(models_dir / "family_names.json", "w") as f:
             json.dump(family_names, f, indent=2)
         with open(models_dir / "config.json", "w") as f:
-            json.dump({
-                "vocab_size": len(vocab),
-                "num_classes": num_classes,
-                "d_model": Config.d_model,
-                "n_heads": Config.n_heads,
-                "n_layers": Config.n_layers,
-                "d_ff": Config.d_ff,
-                "max_seq_len": Config.max_seq_len,
-                "dropout": Config.dropout,
-                "best_fold": int(best_game_mal_fold),
-                "best_f1": float(best_game_mal_f1),
-            }, f, indent=2)
+            json.dump(
+                {
+                    "vocab_size": len(vocab),
+                    "num_classes": num_classes,
+                    "d_model": Config.d_model,
+                    "n_heads": Config.n_heads,
+                    "n_layers": Config.n_layers,
+                    "d_ff": Config.d_ff,
+                    "max_seq_len": Config.max_seq_len,
+                    "dropout": Config.dropout,
+                    "best_fold": int(best_game_mal_fold),
+                    "best_f1": float(best_game_mal_f1),
+                },
+                f,
+                indent=2,
+            )
         logger.info("Best GAME-Mal model saved to %s", models_dir)
 
         X_test_best = best_fold_data["X_test"]
         y_test_best = best_fold_data["y_test"]
 
-        # Extract gate scores
-        gate_info = extract_gate_scores(
-            best_game_mal_model, X_test_best, y_test_best, device
+        # Extract CLS-attention token-importance scores
+        attn_info = extract_cls_attention_scores(
+            best_game_mal_model,
+            X_test_best,
+            device,
+            batch_size=Config.batch_size,
+            layer_aggregation="mean",
         )
-        token_importance = gate_info["per_token_importance"]
+        token_importance = attn_info["per_token_importance"]
 
         # Sparsity analysis
         sparsity = compute_sparsity_stats(token_importance, X_test_best)
@@ -367,7 +446,11 @@ def run_pipeline(skip_baselines=False, quick=False):
                 logger.info("    %.4f  %s", score, api_name)
 
         with open(output_dir / "top_apis_per_family.json", "w") as f:
-            json.dump({k: [(n, float(s)) for n, s in v] for k, v in top_apis.items()}, f, indent=2)
+            json.dump(
+                {k: [(n, float(s)) for n, s in v] for k, v in top_apis.items()},
+                f,
+                indent=2,
+            )
 
         # Plots
         plot_top_apis(top_apis, figures_dir, top_k=10)
@@ -394,14 +477,16 @@ def run_pipeline(skip_baselines=False, quick=False):
     # Format like Table 9 from the base paper
     table_rows = []
     for _, row in summary_df.iterrows():
-        table_rows.append({
-            "Method": row["Method"],
-            "Acc.": f"{row['accuracy_avg']:.4f}",
-            "Sens.": f"{row['sensitivity_avg']:.4f}",
-            "Prec.": f"{row['precision_avg']:.4f}",
-            "AUC": f"{row['auc_avg']:.4f}",
-            "F-Mea.": f"{row['f_score_avg']:.4f}",
-        })
+        table_rows.append(
+            {
+                "Method": row["Method"],
+                "Acc.": f"{row['accuracy_avg']:.4f}",
+                "Sens.": f"{row['sensitivity_avg']:.4f}",
+                "Prec.": f"{row['precision_avg']:.4f}",
+                "AUC": f"{row['auc_avg']:.4f}",
+                "F-Mea.": f"{row['f_score_avg']:.4f}",
+            }
+        )
 
     table_df = pd.DataFrame(table_rows)
     print("\n" + "=" * 70)
@@ -426,12 +511,17 @@ def run_pipeline(skip_baselines=False, quick=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GAME-Mal Experiment Runner")
-    parser.add_argument("--skip-baselines", action="store_true",
-                        help="Skip baseline models, only run GAME-Mal")
-    parser.add_argument("--quick", action="store_true",
-                        help="Quick run: 1 fold, fewer epochs")
-    parser.add_argument("--data-root", type=str, default=None,
-                        help="Override data directory")
+    parser.add_argument(
+        "--skip-baselines",
+        action="store_true",
+        help="Skip baseline models, only run GAME-Mal",
+    )
+    parser.add_argument(
+        "--quick", action="store_true", help="Quick run: 1 fold, fewer epochs"
+    )
+    parser.add_argument(
+        "--data-root", type=str, default=None, help="Override data directory"
+    )
     args = parser.parse_args()
 
     if args.data_root:

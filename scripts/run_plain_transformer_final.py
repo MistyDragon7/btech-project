@@ -1,5 +1,5 @@
 """
-Final Plain Transformer (use_gate=False) training run on the FULL 9,337-sample corpus,
+Final Plain Transformer training run on the FULL 9,337-sample corpus,
 using the best (max_seq_len, truncation) chosen by the seq_len sweep.
 
 This produces the canonical plain transformer numbers to compare directly against GAME-Mal
@@ -11,6 +11,7 @@ Writes: results/plain_transformer_final.json
         results/models/plain_transformer_config.json
 Updates: results/results_summary.csv  (row "PlainTransformer")
 """
+
 from __future__ import annotations
 
 import csv
@@ -29,9 +30,9 @@ from sklearn.model_selection import StratifiedKFold
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.preprocessing import load_dataset, APIVocabulary, pad_with_truncation
-from src.model import GAMEMal
-from src.train import create_dataloader, train_epoch, evaluate
+from src.model import MalwareTransformer
+from src.preprocessing import APIVocabulary, load_dataset, pad_with_truncation
+from src.train import create_dataloader, evaluate, train_epoch
 
 logging.basicConfig(
     level=logging.INFO,
@@ -59,7 +60,6 @@ class Cfg:
     patience = 20
     n_folds = 3
     seed = 42
-    use_gate = False  # KEY DIFFERENCE: no gate
 
 
 def best_seq_config():
@@ -104,9 +104,10 @@ def update_summary_row(method: str, mean_std: dict) -> None:
     log.info("Updated %s row in %s", method, SUMMARY_CSV)
 
 
-def train_one_fold(X_tr, y_tr, X_te, y_te, vocab_size, num_classes,
-                   max_seq_len, device):
-    model = GAMEMal(
+def train_one_fold(
+    X_tr, y_tr, X_te, y_te, vocab_size, num_classes, max_seq_len, device
+):
+    model = MalwareTransformer(
         vocab_size=vocab_size,
         num_classes=num_classes,
         d_model=Cfg.d_model,
@@ -115,15 +116,15 @@ def train_one_fold(X_tr, y_tr, X_te, y_te, vocab_size, num_classes,
         d_ff=Cfg.d_ff,
         max_seq_len=max_seq_len,
         dropout=Cfg.dropout,
-        use_gate=Cfg.use_gate,   # False
     ).to(device)
 
     counts = np.bincount(y_tr, minlength=num_classes).astype(np.float32)
     class_w = len(y_tr) / (num_classes * np.maximum(counts, 1.0))
     class_w_t = torch.from_numpy(class_w).to(device)
     criterion = nn.CrossEntropyLoss(weight=class_w_t)
-    optim = torch.optim.AdamW(model.parameters(), lr=Cfg.lr,
-                              weight_decay=Cfg.weight_decay)
+    optim = torch.optim.AdamW(
+        model.parameters(), lr=Cfg.lr, weight_decay=Cfg.weight_decay
+    )
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=Cfg.epochs)
 
     tr_loader = create_dataloader(X_tr, y_tr, Cfg.batch_size, shuffle=True)
@@ -136,12 +137,19 @@ def train_one_fold(X_tr, y_tr, X_te, y_te, vocab_size, num_classes,
     stale = 0
     for ep in range(1, Cfg.epochs + 1):
         tr_loss = train_epoch(model, tr_loader, optim, criterion, device)
-        val_loss, metrics, _, _ = evaluate(model, te_loader, criterion, device,
-                                           num_classes)
+        val_loss, metrics, _, _ = evaluate(
+            model, te_loader, criterion, device, num_classes
+        )
         sched.step()
         if ep == 1 or ep % 5 == 0:
-            log.info("  ep=%3d train=%.4f val=%.4f acc=%.4f f1=%.4f",
-                     ep, tr_loss, val_loss, metrics["accuracy"], metrics["f_score"])
+            log.info(
+                "  ep=%3d train=%.4f val=%.4f acc=%.4f f1=%.4f",
+                ep,
+                tr_loss,
+                val_loss,
+                metrics["accuracy"],
+                metrics["f_score"],
+            )
         if metrics["f_score"] > best_f1:
             best_f1 = metrics["f_score"]
             best_metrics = metrics.copy()
@@ -151,7 +159,9 @@ def train_one_fold(X_tr, y_tr, X_te, y_te, vocab_size, num_classes,
         else:
             stale += 1
             if stale >= Cfg.patience:
-                log.info("  early stop ep=%d best_f1=%.4f @ ep=%d", ep, best_f1, best_epoch)
+                log.info(
+                    "  early stop ep=%d best_f1=%.4f @ ep=%d", ep, best_f1, best_epoch
+                )
                 break
     return best_metrics, best_state, best_epoch
 
@@ -161,8 +171,11 @@ def main() -> None:
     np.random.seed(Cfg.seed)
 
     max_len, trunc, best_row = best_seq_config()
-    log.info("Plain transformer config: max_seq_len=%d  truncation=%s  use_gate=False",
-             max_len, trunc)
+    log.info(
+        "Plain transformer config: max_seq_len=%d  truncation=%s",
+        max_len,
+        trunc,
+    )
 
     log.info("Loading FULL corpus (len>=5)...")
     sequences, labels, family_names = load_dataset(REPO_ROOT / "extracted_data")
@@ -175,8 +188,10 @@ def main() -> None:
     padded = pad_with_truncation(encoded, max_len=max_len, truncation=trunc)
 
     device = torch.device(
-        "mps" if torch.backends.mps.is_available()
-        else "cuda" if torch.cuda.is_available()
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
         else "cpu"
     )
     log.info("Device: %s   vocab_size=%d", device, len(vocab))
@@ -193,21 +208,34 @@ def main() -> None:
 
     for fold_idx, (tr_idx, te_idx) in enumerate(splits, start=1):
         log.info("=" * 60)
-        log.info("FOLD %d/%d   train=%d  test=%d", fold_idx, Cfg.n_folds,
-                 len(tr_idx), len(te_idx))
+        log.info(
+            "FOLD %d/%d   train=%d  test=%d",
+            fold_idx,
+            Cfg.n_folds,
+            len(tr_idx),
+            len(te_idx),
+        )
         log.info("=" * 60)
         X_tr, X_te = padded[tr_idx], padded[te_idx]
         y_tr, y_te = y[tr_idx], y[te_idx]
         metrics, state, ep = train_one_fold(
-            X_tr, y_tr, X_te, y_te,
+            X_tr,
+            y_tr,
+            X_te,
+            y_te,
             vocab_size=len(vocab),
             num_classes=len(family_names),
             max_seq_len=max_len,
             device=device,
         )
-        log.info("FOLD %d -> acc=%.4f f1=%.4f auc=%.4f (best ep=%d)",
-                 fold_idx, metrics["accuracy"], metrics["f_score"],
-                 metrics["auc"], ep)
+        log.info(
+            "FOLD %d -> acc=%.4f f1=%.4f auc=%.4f (best ep=%d)",
+            fold_idx,
+            metrics["accuracy"],
+            metrics["f_score"],
+            metrics["auc"],
+            ep,
+        )
         fold_results.append({"fold": fold_idx, "best_epoch": ep, **metrics})
         if metrics["f_score"] > best_overall_f1:
             best_overall_f1 = metrics["f_score"]
@@ -224,7 +252,6 @@ def main() -> None:
 
     out = {
         "model": "PlainTransformer",
-        "use_gate": False,
         "n_folds": Cfg.n_folds,
         "max_seq_len": max_len,
         "truncation": trunc,
@@ -245,36 +272,51 @@ def main() -> None:
         torch.save(best_overall_state, MODEL_DIR / "plain_transformer_best.pt")
         # Reuse vocab.pkl (same vocab as GAME-Mal — same corpus build)
         with open(MODEL_DIR / "plain_transformer_config.json", "w") as f:
-            json.dump({
-                "vocab_size": len(vocab),
-                "num_classes": len(family_names),
-                "d_model": Cfg.d_model,
-                "n_heads": Cfg.n_heads,
-                "n_layers": Cfg.n_layers,
-                "d_ff": Cfg.d_ff,
-                "max_seq_len": max_len,
-                "truncation": trunc,
-                "dropout": Cfg.dropout,
-                "use_gate": False,
-                "best_fold": int(best_overall_fold),
-                "best_epoch": int(best_overall_epoch),
-                "best_f1": float(best_overall_f1),
-                "n_folds": Cfg.n_folds,
-                "epochs_max": Cfg.epochs,
-            }, f, indent=2)
-        log.info("Saved plain transformer model (fold %d, ep %d, f1=%.4f) to %s",
-                 best_overall_fold + 1, best_overall_epoch, best_overall_f1, MODEL_DIR)
+            json.dump(
+                {
+                    "vocab_size": len(vocab),
+                    "num_classes": len(family_names),
+                    "d_model": Cfg.d_model,
+                    "n_heads": Cfg.n_heads,
+                    "n_layers": Cfg.n_layers,
+                    "d_ff": Cfg.d_ff,
+                    "max_seq_len": max_len,
+                    "truncation": trunc,
+                    "dropout": Cfg.dropout,
+                    "best_fold": int(best_overall_fold),
+                    "best_epoch": int(best_overall_epoch),
+                    "best_f1": float(best_overall_f1),
+                    "n_folds": Cfg.n_folds,
+                    "epochs_max": Cfg.epochs,
+                },
+                f,
+                indent=2,
+            )
+        log.info(
+            "Saved plain transformer model (fold %d, ep %d, f1=%.4f) to %s",
+            best_overall_fold + 1,
+            best_overall_epoch,
+            best_overall_f1,
+            MODEL_DIR,
+        )
 
     # Update results_summary.csv
     update_summary_row("PlainTransformer", aggregate)
 
     log.info("=" * 60)
-    log.info("FINAL Plain Transformer 3-fold complete in %.1f min",
-             (time.time() - t_start) / 60.0)
-    log.info("acc=%.4f +/- %.4f   f1=%.4f +/- %.4f   auc=%.4f +/- %.4f",
-             aggregate["accuracy_mean"], aggregate["accuracy_std"],
-             aggregate["f_score_mean"], aggregate["f_score_std"],
-             aggregate["auc_mean"], aggregate["auc_std"])
+    log.info(
+        "FINAL Plain Transformer 3-fold complete in %.1f min",
+        (time.time() - t_start) / 60.0,
+    )
+    log.info(
+        "acc=%.4f +/- %.4f   f1=%.4f +/- %.4f   auc=%.4f +/- %.4f",
+        aggregate["accuracy_mean"],
+        aggregate["accuracy_std"],
+        aggregate["f_score_mean"],
+        aggregate["f_score_std"],
+        aggregate["auc_mean"],
+        aggregate["auc_std"],
+    )
     log.info("Weights: results/models/plain_transformer_best.pt")
     log.info("Config:  results/models/plain_transformer_config.json")
 

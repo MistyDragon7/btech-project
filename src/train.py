@@ -1,6 +1,9 @@
 """
-Training and evaluation loop for GAME-Mal.
-Handles the PyTorch training, validation, and metric computation.
+Training and evaluation loop for the Transformer-based malware classifier.
+
+This module trains/evaluates the plain Transformer model defined in `src/model.py`
+(which prepends a learnable [CLS] token and can optionally return attention maps
+for explainability).
 """
 
 import logging
@@ -11,8 +14,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from src.model import GAMEMal
 from src.baselines import compute_metrics
+from src.model import MalwareTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +34,7 @@ def create_dataloader(
 
 
 def train_epoch(
-    model: GAMEMal,
+    model: MalwareTransformer,
     loader: DataLoader,
     optimizer: torch.optim.Optimizer,
     criterion: nn.Module,
@@ -63,7 +66,7 @@ def train_epoch(
 
 @torch.no_grad()
 def evaluate(
-    model: GAMEMal,
+    model: MalwareTransformer,
     loader: DataLoader,
     criterion: nn.Module,
     device: torch.device,
@@ -103,7 +106,7 @@ def evaluate(
     return avg_loss, metrics, y_pred, y_score
 
 
-def train_game_mal(
+def train_transformer(
     vocab_size: int,
     num_classes: int,
     X_train: np.ndarray,
@@ -122,23 +125,28 @@ def train_game_mal(
     batch_size: int = 32,
     patience: int = 10,
     device: torch.device = None,
-) -> Tuple[GAMEMal, Dict[str, float], List[Dict], np.ndarray]:
+) -> Tuple[MalwareTransformer, Dict[str, float], List[Dict], np.ndarray]:
     """
-    Full training pipeline for GAME-Mal.
+    Full training pipeline for the plain Transformer classifier.
 
     Returns:
-        model: trained GAMEMal model
+        model: trained MalwareTransformer model
         best_metrics: metrics on test set at best epoch
         history: list of per-epoch metrics
         y_pred: predictions on test set
     """
     if device is None:
-        device = torch.device("mps" if torch.backends.mps.is_available()
-                              else "cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device(
+            "mps"
+            if torch.backends.mps.is_available()
+            else "cuda"
+            if torch.cuda.is_available()
+            else "cpu"
+        )
     logger.info("Using device: %s", device)
 
     # Create model
-    model = GAMEMal(
+    model = MalwareTransformer(
         vocab_size=vocab_size,
         num_classes=num_classes,
         d_model=d_model,
@@ -180,17 +188,23 @@ def train_game_mal(
         )
         scheduler.step()
 
-        history.append({
-            "epoch": epoch,
-            "train_loss": train_loss,
-            "test_loss": test_loss,
-            **{f"test_{k}": v for k, v in metrics.items()},
-        })
+        history.append(
+            {
+                "epoch": epoch,
+                "train_loss": train_loss,
+                "test_loss": test_loss,
+                **{f"test_{k}": v for k, v in metrics.items()},
+            }
+        )
 
         if epoch % 5 == 0 or epoch == 1:
             logger.info(
                 "Epoch %3d | train_loss=%.4f | test_loss=%.4f | acc=%.4f | f1=%.4f",
-                epoch, train_loss, test_loss, metrics["accuracy"], metrics["f_score"],
+                epoch,
+                train_loss,
+                test_loss,
+                metrics["accuracy"],
+                metrics["f_score"],
             )
 
         # Early stopping on F1
@@ -212,3 +226,7 @@ def train_game_mal(
         model.to(device)
 
     return model, best_metrics, history, best_pred
+
+
+# Backward-compatible alias for legacy callers
+train_game_mal = train_transformer

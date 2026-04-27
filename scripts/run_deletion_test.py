@@ -1,19 +1,27 @@
 """
-Deletion test for explainability faithfulness.
+Deletion test for explainability faithfulness (CLS-attention).
 
-For each malware family we take up to N test samples, compute the gate
-activation magnitude for every non-pad token, mask the top-k tokens
-(set them to <PAD>=0 so attention/pooling skips them), and re-run the
-model. We measure the drop in predicted probability for the true class
-between the original and masked inputs.
+For each malware family we take up to N test samples, compute a per-token
+importance score derived from attention weights *from the class token* ([CLS])
+to all non-pad tokens, mask the top-k tokens (set them to <PAD>=0 so attention
+skips them), and re-run the model.
 
-A faithful explanation should show a meaningful drop. We additionally
-compare against a *random* baseline that masks k tokens chosen uniformly
-at random per sample.
+We measure the drop in predicted probability for the true class between the
+original and masked inputs.
+
+A faithful explanation should show a meaningful drop. We additionally compare
+against a *random* baseline that masks k tokens chosen uniformly at random per
+sample.
+
+IMPORTANT:
+- This test assumes the model has an explicit [CLS] token at position 0, and
+  that `return_attention=True` returns per-layer attention matrices of shape
+  (B, n_heads, seq, seq).
 
 Outputs:
     results/deletion_test.json
 """
+
 from __future__ import annotations
 
 import json
@@ -30,9 +38,8 @@ import torch
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
+from src.model import MalwareTransformer
 from src.preprocessing import load_dataset, pad_sequences
-from src.model import GAMEMal
-
 
 logging.basicConfig(
     level=logging.INFO,
@@ -48,7 +55,7 @@ PAD_IDX = 0
 
 
 def load_model(device: torch.device):
-    with open(MODEL_DIR / "config.json") as f:
+    with open(MODEL_DIR / "plain_transformer_config.json") as f:
         cfg = json.load(f)
     with open(MODEL_DIR / "vocab.pkl", "rb") as f:
         v = pickle.load(f)
@@ -56,7 +63,8 @@ def load_model(device: torch.device):
         family_names = json.load(f)
     api2idx = v["api2idx"]
 
-    model = GAMEMal(
+    # NOTE: gating has been removed from the project; deletion test now uses CLS-attention.
+    model = MalwareTransformer(
         vocab_size=cfg["vocab_size"],
         num_classes=cfg["num_classes"],
         d_model=cfg["d_model"],
@@ -65,42 +73,53 @@ def load_model(device: torch.device):
         d_ff=cfg["d_ff"],
         max_seq_len=cfg["max_seq_len"],
         dropout=cfg["dropout"],
-        use_gate=True,
     ).to(device)
-    state = torch.load(MODEL_DIR / "game_mal_best.pt", map_location=device)
+    state = torch.load(MODEL_DIR / "plain_transformer_best.pt", map_location=device)
     model.load_state_dict(state)
     model.eval()
     return model, api2idx, family_names, cfg["max_seq_len"]
 
 
 @torch.no_grad()
-def predict_proba(model: GAMEMal, x: torch.Tensor) -> np.ndarray:
+def predict_proba(model: MalwareTransformer, x: torch.Tensor) -> np.ndarray:
     logits, _ = model(x, return_attention=False)
     return torch.softmax(logits, dim=-1).cpu().numpy()
 
 
-def gate_magnitude_per_token(model: GAMEMal, x: torch.Tensor) -> np.ndarray:
-    """Mean (over layers, heads, gate-dims) of sigmoid gate scores per token.
+def cls_attention_importance_per_token(model: MalwareTransformer, x: torch.Tensor) -> np.ndarray:
+    """Derive per-token importance from attention from [CLS] to tokens.
+
+    We take attention weights from the [CLS] query position (index 0) to all
+    key positions, average across heads, and then average across layers.
 
     Returns array of shape (seq_len,). Padded positions get 0.
     """
     with torch.no_grad():
         _, info = model(x, return_attention=True)
-    # info["gate_scores"] is list per layer of (B, n_heads, N, d_k) tensors
+
+    # info["attn_weights"] is list per layer of (B, n_heads, N, N)
     per_layer = []
-    for g in info["gate_scores"]:
-        if g is None:
+    for a in info.get("attn_weights", []):
+        if a is None:
             continue
-        # mean over heads + gate dim → (B, N)
-        per_layer.append(g.mean(dim=(1, 3)))
+        # a[:, :, cls, :] -> (B, n_heads, N)
+        cls_row = a[:, :, 0, :]
+        # mean over heads -> (B, N)
+        per_layer.append(cls_row.mean(dim=1))
+
     if not per_layer:
         N = x.shape[1]
         return np.zeros(N, dtype=np.float32)
+
     stacked = torch.stack(per_layer, dim=0).mean(dim=0)  # (B, N)
-    mag = stacked.squeeze(0).cpu().numpy()
+    imp = stacked.squeeze(0).cpu().numpy()
+
     pad_positions = (x.squeeze(0) == PAD_IDX).cpu().numpy()
-    mag[pad_positions] = 0.0
-    return mag
+    imp[pad_positions] = 0.0
+    # Never allow [CLS] itself to be masked
+    if len(imp) > 0:
+        imp[0] = 0.0
+    return imp
 
 
 def mask_topk(seq: np.ndarray, scores: np.ndarray, k: int) -> np.ndarray:
@@ -131,8 +150,10 @@ def mask_random(seq: np.ndarray, k: int, rng: np.random.Generator) -> np.ndarray
 
 def main() -> None:
     device = torch.device(
-        "mps" if torch.backends.mps.is_available()
-        else "cuda" if torch.cuda.is_available()
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
         else "cpu"
     )
     log.info("Device: %s", device)
@@ -171,12 +192,12 @@ def main() -> None:
             for idx in sampled:
                 seq = padded[idx]
                 x = torch.from_numpy(seq[None, :]).long().to(device)
-                gates = gate_magnitude_per_token(model, x)
+                attn_imp = cls_attention_importance_per_token(model, x)
 
                 p_base = predict_proba(model, x)[0, fam_idx]
 
-                masked_gate = mask_topk(seq, gates, k)
-                xg = torch.from_numpy(masked_gate[None, :]).long().to(device)
+                masked_top = mask_topk(seq, attn_imp, k)
+                xg = torch.from_numpy(masked_top[None, :]).long().to(device)
                 p_gate = predict_proba(model, xg)[0, fam_idx]
 
                 masked_rand = mask_random(seq, k, rng)
@@ -206,10 +227,14 @@ def main() -> None:
             overall[k]["random"].extend(d_rand.tolist())
 
             log.info(
-                "[%s] k=%2d  base=%.3f  gate->%.3f (Δ=%.3f)  rand->%.3f (Δ=%.3f)",
-                fam_name, k,
-                base_arr.mean(), gate_arr.mean(), d_gate.mean(),
-                rand_arr.mean(), d_rand.mean(),
+                "[%s] k=%2d  base=%.3f  top-attn->%.3f (Δ=%.3f)  rand->%.3f (Δ=%.3f)",
+                fam_name,
+                k,
+                base_arr.mean(),
+                gate_arr.mean(),
+                d_gate.mean(),
+                rand_arr.mean(),
+                d_rand.mean(),
             )
         per_family[fam_name] = per_k
 
@@ -231,8 +256,8 @@ def main() -> None:
         "overall": overall_summary,
         "notes": (
             "Mean drop in predicted probability for the true class after "
-            "masking top-k highest-gate tokens vs k random tokens. Larger "
-            "delta_gate_minus_random indicates the gate identifies tokens "
+            "masking top-k CLS-attention-ranked tokens vs k random tokens. Larger "
+            "delta_gate_minus_random indicates the attention map identifies tokens "
             "that the model genuinely relies on (faithful explanation)."
         ),
     }
@@ -244,7 +269,10 @@ def main() -> None:
         s = overall_summary[f"k_{k}"]
         log.info(
             "OVERALL k=%2d  Δgate=%.4f  Δrand=%.4f  diff=%.4f",
-            k, s["mean_delta_gate"], s["mean_delta_random"], s["delta_gate_minus_random"],
+            k,
+            s["mean_delta_gate"],
+            s["mean_delta_random"],
+            s["delta_gate_minus_random"],
         )
 
 

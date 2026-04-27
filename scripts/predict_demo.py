@@ -1,12 +1,13 @@
 """
-Minimal inference example: load the trained GAME-Mal checkpoint and
-classify one sample. Also prints the top-k APIs by gate activation
+Minimal inference example: load the trained checkpoint and
+classify one sample. Also prints the top-k APIs by CLS-attention
 for that sample (per-sample explanation).
 
     python3 scripts/predict_demo.py [optional path to a .apk JSONL trace]
 
 If no path is given, a random sample from extracted_data/ is used.
 """
+
 from __future__ import annotations
 
 import json
@@ -21,8 +22,8 @@ import torch
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.preprocessing import load_family_samples, APIVocabulary, pad_sequences
 from src.model import GAMEMal
+from src.preprocessing import APIVocabulary, load_family_samples, pad_sequences
 
 MODEL_DIR = REPO_ROOT / "results" / "models"
 
@@ -47,7 +48,6 @@ def load_checkpoint(device: torch.device):
         d_ff=cfg["d_ff"],
         max_seq_len=cfg["max_seq_len"],
         dropout=cfg["dropout"],
-        use_gate=True,
     ).to(device)
     state = torch.load(MODEL_DIR / "game_mal_best.pt", map_location=device)
     model.load_state_dict(state)
@@ -57,8 +57,10 @@ def load_checkpoint(device: torch.device):
 
 def main() -> None:
     device = torch.device(
-        "mps" if torch.backends.mps.is_available()
-        else "cuda" if torch.cuda.is_available()
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
         else "cpu"
     )
     model, api2idx, idx2api, family_names, cfg = load_checkpoint(device)
@@ -94,16 +96,28 @@ def main() -> None:
     for i in probs.argsort()[::-1][:3]:
         print(f"  {family_names[int(i)]:<14} {probs[int(i)]:.3f}")
 
-    # Per-sample explanation: top tokens by mean gate activation across heads+layers
-    gate_tensors = [g for g in info["gate_scores"] if g is not None]
-    if gate_tensors:
-        # shape per layer: (1, n_heads, seq_len, d_k); mean over heads, d_k, layers
-        stacked = torch.stack(gate_tensors, dim=0)  # (L, 1, H, N, d_k)
-        mean_gate = stacked.mean(dim=(0, 1, 2, -1)).cpu().numpy()  # (N,)
-        tokens = padded.squeeze(0)
-        # rank non-pad tokens
-        valid = [(int(tok), float(mean_gate[i])) for i, tok in enumerate(tokens) if tok != pad]
-        # unique APIs with their mean gate (over positions)
+    # Per-sample explanation: top tokens by mean CLS attention across heads+layers
+    attn_list = info.get("attn_weights", [])
+    if attn_list:
+        # shape per layer: (1, n_heads, S, S); mean over heads+layers for CLS row
+        stacked = torch.stack(attn_list, dim=0)  # (L, 1, H, S, S)
+        cls_rows = stacked[:, :, :, 0, :]  # (L, 1, H, S)
+        mean_cls = cls_rows.mean(dim=(0, 2)).squeeze(0).cpu().numpy()  # (S,)
+
+        token_ids = info.get("token_ids_with_cls")
+        if token_ids is None:
+            token_ids = torch.cat(
+                [torch.zeros((1, 1), dtype=x.dtype, device=x.device), x], dim=1
+            )
+        tokens = token_ids.squeeze(0).cpu().numpy()
+
+        # rank non-pad, non-CLS tokens
+        valid = [
+            (int(tok), float(mean_cls[i]))
+            for i, tok in enumerate(tokens)
+            if i > 0 and tok != pad
+        ]
+        # unique APIs with their mean CLS attention (over positions)
         by_api = {}
         counts = {}
         for tok, g in valid:
@@ -114,7 +128,7 @@ def main() -> None:
             ((idx2api.get(t, f"<{t}>"), by_api[t] / counts[t]) for t in by_api),
             key=lambda p: -p[1],
         )
-        print("\nTop-5 gate-activated APIs in this sample:")
+        print("\nTop-5 CLS-attended APIs in this sample:")
         for api, g in ranked[:5]:
             print(f"  {g:.3f}  {api}")
 

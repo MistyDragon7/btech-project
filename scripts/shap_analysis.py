@@ -13,55 +13,82 @@ Outputs (all to results/figures/):
 """
 
 from __future__ import annotations
-import json, pickle, sys, warnings
+
+import json
+import pickle
+import sys
+import warnings
 from collections import defaultdict
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 import shap
+import torch
+
 warnings.filterwarnings("ignore")
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from src.preprocessing import load_dataset, prepare_splits, APIVocabulary, pad_with_truncation
-from src.markov import build_class_graphs, compute_support_confidence, prune_rules, build_rule_feature_matrix
 from src.baselines import BASELINE_MODELS
+from src.markov import (
+    build_class_graphs,
+    build_rule_feature_matrix,
+    compute_support_confidence,
+    prune_rules,
+)
 from src.model import GAMEMal
+from src.preprocessing import (
+    APIVocabulary,
+    load_dataset,
+    pad_with_truncation,
+    prepare_splits,
+)
 
 RESULTS = REPO / "results"
 FIGURES = RESULTS / "figures"
-MODELS  = RESULTS / "models"
+MODELS = RESULTS / "models"
 FIGURES.mkdir(parents=True, exist_ok=True)
 
-DEVICE = torch.device("cpu")   # SHAP gradient passes are more stable on CPU
-MAX_SEQ_LEN  = 512
-TRUNCATION   = "head"
-MAX_SPACING  = 10
-MIN_SUPPORT  = 1e-4
-MIN_CONF     = 0.8
-SEED         = 42
-N_SHAP_BACK  = 50   # background samples for GradientExplainer
-N_SHAP_TEST  = 80   # test samples to explain
-TOP_K        = 20   # top features to show
+DEVICE = torch.device("cpu")  # SHAP gradient passes are more stable on CPU
+MAX_SEQ_LEN = 512
+TRUNCATION = "head"
+MAX_SPACING = 10
+MIN_SUPPORT = 1e-4
+MIN_CONF = 0.8
+SEED = 42
+N_SHAP_BACK = 50  # background samples for GradientExplainer
+N_SHAP_TEST = 80  # test samples to explain
+TOP_K = 20  # top features to show
 
-FAMILY_NAMES = ["Airpush","DroidKungFu","Fusob","Genpua","GinMaster","Jisut","Opfake","SmsPay"]
+FAMILY_NAMES = [
+    "Airpush",
+    "DroidKungFu",
+    "Fusob",
+    "Genpua",
+    "GinMaster",
+    "Jisut",
+    "Opfake",
+    "SmsPay",
+]
 COLORS = plt.get_cmap("tab10")(np.linspace(0, 1, len(FAMILY_NAMES)))
 
 # ── helpers ────────────────────────────────────────────────────────────────
+
 
 def shorten(rule_str: str, maxlen: int = 32) -> str:
     """Shorten a rule string for axis labels."""
     return rule_str.replace("REFL:", "R:").split(".")[-1][:maxlen]
 
+
 def load_data():
     data_dir = REPO / "extracted_data"
     seqs, labels, _ = load_dataset(data_dir)
-    seqs   = [s for s, l in zip(seqs, labels) if len(s) >= 5]
+    seqs = [s for s, l in zip(seqs, labels) if len(s) >= 5]
     labels = [l for s, l in zip(seqs, labels) if len(s) >= 5]
     # redo with correct filter
     all_seqs, all_labels, _ = load_dataset(data_dir)
@@ -72,33 +99,39 @@ def load_data():
             lbls_f.append(l)
     return seqs_f, np.array(lbls_f)
 
+
 def build_vocab_and_encode(train_seqs, all_seqs):
     vocab = APIVocabulary(min_freq=2)
     vocab.build(train_seqs)
     encoded = [vocab.encode(s) for s in all_seqs]
     return vocab, encoded
 
-def load_transformer(use_gate: bool = False):
+
+def load_transformer():
     # Use dedicated plain-transformer checkpoint when available
-    if use_gate:
-        cfg_path  = MODELS / "config.json"
-        ckpt_path = MODELS / "game_mal_best.pt"
-    else:
-        pt_cfg  = MODELS / "plain_transformer_config.json"
-        pt_ckpt = MODELS / "plain_transformer_best.pt"
-        cfg_path  = pt_cfg  if pt_cfg.exists()  else MODELS / "config.json"
-        ckpt_path = pt_ckpt if pt_ckpt.exists() else MODELS / "game_mal_best.pt"
+    pt_cfg = MODELS / "plain_transformer_config.json"
+    pt_ckpt = MODELS / "plain_transformer_best.pt"
+    cfg_path = pt_cfg if pt_cfg.exists() else MODELS / "config.json"
+    ckpt_path = pt_ckpt if pt_ckpt.exists() else MODELS / "game_mal_best.pt"
 
     cfg = json.loads(cfg_path.read_text())
     with open(MODELS / "vocab.pkl", "rb") as f:
         vocab_obj = pickle.load(f)
-    vocab = vocab_obj["api2idx"] if isinstance(vocab_obj, dict) and "api2idx" in vocab_obj else (
-        vocab_obj.api2idx if hasattr(vocab_obj, "api2idx") else vocab_obj)
+    vocab = (
+        vocab_obj["api2idx"]
+        if isinstance(vocab_obj, dict) and "api2idx" in vocab_obj
+        else (vocab_obj.api2idx if hasattr(vocab_obj, "api2idx") else vocab_obj)
+    )
 
     model = GAMEMal(
-        vocab_size=cfg["vocab_size"], num_classes=cfg["num_classes"],
-        d_model=cfg["d_model"], n_heads=cfg["n_heads"], n_layers=cfg["n_layers"],
-        d_ff=cfg["d_ff"], max_seq_len=cfg["max_seq_len"], dropout=0.0, use_gate=use_gate,
+        vocab_size=cfg["vocab_size"],
+        num_classes=cfg["num_classes"],
+        d_model=cfg["d_model"],
+        n_heads=cfg["n_heads"],
+        n_layers=cfg["n_layers"],
+        d_ff=cfg["d_ff"],
+        max_seq_len=cfg["max_seq_len"],
+        dropout=0.0,
     )
     ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     state = ckpt.get("model_state_dict", ckpt)
@@ -107,10 +140,12 @@ def load_transformer(use_gate: bool = False):
     own.update(state)
     model.load_state_dict(own)
     model.to(DEVICE).eval()
-    print(f"  Loaded {'gated' if use_gate else 'plain'} transformer from {ckpt_path.name}")
+    print(f"  Loaded transformer from {ckpt_path.name}")
     return model, vocab, cfg
 
+
 # ── Transformer wrapper for GradientExplainer ──────────────────────────────
+
 
 class TransformerFromEmbedding(torch.nn.Module):
     """Wraps the transformer so its input is the embedding matrix (float),
@@ -129,7 +164,7 @@ class TransformerFromEmbedding(torch.nn.Module):
         """
         B, N, D = embed.shape
         # Detect padding before adding positional embeddings (zero = padding)
-        pad_mask = (embed.abs().sum(dim=-1) == 0)  # (B, N)
+        pad_mask = embed.abs().sum(dim=-1) == 0  # (B, N)
 
         # Add positional embeddings (mirrors GAMEMal.forward exactly)
         positions = torch.arange(N, device=embed.device).unsqueeze(0).expand(B, -1)
@@ -152,7 +187,9 @@ def get_embeddings(model: GAMEMal, token_ids: torch.Tensor) -> torch.Tensor:
     with torch.no_grad():
         return model.api_embedding(token_ids)  # (B, N, d_model)
 
+
 # ── Part 1: RF SHAP ────────────────────────────────────────────────────────
+
 
 def run_rf_shap(seqs, labels):
     print("=" * 60)
@@ -167,10 +204,10 @@ def run_rf_shap(seqs, labels):
     train_idx, test_idx = splits[_best_fold]
 
     train_seqs = [seqs[i] for i in train_idx]
-    test_seqs  = [seqs[i] for i in test_idx]
-    y_train    = labels[train_idx]
-    y_test     = labels[test_idx]
-    num_cls    = len(FAMILY_NAMES)
+    test_seqs = [seqs[i] for i in test_idx]
+    y_train = labels[train_idx]
+    y_test = labels[test_idx]
+    num_cls = len(FAMILY_NAMES)
 
     print(f"  Train: {len(train_seqs)}   Test: {len(test_seqs)}")
 
@@ -179,16 +216,18 @@ def run_rf_shap(seqs, labels):
     vocab.build(train_seqs)
 
     train_enc = [vocab.encode_sequence(s) for s in train_seqs]
-    test_enc  = [vocab.encode_sequence(s) for s in test_seqs]
+    test_enc = [vocab.encode_sequence(s) for s in test_seqs]
 
     print("  Extracting Markov rules …")
-    class_graphs, _ = build_class_graphs(train_enc, y_train.tolist(), num_cls, MAX_SPACING)
+    class_graphs, _ = build_class_graphs(
+        train_enc, y_train.tolist(), num_cls, MAX_SPACING
+    )
     support, confidence = compute_support_confidence(class_graphs, num_cls)
     selected_rules = prune_rules(support, confidence, MIN_SUPPORT, MIN_CONF)
     print(f"  {len(selected_rules)} rules survive pruning")
 
     X_train = build_rule_feature_matrix(train_enc, selected_rules, MAX_SPACING)
-    X_test  = build_rule_feature_matrix(test_enc,  selected_rules, MAX_SPACING)
+    X_test = build_rule_feature_matrix(test_enc, selected_rules, MAX_SPACING)
 
     print("  Training Random Forest …")
     rf = BASELINE_MODELS["RandomForest"]()
@@ -202,18 +241,18 @@ def run_rf_shap(seqs, labels):
     rng = np.random.default_rng(SEED)
     idx = rng.choice(len(X_test), size=min(N_SHAP_TEST, len(X_test)), replace=False)
     X_explain = X_test[idx]
-    y_explain  = y_test[idx]
+    y_explain = y_test[idx]
     # shap 0.49+: returns (n_samples, n_features, n_classes)
-    shap_values = explainer.shap_values(X_explain)          # (n, n_feat, n_cls)
+    shap_values = explainer.shap_values(X_explain)  # (n, n_feat, n_cls)
     shap_values = np.array(shap_values)
-    if shap_values.ndim == 2:                               # binary edge case
+    if shap_values.ndim == 2:  # binary edge case
         shap_values = shap_values[:, :, np.newaxis]
     # (n_samples, n_features, n_classes)
 
     # Build human-readable rule labels using vocab inverse
     idx2api = {v: k for k, v in vocab.api2idx.items()}
     rule_labels = []
-    for (a, b) in selected_rules:
+    for a, b in selected_rules:
         na = idx2api.get(a, f"tok{a}")
         nb = idx2api.get(b, f"tok{b}")
         na = na.replace("REFL:", "R:").split(".")[-1][:20]
@@ -225,30 +264,44 @@ def run_rf_shap(seqs, labels):
     # Mean |SHAP| across classes: (n_samples, n_features)
     shap_abs = np.abs(shap_values).mean(axis=-1)
     # Global feature importance: mean over samples
-    feat_importance = shap_abs.mean(axis=0)                 # (n_features,)
-    top_idx = np.argsort(feat_importance)[-TOP_K:][::-1]    # top-20 features
+    feat_importance = shap_abs.mean(axis=0)  # (n_features,)
+    top_idx = np.argsort(feat_importance)[-TOP_K:][::-1]  # top-20 features
 
-    shap_top = shap_abs[:, top_idx]    # (n_samples, TOP_K)
-    X_top    = X_explain[:, top_idx]   # (n_samples, TOP_K)
+    shap_top = shap_abs[:, top_idx]  # (n_samples, TOP_K)
+    X_top = X_explain[:, top_idx]  # (n_samples, TOP_K)
 
     fig, ax = plt.subplots(figsize=(11, 7))
     for i in range(TOP_K):
-        vals = shap_top[:, i]           # (n_samples,)
+        vals = shap_top[:, i]  # (n_samples,)
         feat_raw = X_top[:, i]
-        feat_norm = (feat_raw - feat_raw.min()) / (feat_raw.max() - feat_raw.min() + 1e-9)
+        feat_norm = (feat_raw - feat_raw.min()) / (
+            feat_raw.max() - feat_raw.min() + 1e-9
+        )
         jitter = np.random.default_rng(i).uniform(-0.3, 0.3, size=len(vals))
-        sc = ax.scatter(vals, np.full(len(vals), i) + jitter,
-                        c=feat_norm, cmap="RdBu_r", alpha=0.55, s=10, vmin=0, vmax=1)
+        sc = ax.scatter(
+            vals,
+            np.full(len(vals), i) + jitter,
+            c=feat_norm,
+            cmap="RdBu_r",
+            alpha=0.55,
+            s=10,
+            vmin=0,
+            vmax=1,
+        )
 
     ax.set_yticks(range(TOP_K))
     ax.set_yticklabels([rule_labels[j] for j in top_idx], fontsize=7)
     ax.set_xlabel("Mean |SHAP| (averaged over classes)", fontsize=9)
-    ax.set_title("RF SHAP — Top-20 Rules by Global Importance\n"
-                 "(colour = feature value: blue=low, red=high)", fontsize=10)
+    ax.set_title(
+        "RF SHAP — Top-20 Rules by Global Importance\n"
+        "(colour = feature value: blue=low, red=high)",
+        fontsize=10,
+    )
     plt.colorbar(sc, ax=ax, label="Feature value (normalised)", fraction=0.02)
     plt.tight_layout()
     out = FIGURES / "shap_rf_beeswarm.png"
-    plt.savefig(out, dpi=150, bbox_inches="tight"); plt.close()
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
     print(f"  Saved: {out}")
 
     # ── Figure B: Per-class SHAP bar chart ───────────────────────────────
@@ -259,11 +312,11 @@ def run_rf_shap(seqs, labels):
 
     for ci, fname in enumerate(FAMILY_NAMES):
         ax = axes[ci]
-        sv_cls = np.abs(shap_values[:, :, ci])    # (n_samples, n_features)
-        mean_sv = sv_cls.mean(axis=0)              # (n_features,)
-        top15   = np.argsort(mean_sv)[-15:][::-1]
-        vals    = mean_sv[top15]
-        lbls    = [rule_labels[j] for j in top15]
+        sv_cls = np.abs(shap_values[:, :, ci])  # (n_samples, n_features)
+        mean_sv = sv_cls.mean(axis=0)  # (n_features,)
+        top15 = np.argsort(mean_sv)[-15:][::-1]
+        vals = mean_sv[top15]
+        lbls = [rule_labels[j] for j in top15]
         ax.barh(range(len(vals)), vals[::-1], color=COLORS[ci], alpha=0.85)
         ax.set_yticks(range(len(vals)))
         ax.set_yticklabels(lbls[::-1], fontsize=6)
@@ -276,19 +329,22 @@ def run_rf_shap(seqs, labels):
 
     plt.tight_layout()
     out = FIGURES / "shap_rf_bar_per_class.png"
-    plt.savefig(out, dpi=150, bbox_inches="tight"); plt.close()
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
     print(f"  Saved: {out}")
 
     return shap_abs, top_idx, rule_labels, selected_rules, vocab
 
+
 # ── Part 2: Transformer SHAP ───────────────────────────────────────────────
+
 
 def run_transformer_shap(seqs, labels):
     print("\n" + "=" * 60)
     print("Part 2: Transformer SHAP (GradientExplainer on embeddings)")
     print("=" * 60)
 
-    model, vocab, cfg = load_transformer(use_gate=False)
+    model, vocab, cfg = load_transformer()
     max_seq = cfg["max_seq_len"]
 
     splits = prepare_splits(seqs, labels.tolist(), n_folds=3, seed=SEED)
@@ -297,8 +353,8 @@ def run_transformer_shap(seqs, labels):
     train_idx, test_idx = splits[_best_fold]
 
     train_seqs = [seqs[i] for i in train_idx]
-    test_seqs  = [seqs[i] for i in test_idx]
-    y_test     = labels[test_idx]
+    test_seqs = [seqs[i] for i in test_idx]
+    y_test = labels[test_idx]
 
     def encode_batch(seq_list):
         enc = [[vocab.get(t, vocab.get("<UNK>", 1)) for t in s] for s in seq_list]
@@ -308,14 +364,16 @@ def run_transformer_shap(seqs, labels):
     print("  Computing embeddings for background and test sets …")
     rng = np.random.default_rng(SEED)
     back_idx = rng.choice(len(train_seqs), size=N_SHAP_BACK, replace=False)
-    test_ex_idx = rng.choice(len(test_seqs), size=min(N_SHAP_TEST, len(test_seqs)), replace=False)
+    test_ex_idx = rng.choice(
+        len(test_seqs), size=min(N_SHAP_TEST, len(test_seqs)), replace=False
+    )
 
-    back_ids  = encode_batch([train_seqs[i] for i in back_idx])
-    test_ids  = encode_batch([test_seqs[i]  for i in test_ex_idx])
+    back_ids = encode_batch([train_seqs[i] for i in back_idx])
+    test_ids = encode_batch([test_seqs[i] for i in test_ex_idx])
     y_explain = y_test[test_ex_idx]
 
-    back_emb = get_embeddings(model, back_ids)   # (50, 512, 128)
-    test_emb = get_embeddings(model, test_ids)   # (80, 512, 128)
+    back_emb = get_embeddings(model, back_ids)  # (50, 512, 128)
+    test_emb = get_embeddings(model, test_ids)  # (80, 512, 128)
 
     wrapper = TransformerFromEmbedding(model)
     wrapper.eval()
@@ -330,29 +388,38 @@ def run_transformer_shap(seqs, labels):
 
     if isinstance(shap_vals, list) and len(shap_vals) == num_cls:
         # Case (a): one array per class
-        print(f"  shap_vals: list of {len(shap_vals)} arrays, each shape {np.array(shap_vals[0]).shape}")
-        shap_per_pos = np.stack([
-            np.linalg.norm(np.array(sv), axis=-1)   # (n_test, seq_len)
-            for sv in shap_vals
-        ], axis=0)  # (n_classes, n_test, seq_len)
+        print(
+            f"  shap_vals: list of {len(shap_vals)} arrays, each shape {np.array(shap_vals[0]).shape}"
+        )
+        shap_per_pos = np.stack(
+            [
+                np.linalg.norm(np.array(sv), axis=-1)  # (n_test, seq_len)
+                for sv in shap_vals
+            ],
+            axis=0,
+        )  # (n_classes, n_test, seq_len)
     else:
         # Case (b): single array — no per-class breakdown available,
         # broadcast global magnitude to all classes
-        sv_arr = np.array(shap_vals) if not isinstance(shap_vals, np.ndarray) else shap_vals
-        print(f"  shap_vals: single array shape {sv_arr.shape} — broadcasting to all classes")
+        sv_arr = (
+            np.array(shap_vals) if not isinstance(shap_vals, np.ndarray) else shap_vals
+        )
+        print(
+            f"  shap_vals: single array shape {sv_arr.shape} — broadcasting to all classes"
+        )
         if sv_arr.ndim == 4 and sv_arr.shape[0] == num_cls:
             # (n_classes, n_test, seq_len, d_model)
-            sv_norm = np.linalg.norm(sv_arr, axis=-1)            # (n_classes, n_test, seq_len)
+            sv_norm = np.linalg.norm(sv_arr, axis=-1)  # (n_classes, n_test, seq_len)
         elif sv_arr.ndim == 4 and sv_arr.shape[1] == num_cls:
             # (n_test, n_classes, seq_len, d_model)
             sv_norm = np.linalg.norm(sv_arr, axis=-1).transpose(1, 0, 2)
         elif sv_arr.ndim == 4 and sv_arr.shape[-1] == num_cls:
             # (n_test, seq_len, d_model, n_classes) — shap 0.49 GradientExplainer actual format
-            sv_norm = np.linalg.norm(sv_arr, axis=2)             # (n_test, seq_len, n_classes)
-            sv_norm = sv_norm.transpose(2, 0, 1)                 # (n_classes, n_test, seq_len)
+            sv_norm = np.linalg.norm(sv_arr, axis=2)  # (n_test, seq_len, n_classes)
+            sv_norm = sv_norm.transpose(2, 0, 1)  # (n_classes, n_test, seq_len)
         elif sv_arr.ndim == 3:
             # (n_test, seq_len, d_model) — global, no class split
-            sv_norm_global = np.linalg.norm(sv_arr, axis=-1)    # (n_test, seq_len)
+            sv_norm_global = np.linalg.norm(sv_arr, axis=-1)  # (n_test, seq_len)
             sv_norm = np.stack([sv_norm_global] * num_cls, axis=0)
         else:
             raise ValueError(f"Unexpected shap_vals shape: {sv_arr.shape}")
@@ -368,14 +435,15 @@ def run_transformer_shap(seqs, labels):
         fontsize=11,
     )
 
-    show_positions = 80   # first 80 positions are most informative after head-trunc
+    show_positions = 80  # first 80 positions are most informative after head-trunc
 
     for ci, fname in enumerate(FAMILY_NAMES):
         ax = axes[ci]
         # Samples of this class
-        cls_mask = (y_explain == ci)
+        cls_mask = y_explain == ci
         if cls_mask.sum() == 0:
-            ax.axis("off"); continue
+            ax.axis("off")
+            continue
 
         mean_shap = shap_per_pos[ci][cls_mask].mean(axis=0)[:show_positions]
         x = np.arange(show_positions)
@@ -391,7 +459,8 @@ def run_transformer_shap(seqs, labels):
 
     plt.tight_layout()
     out = FIGURES / "shap_transformer_summary.png"
-    plt.savefig(out, dpi=150, bbox_inches="tight"); plt.close()
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
     print(f"  Saved: {out}")
 
     # ── Figure D: top-20 tokens by transformer SHAP (averaged over families) ─
@@ -413,14 +482,19 @@ def run_transformer_shap(seqs, labels):
             token_shap[tok].append(sample_shap[pos])
 
     token_mean = {t: np.mean(v) for t, v in token_shap.items() if len(v) >= 3}
-    top_transformer = sorted(token_mean, key=lambda t: token_mean[t], reverse=True)[:TOP_K]
+    top_transformer = sorted(token_mean, key=lambda t: token_mean[t], reverse=True)[
+        :TOP_K
+    ]
 
     return shap_per_pos, token_mean, top_transformer, test_ids, y_explain, idx2api
 
+
 # ── Figure E: RF vs Transformer top-API comparison ─────────────────────────
 
-def plot_rf_vs_transformer(rf_shap_abs, rf_top_idx, rf_rule_labels,
-                            transformer_token_mean, transformer_top):
+
+def plot_rf_vs_transformer(
+    rf_shap_abs, rf_top_idx, rf_rule_labels, transformer_token_mean, transformer_top
+):
     print("\nPlotting RF vs Transformer comparison …")
 
     # RF: aggregate rules → API by extracting each API from "A→B" and summing
@@ -430,7 +504,9 @@ def plot_rf_vs_transformer(rf_shap_abs, rf_top_idx, rf_rule_labels,
         for part in lbl.split("→"):
             rf_api_importance[part.strip()] += mean_imp
 
-    rf_top20 = sorted(rf_api_importance, key=lambda t: rf_api_importance[t], reverse=True)[:TOP_K]
+    rf_top20 = sorted(
+        rf_api_importance, key=lambda t: rf_api_importance[t], reverse=True
+    )[:TOP_K]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
     fig.suptitle(
@@ -441,8 +517,8 @@ def plot_rf_vs_transformer(rf_shap_abs, rf_top_idx, rf_rule_labels,
     )
 
     # RF bar
-    rf_vals  = [rf_api_importance[t] for t in rf_top20]
-    rf_lbls  = [t[:30] for t in rf_top20]
+    rf_vals = [rf_api_importance[t] for t in rf_top20]
+    rf_lbls = [t[:30] for t in rf_top20]
     ax1.barh(range(len(rf_vals)), rf_vals[::-1], color="#1f77b4", alpha=0.85)
     ax1.set_yticks(range(len(rf_vals)))
     ax1.set_yticklabels(rf_lbls[::-1], fontsize=7)
@@ -455,15 +531,19 @@ def plot_rf_vs_transformer(rf_shap_abs, rf_top_idx, rf_rule_labels,
     ax2.barh(range(len(tr_vals)), tr_vals[::-1], color="#d62728", alpha=0.85)
     ax2.set_yticks(range(len(tr_vals)))
     ax2.set_yticklabels(tr_lbls[::-1], fontsize=7)
-    ax2.set_title("Plain Transformer (GradientExplainer SHAP)", fontsize=9, fontweight="bold")
+    ax2.set_title(
+        "Plain Transformer (GradientExplainer SHAP)", fontsize=9, fontweight="bold"
+    )
     ax2.set_xlabel("Mean |SHAP| summed over classes", fontsize=8)
 
     # Mark tokens that appear in both top-20 lists
     rf_set = set(rf_top20)
     tr_set = set(transformer_top)
     overlap = rf_set & tr_set
-    print(f"  API overlap between RF top-{TOP_K} and Transformer top-{TOP_K}: "
-          f"{len(overlap)} / {TOP_K}")
+    print(
+        f"  API overlap between RF top-{TOP_K} and Transformer top-{TOP_K}: "
+        f"{len(overlap)} / {TOP_K}"
+    )
     if overlap:
         print(f"  Shared: {', '.join(sorted(overlap)[:8])}")
 
@@ -473,11 +553,13 @@ def plot_rf_vs_transformer(rf_shap_abs, rf_top_idx, rf_rule_labels,
 
     plt.tight_layout()
     out = FIGURES / "shap_rf_vs_transformer.png"
-    plt.savefig(out, dpi=150, bbox_inches="tight"); plt.close()
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
     print(f"  Saved: {out}")
 
 
 # ── main ───────────────────────────────────────────────────────────────────
+
 
 def main():
     np.random.seed(SEED)
@@ -487,9 +569,15 @@ def main():
     seqs, labels = load_data()
     print(f"  {len(seqs)} samples, {len(np.unique(labels))} families")
 
-    rf_shap_abs, rf_top_idx, rf_rule_labels, selected_rules, vocab_obj = run_rf_shap(seqs, labels)
-    shap_per_pos, token_mean, top_transformer, test_ids, y_explain, idx2api = run_transformer_shap(seqs, labels)
-    plot_rf_vs_transformer(rf_shap_abs, rf_top_idx, rf_rule_labels, token_mean, top_transformer)
+    rf_shap_abs, rf_top_idx, rf_rule_labels, selected_rules, vocab_obj = run_rf_shap(
+        seqs, labels
+    )
+    shap_per_pos, token_mean, top_transformer, test_ids, y_explain, idx2api = (
+        run_transformer_shap(seqs, labels)
+    )
+    plot_rf_vs_transformer(
+        rf_shap_abs, rf_top_idx, rf_rule_labels, token_mean, top_transformer
+    )
 
     print("\nAll SHAP figures saved to results/figures/:")
     for p in sorted(FIGURES.glob("shap_*.png")):

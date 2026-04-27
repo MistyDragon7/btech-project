@@ -1,149 +1,139 @@
 """
-GAME-Mal: Gated Attention over Markov Embeddings for Malware classification.
+Plain Transformer encoder for Android malware family classification with
+CLS-token-based attention explainability.
 
-Architecture:
-1. API Embedding layer (learns representations of API calls)
-2. Positional encoding (sequence position matters for behavioral patterns)
-3. Multi-head self-attention with SDPA output sigmoid gating (from Qiu et al. 2025)
-4. Classification head with pooling
+Key design choices:
+- Learnable [CLS] token prepended to every sequence.
+- Classification uses the final hidden state of [CLS].
+- Explainability uses attention maps specifically "with respect to the class token":
+  i.e., for each layer/head we expose the attention row from CLS -> all tokens.
 
-The sigmoid gating after SDPA:
-- Introduces non-linearity (breaks low-rank bottleneck between V and W_O)
-- Creates input-dependent sparsity (learns which patterns matter)
-- Gating scores ARE the explanation (no post-hoc method needed)
+This file intentionally removes all gated-attention logic to reduce redundancy and
+avoid "explainability by gate" claims. Attention maps are returned for downstream
+analysis and faithfulness tests (e.g., deletion tests masking top-k CLS-attended tokens).
+
+Tensor shapes:
+- Input x: (B, N) where N is max_seq_len, padded with 0 (PAD).
+- Internally we create: (B, N+1) with CLS at position 0.
+- Attention weights per layer: (B, H, N+1, N+1)
+
+Note:
+- Padding mask is applied so PAD tokens are not attended-to.
+- CLS is never masked.
 """
 
+from __future__ import annotations
+
 import math
-from typing import Optional, Tuple
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-class GatedMultiHeadAttention(nn.Module):
+@dataclass(frozen=True)
+class TransformerInfo:
     """
-    Multi-head self-attention with head-specific sigmoid gating after SDPA.
+    Lightweight container for explainability.
 
-    This is the G1 position from Qiu et al. (2025), which they found to be
-    the most effective: it introduces non-linearity upon the low-rank mapping
-    and applies query-dependent sparse gating scores to SDPA output.
-
-    gate_scores = sigmoid(X @ W_gate)  # head-specific, element-wise
-    output = gate_scores * softmax(QK^T/sqrt(d_k)) @ V
+    attn_weights: list of length n_layers.
+                  Each entry is a tensor (B, n_heads, S, S) where S = N+1 (CLS+tokens).
+    cls_index: index of CLS token in the sequence (always 0).
+    token_ids_with_cls: the input ids with CLS prepended: (B, S)
+    pad_mask_with_cls: True where padded: (B, S)
     """
 
-    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.1, use_gate: bool = True):
+    attn_weights: List[torch.Tensor]
+    cls_index: int
+    token_ids_with_cls: torch.Tensor
+    pad_mask_with_cls: torch.Tensor
+
+
+class MultiHeadSelfAttention(nn.Module):
+    """
+    Standard multi-head self-attention that can optionally return attention weights.
+    """
+
+    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.1):
         super().__init__()
-        assert d_model % n_heads == 0
+        if d_model % n_heads != 0:
+            raise ValueError(
+                f"d_model ({d_model}) must be divisible by n_heads ({n_heads})"
+            )
+
         self.d_model = d_model
         self.n_heads = n_heads
         self.d_k = d_model // n_heads
-        self.use_gate = use_gate
 
-        # QKV projections
         self.w_q = nn.Linear(d_model, d_model)
         self.w_k = nn.Linear(d_model, d_model)
         self.w_v = nn.Linear(d_model, d_model)
-
-        # Output projection
         self.w_o = nn.Linear(d_model, d_model)
 
-        if use_gate:
-            # HEAD-SPECIFIC SIGMOID GATE (the key innovation from Qiu et al.)
-            # Produces gating scores with shape (batch, n_heads, seq_len, d_k)
-            # Each head gets its own gate projection
-            self.w_gate = nn.Linear(d_model, d_model)
-
-            # Initialize gate bias negative to encourage sparsity (sigmoid(-2) ≈ 0.12)
-            # This matches the mean gating score of ~0.116 reported in Qiu et al.
-            nn.init.constant_(self.w_gate.bias, -2.0)
-            nn.init.normal_(self.w_gate.weight, std=0.02)
-        else:
-            self.w_gate = None
-
-        self.dropout = nn.Dropout(dropout)
         self.attn_dropout = nn.Dropout(dropout)
+        self.out_dropout = nn.Dropout(dropout)
 
-        # Storage for explainability
-        self._last_gate_scores = None
-        self._last_attn_weights = None
+        # for numerical stability when all tokens are masked (should not happen due to CLS)
+        self._neg_inf = -1e9
 
     def forward(
         self,
         x: torch.Tensor,
-        mask: Optional[torch.Tensor] = None,
+        pad_mask: Optional[torch.Tensor] = None,
         return_attention: bool = False,
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[torch.Tensor]]:
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """
         Args:
-            x: (batch, seq_len, d_model)
-            mask: (batch, seq_len) — True for padding positions
-            return_attention: if True, return attention weights and gate scores
+            x: (B, S, D)
+            pad_mask: (B, S) True for PAD positions (these keys are masked out)
+            return_attention: whether to return attention weights
 
         Returns:
-            output: (batch, seq_len, d_model)
-            attn_weights: (batch, n_heads, seq_len, seq_len) or None
-            gate_scores: (batch, n_heads, seq_len, d_k) or None
+            out: (B, S, D)
+            attn: (B, H, S, S) if return_attention else None
         """
-        B, N, D = x.shape
+        B, S, D = x.shape
 
-        # QKV projections → (B, n_heads, N, d_k)
-        Q = self.w_q(x).view(B, N, self.n_heads, self.d_k).transpose(1, 2)
-        K = self.w_k(x).view(B, N, self.n_heads, self.d_k).transpose(1, 2)
-        V = self.w_v(x).view(B, N, self.n_heads, self.d_k).transpose(1, 2)
+        # Project to Q, K, V and reshape to (B, H, S, d_k)
+        Q = self.w_q(x).view(B, S, self.n_heads, self.d_k).transpose(1, 2)
+        K = self.w_k(x).view(B, S, self.n_heads, self.d_k).transpose(1, 2)
+        V = self.w_v(x).view(B, S, self.n_heads, self.d_k).transpose(1, 2)
 
-        # Scaled dot-product attention
+        # Attention scores: (B, H, S, S)
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
 
-        if mask is not None:
-            # mask shape: (B, N) → (B, 1, 1, N)
-            mask_expanded = mask.unsqueeze(1).unsqueeze(2)
-            scores = scores.masked_fill(mask_expanded, float("-inf"))
+        if pad_mask is not None:
+            # Mask out PAD *keys* so nobody attends to padding.
+            # pad_mask: (B, S) -> (B, 1, 1, S)
+            key_mask = pad_mask.unsqueeze(1).unsqueeze(2)
+            scores = scores.masked_fill(key_mask, self._neg_inf)
 
-        attn_weights = F.softmax(scores, dim=-1)
-        attn_weights = self.attn_dropout(attn_weights)
+        attn = F.softmax(scores, dim=-1)
+        attn = self.attn_dropout(attn)
 
-        # SDPA output
-        sdpa_out = torch.matmul(attn_weights, V)  # (B, n_heads, N, d_k)
+        out = torch.matmul(attn, V)  # (B, H, S, d_k)
+        out = out.transpose(1, 2).contiguous().view(B, S, D)
+        out = self.w_o(out)
+        out = self.out_dropout(out)
 
-        if self.use_gate:
-            # ═══════════════════════════════════════════════════════
-            # GATING: Head-specific sigmoid gate after SDPA (G1)
-            # This is the core contribution adapted from Qiu et al.
-            # ═══════════════════════════════════════════════════════
-            gate_input = self.w_gate(x)  # (B, N, D)
-            gate_input = gate_input.view(B, N, self.n_heads, self.d_k).transpose(1, 2)
-            gate_scores = torch.sigmoid(gate_input)  # (B, n_heads, N, d_k)
-
-            # Apply gate: element-wise multiplication
-            gated_out = sdpa_out * gate_scores  # sparse, query-dependent filtering
-        else:
-            # Ablation: plain multi-head attention (no gating)
-            gate_scores = None
-            gated_out = sdpa_out
-
-        # Concatenate heads and project
-        gated_out = gated_out.transpose(1, 2).contiguous().view(B, N, D)
-        output = self.w_o(gated_out)
-        output = self.dropout(output)
-
-        # Store for explainability
         if return_attention:
-            self._last_gate_scores = gate_scores.detach() if gate_scores is not None else None
-            self._last_attn_weights = attn_weights.detach()
-            return output, attn_weights.detach(), self._last_gate_scores
-
-        return output, None, None
+            return out, attn.detach()
+        return out, None
 
 
-class GAMEMalBlock(nn.Module):
-    """Single transformer block with gated attention + FFN."""
+class TransformerBlock(nn.Module):
+    """
+    Pre-norm Transformer encoder block (MHA + FFN).
+    """
 
-    def __init__(self, d_model: int, n_heads: int, d_ff: int, dropout: float = 0.1, use_gate: bool = True):
+    def __init__(self, d_model: int, n_heads: int, d_ff: int, dropout: float = 0.1):
         super().__init__()
-        self.attention = GatedMultiHeadAttention(d_model, n_heads, dropout, use_gate=use_gate)
         self.norm1 = nn.LayerNorm(d_model)
+        self.attn = MultiHeadSelfAttention(
+            d_model=d_model, n_heads=n_heads, dropout=dropout
+        )
         self.norm2 = nn.LayerNorm(d_model)
         self.ffn = nn.Sequential(
             nn.Linear(d_model, d_ff),
@@ -153,24 +143,27 @@ class GAMEMalBlock(nn.Module):
             nn.Dropout(dropout),
         )
 
-    def forward(self, x, mask=None, return_attention=False):
-        # Pre-norm architecture
-        normed = self.norm1(x)
-        attn_out, attn_w, gate_s = self.attention(normed, mask, return_attention)
+    def forward(
+        self,
+        x: torch.Tensor,
+        pad_mask: Optional[torch.Tensor] = None,
+        return_attention: bool = False,
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        h = self.norm1(x)
+        attn_out, attn_w = self.attn(
+            h, pad_mask=pad_mask, return_attention=return_attention
+        )
         x = x + attn_out
 
-        normed = self.norm2(x)
-        x = x + self.ffn(normed)
+        h = self.norm2(x)
+        x = x + self.ffn(h)
 
-        return x, attn_w, gate_s
+        return x, attn_w
 
 
-class GAMEMal(nn.Module):
+class MalwareTransformer(nn.Module):
     """
-    GAME-Mal: Gated Attention Markov Embeddings for Malware classification.
-
-    Takes encoded API call sequences, applies gated attention, and classifies
-    into malware families. The gating scores provide built-in explainability.
+    Plain Transformer encoder classifier with a learnable CLS token.
     """
 
     def __init__(
@@ -183,27 +176,39 @@ class GAMEMal(nn.Module):
         d_ff: int = 256,
         max_seq_len: int = 512,
         dropout: float = 0.1,
-        use_gate: bool = True,
+        pad_idx: int = 0,
     ):
         super().__init__()
-        self.d_model = d_model
+        self.vocab_size = vocab_size
         self.num_classes = num_classes
-        self.use_gate = use_gate
+        self.d_model = d_model
+        self.n_heads = n_heads
+        self.n_layers = n_layers
+        self.max_seq_len = max_seq_len
+        self.pad_idx = pad_idx
 
-        # Embeddings
-        self.api_embedding = nn.Embedding(vocab_size, d_model, padding_idx=0)
-        self.pos_embedding = nn.Embedding(max_seq_len, d_model)
+        # Token embeddings (+1 because we prepend CLS, but CLS itself is a vector param)
+        self.api_embedding = nn.Embedding(vocab_size, d_model, padding_idx=pad_idx)
+
+        # Positional embeddings for sequence WITH CLS => length max_seq_len+1
+        self.pos_embedding = nn.Embedding(max_seq_len + 1, d_model)
+
+        # Learnable CLS token embedding
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, d_model))
+        nn.init.normal_(self.cls_token, std=0.02)
+
         self.embed_dropout = nn.Dropout(dropout)
 
-        # Transformer blocks (with or without gated attention)
-        self.blocks = nn.ModuleList([
-            GAMEMalBlock(d_model, n_heads, d_ff, dropout, use_gate=use_gate)
-            for _ in range(n_layers)
-        ])
-
+        self.blocks = nn.ModuleList(
+            [
+                TransformerBlock(
+                    d_model=d_model, n_heads=n_heads, d_ff=d_ff, dropout=dropout
+                )
+                for _ in range(n_layers)
+            ]
+        )
         self.final_norm = nn.LayerNorm(d_model)
 
-        # Classification head
         self.classifier = nn.Sequential(
             nn.Linear(d_model, d_model // 2),
             nn.GELU(),
@@ -211,46 +216,102 @@ class GAMEMal(nn.Module):
             nn.Linear(d_model // 2, num_classes),
         )
 
+    def _prepend_cls(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+        Prepend CLS token to token id tensor.
+
+        Args:
+            x: (B, N)
+
+        Returns:
+            x_with_cls: (B, N+1)
+            pad_mask_with_cls: (B, N+1) True where PAD
+        """
+        B, N = x.shape
+        if N != self.max_seq_len:
+            # We expect already padded/truncated inputs at max_seq_len.
+            # If a script passes a different length, positional embeddings will still work
+            # up to max_seq_len, but we keep the check to surface pipeline mistakes early.
+            if N > self.max_seq_len:
+                raise ValueError(
+                    f"Input seq_len={N} exceeds max_seq_len={self.max_seq_len}"
+                )
+
+        pad_mask = x == self.pad_idx  # (B, N)
+
+        # Create a dummy CLS id column (not used for embedding lookup)
+        cls_col = torch.full(
+            (B, 1), fill_value=self.pad_idx, device=x.device, dtype=x.dtype
+        )
+        x_with_cls = torch.cat([cls_col, x], dim=1)  # (B, N+1)
+
+        # CLS is never padding
+        cls_pad = torch.zeros((B, 1), device=x.device, dtype=torch.bool)
+        pad_mask_with_cls = torch.cat([cls_pad, pad_mask], dim=1)  # (B, N+1)
+
+        return x_with_cls, pad_mask_with_cls
+
     def forward(
         self,
         x: torch.Tensor,
         return_attention: bool = False,
-    ) -> Tuple[torch.Tensor, dict]:
+    ) -> Tuple[torch.Tensor, Dict]:
         """
         Args:
-            x: (batch, seq_len) — integer-encoded API call sequences
-            return_attention: if True, collect attention/gate info for explainability
+            x: (B, N) int token ids (PAD=0)
+            return_attention: if True returns attention weights for each block
 
         Returns:
-            logits: (batch, num_classes)
-            info: dict with 'gate_scores', 'attn_weights' per layer (if requested)
+            logits: (B, C)
+            info: dict containing attention maps and metadata for explainability
         """
         B, N = x.shape
+        x_with_cls, pad_mask_with_cls = self._prepend_cls(x)  # (B, S)
+        S = x_with_cls.shape[1]
+        cls_index = 0
 
-        # Padding mask: True where padded
-        pad_mask = (x == 0)
+        # Build embeddings (CLS uses parameter vector, other tokens use embedding table)
+        token_emb = self.api_embedding(x)  # (B, N, D)
+        cls_emb = self.cls_token.expand(B, -1, -1)  # (B, 1, D)
+        h = torch.cat([cls_emb, token_emb], dim=1)  # (B, S, D)
 
-        # Embeddings
-        positions = torch.arange(N, device=x.device).unsqueeze(0).expand(B, -1)
-        h = self.api_embedding(x) + self.pos_embedding(positions)
+        # Add positional embeddings
+        pos = torch.arange(S, device=x.device).unsqueeze(0).expand(B, -1)  # (B, S)
+        h = h + self.pos_embedding(pos)
+
         h = self.embed_dropout(h)
 
-        # Transformer blocks
-        info = {"gate_scores": [], "attn_weights": []}
-        for block in self.blocks:
-            h, attn_w, gate_s = block(h, pad_mask, return_attention)
-            if return_attention:
-                info["gate_scores"].append(gate_s)
-                info["attn_weights"].append(attn_w)
+        attn_weights: List[torch.Tensor] = []
+        for blk in self.blocks:
+            h, attn_w = blk(
+                h, pad_mask=pad_mask_with_cls, return_attention=return_attention
+            )
+            if return_attention and attn_w is not None:
+                attn_weights.append(attn_w)
 
         h = self.final_norm(h)
 
-        # Global average pooling (ignoring padding)
-        mask_expanded = (~pad_mask).unsqueeze(-1).float()  # (B, N, 1)
-        h_sum = (h * mask_expanded).sum(dim=1)  # (B, d_model)
-        lengths = mask_expanded.sum(dim=1).clamp(min=1)  # (B, 1)
-        h_pooled = h_sum / lengths
+        # Classification from [CLS] final hidden state
+        cls_h = h[:, cls_index, :]  # (B, D)
+        logits = self.classifier(cls_h)
 
-        logits = self.classifier(h_pooled)
+        if not return_attention:
+            return logits, {}
 
-        return logits, info
+        info = TransformerInfo(
+            attn_weights=attn_weights,
+            cls_index=cls_index,
+            token_ids_with_cls=x_with_cls.detach(),
+            pad_mask_with_cls=pad_mask_with_cls.detach(),
+        )
+
+        # Return as a plain dict to keep backward compatibility with existing callers.
+        return logits, {
+            "attn_weights": info.attn_weights,
+            "cls_index": info.cls_index,
+            "token_ids_with_cls": info.token_ids_with_cls,
+            "pad_mask_with_cls": info.pad_mask_with_cls,
+        }
+
+
+# Backward-compat alias removed.

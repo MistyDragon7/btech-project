@@ -6,6 +6,7 @@ Replays the saved best fold of GAME-Mal: loads model + vocab, rebuilds
 the matched-prep test split (3-fold stratified, seed=42, len>=30 filter),
 identifies the best fold by predicted F1, and computes per-class metrics.
 """
+
 from __future__ import annotations
 
 import csv
@@ -21,9 +22,9 @@ from sklearn.model_selection import StratifiedKFold
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from src.preprocessing import load_dataset, pad_sequences
-from src.model import GAMEMal
 from src.baselines import compute_per_class_metrics
+from src.model import GAMEMal
+from src.preprocessing import load_dataset, pad_sequences
 
 MODEL_DIR = REPO_ROOT / "results" / "models"
 SEED = 42
@@ -49,8 +50,10 @@ def main() -> None:
     y = np.array(labels)
 
     device = torch.device(
-        "mps" if torch.backends.mps.is_available()
-        else "cuda" if torch.cuda.is_available()
+        "mps"
+        if torch.backends.mps.is_available()
+        else "cuda"
+        if torch.cuda.is_available()
         else "cpu"
     )
     model = GAMEMal(
@@ -62,9 +65,10 @@ def main() -> None:
         d_ff=cfg["d_ff"],
         max_seq_len=cfg["max_seq_len"],
         dropout=cfg["dropout"],
-        use_gate=True,
     ).to(device)
-    model.load_state_dict(torch.load(MODEL_DIR / "game_mal_best.pt", map_location=device))
+    model.load_state_dict(
+        torch.load(MODEL_DIR / "game_mal_best.pt", map_location=device)
+    )
     model.eval()
 
     skf = StratifiedKFold(n_splits=N_FOLDS, shuffle=True, random_state=SEED)
@@ -78,7 +82,7 @@ def main() -> None:
     preds = []
     with torch.no_grad():
         for i in range(0, len(X_te), 64):
-            x = torch.from_numpy(X_te[i:i+64]).long().to(device)
+            x = torch.from_numpy(X_te[i : i + 64]).long().to(device)
             logits, _ = model(x, return_attention=False)
             preds.append(logits.argmax(dim=-1).cpu().numpy())
     y_pred = np.concatenate(preds)
@@ -86,24 +90,35 @@ def main() -> None:
     per_class = compute_per_class_metrics(y_te, y_pred, family_names)
 
     out_path = REPO_ROOT / "results" / "game_mal_per_class.csv"
-    fieldnames = ["family", "accuracy", "sensitivity", "specificity",
-                  "precision", "balanced_accuracy", "f_score"]
+    fieldnames = [
+        "family",
+        "accuracy",
+        "sensitivity",
+        "specificity",
+        "precision",
+        "balanced_accuracy",
+        "f_score",
+    ]
     with open(out_path, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         for fam, m in per_class.items():
-            w.writerow({
-                "family": fam,
-                "accuracy": m["accuracy"],
-                "sensitivity": m["sensitivity"],
-                "specificity": m["specificity"],
-                "precision": m["precision"],
-                "balanced_accuracy": m["balanced_accuracy"],
-                "f_score": m["f_score"],
-            })
+            w.writerow(
+                {
+                    "family": fam,
+                    "accuracy": m["accuracy"],
+                    "sensitivity": m["sensitivity"],
+                    "specificity": m["specificity"],
+                    "precision": m["precision"],
+                    "balanced_accuracy": m["balanced_accuracy"],
+                    "f_score": m["f_score"],
+                }
+            )
     print(f"Wrote {out_path} (column 'auc' renamed to 'balanced_accuracy')")
     for fam, m in per_class.items():
-        print(f"  {fam:14s}  P={m['precision']:.3f}  R={m['sensitivity']:.3f}  F1={m['f_score']:.3f}  bal_acc={m['balanced_accuracy']:.3f}")
+        print(
+            f"  {fam:14s}  P={m['precision']:.3f}  R={m['sensitivity']:.3f}  F1={m['f_score']:.3f}  bal_acc={m['balanced_accuracy']:.3f}"
+        )
 
 
 if __name__ == "__main__":
