@@ -63,9 +63,9 @@ class Cfg:
 
 
 def best_seq_config():
-    # We are overriding the sweep and forcing 2048 to beat the Random Forest baseline
-    log.info("Overriding sweep: forcing max_seq_len=2048 to maximize accuracy")
-    return 2048, "head", None
+    # 1024 is the sweet spot: 2x the original sweep, fits T4 VRAM comfortably
+    log.info("Overriding sweep: forcing max_seq_len=1024")
+    return 1024, "head", None
 
 
 def update_summary_row(method: str, mean_std: dict) -> None:
