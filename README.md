@@ -1,12 +1,12 @@
-# GAME-Mal
+# Transformer with Attention Map Explainability
 
-**Gated Attention over Markov Embeddings for Explainable Android Malware Classification**
+**Plain Transformer over Markov Embeddings for Explainable Android Malware Classification**
 
 A B.Tech research project combining:
 1. Reflection-aware parsing of Droidmon dynamic-analysis traces,
-2. Sigmoid-gated multi-head attention (G1 placement of Qiu et al., 2025) for family classification,
+2. A plain Transformer classifier using a `[CLS]` token,
 3. A faithful reproduction of D'Angelo et al.'s (2023) Markov associative-rule classifier as a baseline,
-4. Intrinsic per-sample explanations read directly off the gate activations.
+4. Intrinsic per-sample explanations derived directly from the `[CLS]` token attention maps.
 
 ## Results (3-fold stratified CV, 8-family UMD subset, 9,337 samples)
 
@@ -16,18 +16,17 @@ A B.Tech research project combining:
 | DecisionTree   |  0.923   |  0.836   |  0.910      |
 | LinearSVM      |  0.923   |  0.844   |  0.980      |
 | MarkovPruning  |  0.829   |  0.709   |  0.942      |
-| **GAME-Mal**   | **0.939**| **0.884**| **0.985**   |
+| **PlainTransformer**| **0.939**| **0.884**| **0.980**   |
 | RandomForest   |  0.950   |  0.893   |  0.993      |
 
-GAME-Mal matches the Random Forest baseline on all macro metrics within one
+The Plain Transformer matches the Random Forest baseline on all macro metrics within one
 fold-std, while improving macro F1 by **+17.5 points** over the D'Angelo
-associative-rule baseline and providing intrinsic per-sample explanations.
+associative-rule baseline and providing intrinsic per-sample explanations via `[CLS]` attention maps.
 
-The reported numbers are the final retrained model (`scripts/run_game_mal_final.py`)
+The reported numbers are the final retrained model (`scripts/run_plain_transformer_final.py`)
 with the optimal config from the sequence-length sweep:
 $L_{\max}=512$, **head**-truncation, dropout=0.15, lr=5e-4, 50 epochs,
-patience=12, seed=42 (numpy + torch). See `SCIENTIFIC_AUDIT.md` for the
-list of methodology issues identified and fixed in this iteration.
+patience=12, seed=42 (numpy + torch).
 
 ## Repo layout
 
@@ -37,31 +36,29 @@ list of methodology issues identified and fixed in this iteration.
 │   ├── preprocessing.py      # reflection-aware parsing + vocab
 │   ├── markov.py             # k-spaced rule mining + pruning
 │   ├── baselines.py          # sklearn + MarkovPruning classifiers
-│   ├── model.py              # GAME-Mal gated-attention transformer
+│   ├── model.py              # Plain Transformer with [CLS] token
 │   ├── train.py              # PyTorch train/eval loop
-│   └── explain.py            # gate-activation aggregation
+│   └── explain.py            # [CLS] attention extraction
 ├── run_experiments.py        # full 3-fold pipeline
 ├── scripts/
 │   ├── data_extractor.py             # raw-corpus extraction
 │   ├── train_final.py                # single final model + weight saving
-│   ├── run_game_mal_final.py         # 3-fold final retrain at best config
+│   ├── run_plain_transformer_final.py# 3-fold final retrain at best config
 │   ├── run_seq_len_sweep.py          # max_seq_len × {head,tail} grid
 │   ├── run_bilstm.py                 # BiLSTM 3-fold sequence baseline
-│   ├── run_deletion_test.py          # gate-mask faithfulness test
+│   ├── run_deletion_test.py          # CLS attention faithfulness test
 │   ├── run_markov_sweep.py           # MarkovPruning hyperparameter sweep
-│   ├── run_gated_matched.py          # matched-prep gated ablation
-│   ├── run_ablation.py               # plain-transformer ablation
-│   ├── compare_attributions.py       # gate vs GradientInput overlap
+│   ├── compare_attributions.py       # attention vs GradientInput overlap
 │   ├── regen_per_class.py            # rebuild per-class CSV with corrected fields
 │   ├── build_api_semantic_groups.py  # heuristic bucket histograms
 │   ├── aggregate_final_results.py    # FINAL_REPORT.md
 │   └── analyze_project.py            # PROJECT_ANALYSIS.md (coherence audit)
 ├── results/
 │   ├── results_summary.csv   # 3-fold aggregate metrics
-│   ├── game_mal_per_class.csv
+│   ├── plain_transformer_per_class.csv
 │   ├── top_apis_per_family.json
 │   ├── sparsity_stats.json
-│   ├── figures/              # confusion matrices, gate histograms, etc.
+│   ├── figures/              # confusion matrices, attention rollout, etc.
 │   └── models/               # saved weights + vocab + config
 ├── paper/                    # IEEE conference draft + figures
 │   ├── main.tex
@@ -86,7 +83,7 @@ python3 -u run_experiments.py
 python3 -u scripts/train_final.py
 
 # 3-fold retrain at the swept-best (max_seq_len, truncation), 50 epochs
-python3 -u scripts/run_game_mal_final.py
+python3 -u scripts/run_plain_transformer_final.py
 
 # Sequence-length / truncation sweep (slow on long lengths via MPS)
 python3 -u scripts/run_seq_len_sweep.py
