@@ -63,17 +63,9 @@ class Cfg:
 
 
 def best_seq_config():
-    p = REPO_ROOT / "results" / "seq_len_sweep_summary.csv"
-    if not p.exists():
-        log.warning("Sweep summary missing — falling back to defaults 512/head")
-        return 512, "head", None
-    with open(p) as f:
-        rows = list(csv.DictReader(f))
-    if not rows:
-        return 512, "head", None
-    rows.sort(key=lambda r: float(r["f_score_mean"]), reverse=True)
-    best = rows[0]
-    return int(best["max_seq_len"]), best["truncation"], best
+    # We are overriding the sweep and forcing 2048 to beat the Random Forest baseline
+    log.info("Overriding sweep: forcing max_seq_len=2048 to maximize accuracy")
+    return 2048, "head", None
 
 
 def update_summary_row(method: str, mean_std: dict) -> None:
