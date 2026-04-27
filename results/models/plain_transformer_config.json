@@ -8,10 +8,9 @@
   "max_seq_len": 512,
   "truncation": "head",
   "dropout": 0.15,
-  "use_gate": false,
-  "best_fold": 2,
-  "best_epoch": 36,
-  "best_f1": 0.8997125867633134,
+  "best_fold": 1,
+  "best_epoch": 37,
+  "best_f1": 0.894101264937337,
   "n_folds": 3,
   "epochs_max": 100
 }

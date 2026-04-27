@@ -1,0 +1,263 @@
+{
+  "samples_per_family": 30,
+  "k_values": [
+    5,
+    10,
+    20
+  ],
+  "per_family": {
+    "Airpush": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.9973367094993592,
+        "mean_p_after_gate_mask": 0.9942084570725759,
+        "mean_p_after_random_mask": 0.9824997742970785,
+        "mean_delta_gate": 0.003128252426783244,
+        "mean_delta_random": 0.01483693520228068,
+        "delta_gate_minus_random": -0.011708682775497437
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.9973367094993592,
+        "mean_p_after_gate_mask": 0.9947373906771342,
+        "mean_p_after_random_mask": 0.9974124272664388,
+        "mean_delta_gate": 0.002599318822224935,
+        "mean_delta_random": -7.571776707967122e-05,
+        "delta_gate_minus_random": 0.0026750365893046064
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.9973367094993592,
+        "mean_p_after_gate_mask": 0.9924491624037425,
+        "mean_p_after_random_mask": 0.9962780594825744,
+        "mean_delta_gate": 0.004887547095616659,
+        "mean_delta_random": 0.001058650016784668,
+        "delta_gate_minus_random": 0.003828897078831991
+      }
+    },
+    "DroidKungFu": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.9645735482510644,
+        "mean_p_after_gate_mask": 0.8509705854890247,
+        "mean_p_after_random_mask": 0.9514305396471172,
+        "mean_delta_gate": 0.11360296276203978,
+        "mean_delta_random": 0.013143008603947237,
+        "delta_gate_minus_random": 0.10045995415809254
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.9645735482510644,
+        "mean_p_after_gate_mask": 0.7282103359388808,
+        "mean_p_after_random_mask": 0.9630920969105016,
+        "mean_delta_gate": 0.23636321231218366,
+        "mean_delta_random": 0.0014814513405629745,
+        "delta_gate_minus_random": 0.2348817609716207
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.9645735482510644,
+        "mean_p_after_gate_mask": 0.632527847122401,
+        "mean_p_after_random_mask": 0.9003394203124723,
+        "mean_delta_gate": 0.3320457011286635,
+        "mean_delta_random": 0.06423412793859219,
+        "delta_gate_minus_random": 0.2678115731900713
+      }
+    },
+    "Fusob": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999994953473409,
+        "mean_p_after_gate_mask": 0.9999979496002197,
+        "mean_p_after_random_mask": 0.9999994516372681,
+        "mean_delta_gate": 1.5457471211751302e-06,
+        "mean_delta_random": 4.3710072835286455e-08,
+        "delta_gate_minus_random": 1.5020370483398437e-06
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999994953473409,
+        "mean_p_after_gate_mask": 0.9999973217646281,
+        "mean_p_after_random_mask": 0.999999459584554,
+        "mean_delta_gate": 2.173582712809245e-06,
+        "mean_delta_random": 3.5762786865234374e-08,
+        "delta_gate_minus_random": 2.1378199259440104e-06
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999994953473409,
+        "mean_p_after_gate_mask": 0.9999971230824788,
+        "mean_p_after_random_mask": 0.9999993483225504,
+        "mean_delta_gate": 2.3722648620605467e-06,
+        "mean_delta_random": 1.4702479044596355e-07,
+        "delta_gate_minus_random": 2.225240071614583e-06
+      }
+    },
+    "Genpua": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.9571276262402535,
+        "mean_p_after_gate_mask": 0.779759592070089,
+        "mean_p_after_random_mask": 0.9414862821499507,
+        "mean_delta_gate": 0.17736803417016442,
+        "mean_delta_random": 0.015641344090302784,
+        "delta_gate_minus_random": 0.16172669007986162
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.9571276262402535,
+        "mean_p_after_gate_mask": 0.7252714253703744,
+        "mean_p_after_random_mask": 0.9566882859915495,
+        "mean_delta_gate": 0.2318562008698791,
+        "mean_delta_random": 0.0004393402487039566,
+        "delta_gate_minus_random": 0.23141686062117514
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.9571276262402535,
+        "mean_p_after_gate_mask": 0.7365828231826527,
+        "mean_p_after_random_mask": 0.9339406533787648,
+        "mean_delta_gate": 0.2205448030576008,
+        "mean_delta_random": 0.023186972861488662,
+        "delta_gate_minus_random": 0.19735783019611214
+      }
+    },
+    "GinMaster": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999156852563222,
+        "mean_p_after_gate_mask": 0.8669016574502166,
+        "mean_p_after_random_mask": 0.9996391713619233,
+        "mean_delta_gate": 0.13301402780610563,
+        "mean_delta_random": 0.00027651389439900715,
+        "delta_gate_minus_random": 0.13273751391170663
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999156852563222,
+        "mean_p_after_gate_mask": 0.764479736223196,
+        "mean_p_after_random_mask": 0.9666342995575784,
+        "mean_delta_gate": 0.23543594903312623,
+        "mean_delta_random": 0.03328138569874379,
+        "delta_gate_minus_random": 0.20215456333438245
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999156852563222,
+        "mean_p_after_gate_mask": 0.4759558635833855,
+        "mean_p_after_random_mask": 0.9950848599274953,
+        "mean_delta_gate": 0.5239598216729368,
+        "mean_delta_random": 0.0048308253288269045,
+        "delta_gate_minus_random": 0.5191289963441098
+      }
+    },
+    "Jisut": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.999431949853897,
+        "mean_p_after_gate_mask": 0.9991592744986216,
+        "mean_p_after_random_mask": 0.9994221568107605,
+        "mean_delta_gate": 0.000272675355275472,
+        "mean_delta_random": 9.79304313659668e-06,
+        "delta_gate_minus_random": 0.00026288231213887533
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.999431949853897,
+        "mean_p_after_gate_mask": 0.9988701939582825,
+        "mean_p_after_random_mask": 0.9993589480717977,
+        "mean_delta_gate": 0.0005617558956146241,
+        "mean_delta_random": 7.300178209940592e-05,
+        "delta_gate_minus_random": 0.0004887541135152182
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.999431949853897,
+        "mean_p_after_gate_mask": 0.9979558805624644,
+        "mean_p_after_random_mask": 0.9994351903597514,
+        "mean_delta_gate": 0.0014760692914326985,
+        "mean_delta_random": -3.240505854288737e-06,
+        "delta_gate_minus_random": 0.0014793097972869871
+      }
+    },
+    "Opfake": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999362071355183,
+        "mean_p_after_gate_mask": 0.8539847108225028,
+        "mean_p_after_random_mask": 0.9999313910802206,
+        "mean_delta_gate": 0.14595149631301563,
+        "mean_delta_random": 4.816055297851562e-06,
+        "delta_gate_minus_random": 0.1459466802577178
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999362071355183,
+        "mean_p_after_gate_mask": 0.7854033571580658,
+        "mean_p_after_random_mask": 0.9964097102483114,
+        "mean_delta_gate": 0.21453284997745262,
+        "mean_delta_random": 0.0035264968872070314,
+        "delta_gate_minus_random": 0.2110063530902456
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.9999362071355183,
+        "mean_p_after_gate_mask": 0.7884693088699464,
+        "mean_p_after_random_mask": 0.9998309393723805,
+        "mean_delta_gate": 0.21146689826557197,
+        "mean_delta_random": 0.00010526776313781738,
+        "delta_gate_minus_random": 0.21136163050243414
+      }
+    },
+    "SmsPay": {
+      "k_5": {
+        "n_samples": 30,
+        "mean_p_base": 0.91822632952385,
+        "mean_p_after_gate_mask": 0.7310823886510358,
+        "mean_p_after_random_mask": 0.9237065607960365,
+        "mean_delta_gate": 0.1871439408728141,
+        "mean_delta_random": -0.005480231272186605,
+        "delta_gate_minus_random": 0.19262417214500072
+      },
+      "k_10": {
+        "n_samples": 30,
+        "mean_p_base": 0.91822632952385,
+        "mean_p_after_gate_mask": 0.7268937686508858,
+        "mean_p_after_random_mask": 0.9088972964700891,
+        "mean_delta_gate": 0.19133256087296407,
+        "mean_delta_random": 0.00932903305376082,
+        "delta_gate_minus_random": 0.18200352781920326
+      },
+      "k_20": {
+        "n_samples": 30,
+        "mean_p_base": 0.91822632952385,
+        "mean_p_after_gate_mask": 0.7163639053819376,
+        "mean_p_after_random_mask": 0.8725395658902926,
+        "mean_delta_gate": 0.20186242414191233,
+        "mean_delta_random": 0.04568676363355735,
+        "delta_gate_minus_random": 0.15617566050835496
+      }
+    }
+  },
+  "overall": {
+    "k_5": {
+      "n_samples": 240,
+      "mean_delta_gate": 0.09506036693166493,
+      "mean_delta_random": 0.0048040279159062985,
+      "delta_gate_minus_random": 0.09025633901575864
+    },
+    "k_10": {
+      "n_samples": 240,
+      "mean_delta_gate": 0.13908550267076975,
+      "mean_delta_random": 0.006006878375848146,
+      "delta_gate_minus_random": 0.1330786242949216
+    },
+    "k_20": {
+      "n_samples": 240,
+      "mean_delta_gate": 0.1870307046148246,
+      "mean_delta_random": 0.017387439257665466,
+      "delta_gate_minus_random": 0.16964326535715912
+    }
+  },
+  "notes": "Mean drop in predicted probability for the true class after masking top-k CLS-attention-ranked tokens vs k random tokens. Larger delta_gate_minus_random indicates the attention map identifies tokens that the model genuinely relies on (faithful explanation)."
+}

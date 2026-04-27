@@ -111,14 +111,15 @@ def cls_attention_importance_per_token(model: MalwareTransformer, x: torch.Tenso
         N = x.shape[1]
         return np.zeros(N, dtype=np.float32)
 
-    stacked = torch.stack(per_layer, dim=0).mean(dim=0)  # (B, N)
+    stacked = torch.stack(per_layer, dim=0).mean(dim=0)  # (B, S)
     imp = stacked.squeeze(0).cpu().numpy()
+
+    # The model prepends [CLS] internally, so attn is size N+1.
+    # We drop the first element to align with the original sequence of size N.
+    imp = imp[1:]
 
     pad_positions = (x.squeeze(0) == PAD_IDX).cpu().numpy()
     imp[pad_positions] = 0.0
-    # Never allow [CLS] itself to be masked
-    if len(imp) > 0:
-        imp[0] = 0.0
     return imp
 
 

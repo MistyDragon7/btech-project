@@ -1,6 +1,5 @@
 {
   "model": "PlainTransformer",
-  "use_gate": false,
   "n_folds": 3,
   "max_seq_len": 512,
   "truncation": "head",
@@ -11,40 +10,40 @@
   "fold_results": [
     {
       "fold": 1,
-      "best_epoch": 8,
-      "accuracy": 0.9257950530035336,
-      "sensitivity": 0.8701140956646776,
-      "precision": 0.8753103472435226,
-      "f_score": 0.8697424892889138,
-      "auc": 0.9805269690360603
+      "best_epoch": 59,
+      "accuracy": 0.9373594603276582,
+      "sensitivity": 0.8700624056926904,
+      "precision": 0.87629349061321,
+      "f_score": 0.8729522205085882,
+      "auc": 0.9779616605522781
     },
     {
       "fold": 2,
-      "best_epoch": 32,
-      "accuracy": 0.9447300771208226,
-      "sensitivity": 0.8837075861915871,
-      "precision": 0.8862266280136399,
-      "f_score": 0.8840294459435795,
-      "auc": 0.9850065187084672
+      "best_epoch": 37,
+      "accuracy": 0.9440874035989717,
+      "sensitivity": 0.8944296691074449,
+      "precision": 0.894616740878243,
+      "f_score": 0.894101264937337,
+      "auc": 0.9842890009999172
     },
     {
       "fold": 3,
-      "best_epoch": 36,
-      "accuracy": 0.9450514138817481,
-      "sensitivity": 0.9060989147737593,
-      "precision": 0.8978510236550066,
-      "f_score": 0.8997125867633134,
-      "auc": 0.984868557114341
+      "best_epoch": 26,
+      "accuracy": 0.9373393316195373,
+      "sensitivity": 0.8904739456494456,
+      "precision": 0.8870961279454472,
+      "f_score": 0.8860411881015167,
+      "auc": 0.9799453111194195
     }
   ],
-  "accuracy_mean": 0.9385255146687014,
-  "accuracy_std": 0.009002751615838018,
-  "sensitivity_mean": 0.8866401988766747,
-  "sensitivity_std": 0.014836373421401091,
-  "precision_mean": 0.8864626663040563,
-  "precision_std": 0.009203706095108795,
-  "f_score_mean": 0.884494840665269,
-  "f_score_std": 0.012239665840794993,
-  "auc_mean": 0.9834673482862896,
-  "auc_std": 0.0020799248306525076
+  "accuracy_mean": 0.939595398515389,
+  "accuracy_std": 0.0031763378855134295,
+  "sensitivity_mean": 0.8849886734831937,
+  "sensitivity_std": 0.01067729802382612,
+  "precision_mean": 0.8860021198123,
+  "precision_std": 0.0075203286903034626,
+  "f_score_mean": 0.8843648911824807,
+  "f_score_std": 0.00871504440925287,
+  "auc_mean": 0.9807319908905382,
+  "auc_std": 0.002642342153191398
 }
