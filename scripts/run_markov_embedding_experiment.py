@@ -65,9 +65,17 @@ class Cfg:
 
 
 def best_seq_config():
-    # 1024 is the sweet spot: 2x the original sweep, fits T4 VRAM comfortably
-    log.info("Overriding sweep: forcing max_seq_len=1024")
-    return 1024, "head", None
+    p = REPO_ROOT / "results" / "seq_len_sweep_summary.csv"
+    if not p.exists():
+        log.warning("Sweep summary missing — falling back to defaults 512/head")
+        return 512, "head", None
+    with open(p) as f:
+        rows = list(csv.DictReader(f))
+    if not rows:
+        return 512, "head", None
+    rows.sort(key=lambda r: float(r["f_score_mean"]), reverse=True)
+    best = rows[0]
+    return int(best["max_seq_len"]), best["truncation"], best
 
 
 def update_summary_row(method: str, mean_std: dict) -> None:
