@@ -177,6 +177,7 @@ class MalwareTransformer(nn.Module):
         max_seq_len: int = 512,
         dropout: float = 0.1,
         pad_idx: int = 0,
+        pretrained_embeddings: Optional[torch.Tensor] = None,
     ):
         super().__init__()
         self.vocab_size = vocab_size
@@ -189,6 +190,9 @@ class MalwareTransformer(nn.Module):
 
         # Token embeddings (+1 because we prepend CLS, but CLS itself is a vector param)
         self.api_embedding = nn.Embedding(vocab_size, d_model, padding_idx=pad_idx)
+        if pretrained_embeddings is not None:
+            assert pretrained_embeddings.shape == (vocab_size, d_model)
+            self.api_embedding.weight.data.copy_(pretrained_embeddings)
 
         # Positional embeddings for sequence WITH CLS => length max_seq_len+1
         self.pos_embedding = nn.Embedding(max_seq_len + 1, d_model)

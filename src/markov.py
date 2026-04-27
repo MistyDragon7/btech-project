@@ -10,6 +10,8 @@ from collections import defaultdict
 from typing import Dict, List, Tuple
 
 import numpy as np
+import torch
+from sklearn.decomposition import TruncatedSVD
 
 logger = logging.getLogger(__name__)
 
@@ -170,3 +172,60 @@ def build_rule_feature_matrix(
                 matrix[i, rule_to_idx[rule]] = count / seq_len  # normalize
 
     return matrix
+
+
+# ── Markov Embeddings ───────────────────────────────────────────────────────
+
+def build_svd_markov_embeddings(
+    encoded_sequences: List[List[int]],
+    vocab_size: int,
+    d_model: int = 128,
+    max_spacing: int = 10,
+) -> torch.Tensor:
+    """
+    Builds True Markov Embeddings by factorizing the global transition matrix.
+    
+    1. Extracts k-spaced rules across all sequences to build a dense transition matrix T.
+    2. Runs TruncatedSVD to compress T into (vocab_size, d_model).
+    
+    Args:
+        encoded_sequences: List of encoded API sequences from the training set.
+        vocab_size: Total vocabulary size (including PAD and UNK).
+        d_model: Target embedding dimension.
+        max_spacing: The max k-spacing window for extracting rules.
+        
+    Returns:
+        embeddings: A PyTorch tensor of shape (vocab_size, d_model) representing the Markov structural knowledge.
+    """
+    logger.info(f"Building global {vocab_size}x{vocab_size} transition matrix...")
+    transition_matrix = np.zeros((vocab_size, vocab_size), dtype=np.float32)
+    
+    # We aggregate all rules across all training sequences
+    for seq in encoded_sequences:
+        rules = extract_rules(seq, max_spacing)
+        for (u, v), count in rules.items():
+            if u < vocab_size and v < vocab_size:
+                transition_matrix[u, v] += count
+                
+    # Note: Row 0 is PAD. We keep it as all zeros.
+    
+    logger.info(f"Running TruncatedSVD to reduce dimensions to {d_model}...")
+    # n_components must be strictly less than the number of features, but typically vocab_size >> d_model.
+    n_components = min(d_model, vocab_size - 1)
+    svd = TruncatedSVD(n_components=n_components, random_state=42)
+    
+    compressed_embeddings = svd.fit_transform(transition_matrix) # Shape: (vocab_size, n_components)
+    
+    # If vocab_size was weirdly small and n_components < d_model, pad with zeros
+    if compressed_embeddings.shape[1] < d_model:
+        pad_width = d_model - compressed_embeddings.shape[1]
+        compressed_embeddings = np.pad(compressed_embeddings, ((0, 0), (0, pad_width)), mode='constant')
+        
+    # Ensure PAD (index 0) is strictly zeroed out
+    compressed_embeddings[0, :] = 0.0
+    
+    tensor_embeddings = torch.tensor(compressed_embeddings, dtype=torch.float32)
+    logger.info(f"Generated Markov embeddings of shape {tensor_embeddings.shape}")
+    
+    return tensor_embeddings
+
