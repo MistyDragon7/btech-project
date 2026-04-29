@@ -1,1 +1,0 @@
-Use hooked_method, hooked_class and is_reflection true
