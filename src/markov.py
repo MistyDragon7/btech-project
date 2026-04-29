@@ -209,6 +209,15 @@ def build_svd_markov_embeddings(
                 
     # Note: Row 0 is PAD. We keep it as all zeros.
     
+    logger.info("Applying log-smoothing (log(1+count)) and row-normalization...")
+    # Apply log-smoothing
+    transition_matrix = np.log1p(transition_matrix)
+    
+    # Apply row-normalization
+    row_sums = transition_matrix.sum(axis=1, keepdims=True)
+    row_sums[row_sums == 0] = 1.0
+    transition_matrix = transition_matrix / row_sums
+    
     logger.info(f"Running TruncatedSVD to reduce dimensions to {d_model}...")
     # n_components must be strictly less than the number of features, but typically vocab_size >> d_model.
     n_components = min(d_model, vocab_size - 1)
