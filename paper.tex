@@ -23,10 +23,27 @@
 \title{Markov-Initialized Transformers for Explainable\\
 Android Malware Family Classification}
 
-\author{\IEEEauthorblockN{Arav Jain}
-\IEEEauthorblockA{\textit{Department of Computer Science and Engineering}\\
-\textit{[Institution Name]}\\
-aravjain.int@urbancompany.com}}
+\author{
+\IEEEauthorblockN{Arav Jain}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
+\textit{Delhi Technological University}\\
+aravjain.int@urbancompany.com}
+\\[0.9cm]
+\IEEEauthorblockN{Divyanshu Bansal}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
+\textit{Delhi Technological University}\\
+divyanshubansal\_mc22a14\_03@dtu.ac.in}
+\and
+\IEEEauthorblockN{Harij Sharma}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
+\textit{Delhi Technological University}\\
+email address or ORCID}
+\\[0.9cm]
+\IEEEauthorblockN{Anshul Arora}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
+\textit{Delhi Technological University}\\
+email address or ORCID}
+}
 
 \maketitle
 
@@ -39,7 +56,7 @@ attention mechanism more interpretable.
 Our approach builds a global k-spaced API transition matrix
 ($k \in \{1,\ldots,10\}$), factorizes it via Truncated SVD, and uses
 the resulting vectors to initialize the model's token embeddings before
-any labeled training---encoding global behavioral structure into the
+any labeled training, encoding global behavioral structure into the
 embedding space from the outset.
 To measure the effect on transparency, we use a deletion test: if masking
 the tokens that the \textit{[CLS]} attention map ranks highest causes a
@@ -48,7 +65,7 @@ meaningfully aligned with the model's actual decision.
 Against a plain randomly-initialized Transformer on 9,337 Droidmon
 execution traces across 8 Android malware families (3-fold stratified CV),
 the Markov-initialized variant shows a substantially larger faithfulness
-gap at $k{=}20$ (27.1\% vs.\ 17.0\%), at a modest 2.6\,pp Macro-F1
+gap at $m{=}20$ (27.1\% vs.\ 17.0\%), at a modest 2.6\,pp Macro-F1
 cost (0.858 vs.\ 0.884).
 A per-family breakdown reveals that the gain is concentrated in families
 with stereotyped API chains and absent for parasitic malware that blends
@@ -66,8 +83,8 @@ Markov chain, API call sequences, attention faithfulness, deletion test
 
 Android malware continues to pose a significant threat to mobile security,
 with over three million new malicious samples detected annually~\cite{av_test_2023}.
-Family-level classification---attributing a sample to a specific malware
-family such as Airpush, DroidKungFu, or Fusob---is essential for incident
+Family-level classification, attributing a sample to a specific malware
+family such as Airpush, DroidKungFu, or Fusob, is essential for incident
 response, threat intelligence, and understanding the behavioral evolution
 of malware campaigns. The distinction is clinically meaningful: an
 Airpush infection (unauthorized adware and user tracking) calls for
@@ -83,15 +100,15 @@ Deep learning models, including CNNs, LSTMs, and Transformers, achieve
 high accuracy on such traces but operate as black boxes. Post-hoc
 explanation methods such as SHAP~\cite{lundberg2017shap} and LIME
 explain a surrogate model, not the model itself. Intrinsic
-explainability---where the model's own internal representations serve
-as explanations---remains underexplored in the malware domain.
+explainability, where the model's own internal representations serve
+as explanations, remains underexplored in the malware domain.
 
 The \textit{[CLS]} token's attention distribution over input tokens
 is a natural candidate for intrinsic explanation: it produces a
 per-sample importance ranking without any external computation.
 However, whether attention constitutes a \textit{faithful}
-explanation---one that identifies the tokens the model genuinely
-relies on---is empirically contested~\cite{jain2019attention,
+explanation, one that identifies the tokens the model genuinely
+relies on, is empirically contested~\cite{jain2019attention,
 wiegreffe2019attention}. Deletion tests~\cite{samek2017evaluating}
 provide a concrete criterion that sidesteps the theoretical debate:
 if masking the highest-attention tokens reduces model confidence
@@ -113,7 +130,7 @@ Our contributions are:
     with standard Transformer architectures.
   \item A controlled ablation on 9,337 samples demonstrating that this
     initialization produces measurably more faithful \textit{[CLS]}
-    attention maps (+10.1\,pp faithfulness gap at $k{=}20$).
+    attention maps (+10.1\,pp faithfulness gap at $m{=}20$).
   \item A per-family faithfulness analysis revealing family-specific
     patterns and a principled discussion of the accuracy--explainability
     tradeoff.
@@ -135,7 +152,9 @@ resulting attention-based explanations.
 \subsection{Explainability in Security ML}
 Post-hoc methods such as SHAP and LIME have been applied to malware
 classifiers~\cite{lundberg2017shap}, but they explain a surrogate model
-rather than the trained model itself. The use of attention weights as
+rather than the trained model itself. Recent work in explainable Android malware detection has utilized post-hoc techniques; for example, Soi et al.~\cite{soi2024enhancing} apply SHAP to 1D-CNNs over API sequences, while Wu et al.~\cite{wu2021why} use input gradients for LSTMs. However, these methods typically focus on single-API attributions post-training. In contrast, our approach intrinsically encodes transition patterns directly into the embedding space.
+
+The use of attention weights as
 intrinsic explanations is theoretically contested: Jain and
 Wallace~\cite{jain2019attention} show that alternative attention
 distributions can yield identical predictions, undermining the claim
@@ -287,9 +306,9 @@ low-rank approximation of the row space of $\mathbf{T}$: APIs with
 similar outgoing transition profiles receive geometrically similar
 embedding vectors, while APIs that tend to co-occur with a distinctive
 set of partners receive distinctive representations. This means that
-APIs belonging to the same behavioral chain---for example, the
+APIs belonging to the same behavioral chain (for example, the
 telephony initialization, message composition, and send calls that
-constitute the SmsPay SMS-fraud sequence---are embedded close together
+constitute the SmsPay SMS-fraud sequence) are embedded close together
 in $\mathbb{R}^{d}$ before training begins, providing a natural
 inductive bias toward attending to semantically coherent API groups.
 
@@ -321,26 +340,27 @@ faithfully identifies the tokens the model relies on for its prediction.
 For each test sample $(\mathbf{x}, y)$:
 \begin{enumerate}
   \item Compute baseline probability $P_0 = P(y \mid \mathbf{x})$.
-  \item Rank tokens by descending $\hat{\mathbf{a}}$; select top-$k$
+  \item Rank tokens by descending $\hat{\mathbf{a}}$; select top-$m$
     indices $\mathcal{I}_{\text{attn}}$.
   \item Mask $\mathcal{I}_{\text{attn}}$ by replacing with PAD;
     re-run inference to obtain $P_{\text{attn}}$.
-  \item Repeat with $k$ uniformly random indices to obtain $P_{\text{rand}}$.
+  \item Repeat with $m$ uniformly random indices to obtain $P_{\text{rand}}$.
 \end{enumerate}
 The \textit{faithfulness gap}
 $G = (P_0 - P_{\text{attn}}) - (P_0 - P_{\text{rand}})$
 measures how much more the model relies on its high-attention tokens
-than on random ones. We evaluate at $k \in \{5, 10, 20\}$ and report
-means over 30 samples per family (240 total). $G > 0$ is a necessary---
-not sufficient---condition for faithful explanation.
+than on random ones. We evaluate at $m \in \{5, 10, 20\}$ and report
+means over 30 samples per family (240 total). $G > 0$ is a necessary,
+but not sufficient, condition for faithful explanation.
 
 \subsection{Training Protocol}
 Both the plain and Markov-initialized Transformers use identical
 configurations: AdamW optimizer, learning rate $5 \times 10^{-4}$,
-cosine annealing with $T_{\max}=100$ epochs, gradient clipping at 1.0,
-and early stopping with patience 20 on validation Macro-F1. We use
-3-fold stratified cross-validation with the same fold assignments
+batch size 64, cosine annealing with $T_{\max}=100$ epochs, gradient
+clipping at 1.0, and early stopping with patience 20 on validation Macro-F1.
+We use 3-fold stratified cross-validation with the same fold assignments
 and random seed (42) across all experiments to ensure fair comparison.
+The SVD embedding dimension used is $d_{\text{model}}=128$.
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Experimental Setup}
@@ -354,6 +374,8 @@ traces across 8 malware families (Table~\ref{tab:dataset}). The corpus
 exhibits a 35$\times$ class imbalance between the dominant family
 (Airpush, 63\%) and the two smallest (Fusob and SmsPay, $<2\%$ each).
 Class-weighted loss and stratified fold assignment mitigate this imbalance.
+
+Our methodology relies on dynamic API traces, which capture runtime behavior and obfuscation resistance, differentiating it from static-feature datasets like Drebin~\cite{drebin2014} or CICAndMal2017~\cite{lashkari2018cicandmal2017}. However, evaluating on a single dataset remains a limitation; future work must verify generalization to other benchmarks.
 
 \begin{table}[t]
 \centering
@@ -394,6 +416,15 @@ from masking minority-family performance.
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Results and Discussion}
 
+\begin{figure*}[tp]
+\centering
+\includegraphics[width=0.48\textwidth]{results/figures/cls_attn_heatmap_per_family.png}
+\hfill
+\includegraphics[width=0.48\textwidth]{results/figures/markov_transformer_cls_attn_heatmap_per_family.png}
+\caption{Average \textit{[CLS]} attention heatmaps across families for the Plain Transformer (left) and Markov-initialized Transformer (right). The Markov model strongly focuses on specific API chains for families like SmsPay and DroidKungFu, while struggling with parasitic malware like GinMaster where host-app noise dominates the transition matrix.}
+\label{fig:attention_heatmaps}
+\end{figure*}
+
 \subsection{Classification Performance}
 
 Table~\ref{tab:classification} reports 3-fold stratified CV results for
@@ -406,7 +437,7 @@ The Markov Transformer achieves Macro-F1\,=\,0.858, a 2.6\,pp drop
 relative to the plain variant. The structural inductive bias appears
 to constrain the model's ability to exploit discriminative patterns
 that are not reflected in the global transition structure. We report
-this finding honestly---the Markov variant is not a better classifier,
+this finding honestly: the Markov variant is not a better classifier,
 but we show below that its attention tells a more faithful story.
 
 \begin{table}[t]
@@ -418,13 +449,13 @@ but we show below that its attention tells a more faithful story.
 \toprule
 \textbf{Model} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{AUROC} \\
 \midrule
-GaussianNB     & 0.860\,$\pm$\,.001 & 0.782\,$\pm$\,.007 & 0.925\,$\pm$\,.007 \\
-Decision Tree  & 0.922\,$\pm$\,.001 & 0.836\,$\pm$\,.004 & 0.910\,$\pm$\,.002 \\
-LinearSVM      & 0.923\,$\pm$\,.001 & 0.844\,$\pm$\,.009 & 0.980\,$\pm$\,.005 \\
-Markov Trans.  & 0.927\,$\pm$\,.004 & 0.858\,$\pm$\,.004 & 0.976\,$\pm$\,.003 \\
-Plain Trans.   & 0.940\,$\pm$\,.003 & \underline{0.884\,$\pm$\,.009} & 0.981\,$\pm$\,.003 \\
-BiLSTM         & \textbf{0.948\,$\pm$\,.004} & \textbf{0.894\,$\pm$\,.003} & \underline{0.992\,$\pm$\,.001} \\
-Rand.\ Forest  & \underline{0.950\,$\pm$\,.003} & 0.893\,$\pm$\,.010 & \textbf{0.993\,$\pm$\,.001} \\
+GaussianNB     & 0.860\,$\pm$\,0.001 & 0.782\,$\pm$\,0.007 & 0.925\,$\pm$\,0.007 \\
+Decision Tree  & 0.922\,$\pm$\,0.001 & 0.836\,$\pm$\,0.004 & 0.910\,$\pm$\,0.002 \\
+LinearSVM      & 0.923\,$\pm$\,0.001 & 0.844\,$\pm$\,0.009 & 0.980\,$\pm$\,0.005 \\
+Markov Trans.  & 0.927\,$\pm$\,0.004 & 0.858\,$\pm$\,0.004 & 0.976\,$\pm$\,0.003 \\
+Plain Trans.   & 0.940\,$\pm$\,0.003 & \underline{0.884\,$\pm$\,0.009} & 0.981\,$\pm$\,0.003 \\
+BiLSTM         & \textbf{0.948\,$\pm$\,0.004} & \textbf{0.894\,$\pm$\,0.003} & \underline{0.992\,$\pm$\,0.001} \\
+Rand.\ Forest  & \underline{0.950\,$\pm$\,0.003} & 0.893\,$\pm$\,0.010 & \textbf{0.993\,$\pm$\,0.001} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -433,23 +464,23 @@ Rand.\ Forest  & \underline{0.950\,$\pm$\,.003} & 0.893\,$\pm$\,.010 & \textbf{0
 \label{sec:faithfulness}
 
 Table~\ref{tab:faithfulness} reports deletion test results at
-$k \in \{5, 10, 20\}$. Both models pass the base faithfulness
-criterion ($G > 0$ at all $k$). However, the Markov Transformer
+$m \in \{5, 10, 20\}$. Both models pass the base faithfulness
+criterion ($G > 0$ at all $m$). However, the Markov Transformer
 produces markedly larger faithfulness gaps throughout, with the
-advantage growing from 0.5\,pp at $k{=}5$ to 10.1\,pp at $k{=}20$.
+advantage growing from 0.5\,pp at $m{=}5$ to 10.1\,pp at $m{=}20$.
 This indicates that Markov-initialized attention heads identify tokens
 the model relies on considerably more precisely than randomly initialized
 attention heads at the same architecture and scale.
 
 \begin{table}[t]
 \centering
-\caption{Deletion test: mean probability drop $\Delta$ when masking top-$k$
-  CLS-attention tokens vs.\ $k$ random tokens (240 samples, 8 families).}
+\caption{Deletion test: mean probability drop $\Delta$ when masking top-$m$
+  CLS-attention tokens vs.\ $m$ random tokens (240 samples, 8 families).}
 \label{tab:faithfulness}
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{llccc}
 \toprule
-\textbf{Model} & \textbf{Metric} & $k{=}5$ & $k{=}10$ & $k{=}20$ \\
+\textbf{Model} & \textbf{Metric} & $m{=}5$ & $m{=}10$ & $m{=}20$ \\
 \midrule
 \multirow{3}{*}{Plain Trans.}
   & $\Delta_{\text{attn}}$  & 9.5\%  & 13.9\%  & 18.7\% \\
@@ -468,12 +499,12 @@ attention heads at the same architecture and scale.
 \subsection{Per-Family Faithfulness}
 
 Table~\ref{tab:perfamily} breaks down faithfulness gaps by family at
-$k{=}20$. The Markov Transformer outperforms the plain variant in 6 of
+$m{=}20$. The Markov Transformer outperforms the plain variant in 6 of
 8 families.
 
 \begin{table}[t]
 \centering
-\caption{Per-family faithfulness gap $G$ at $k{=}20$.
+\caption{Per-family faithfulness gap $G$ at $m{=}20$.
   $\uparrow$: Markov $>$ Plain;\; $\downarrow$: Markov $<$ Plain.}
 \label{tab:perfamily}
 \begin{tabular}{lccc}
@@ -527,11 +558,13 @@ transition prior can actively mislead attention.
 
 The deletion test establishes \textit{that} the Markov model's
 attention is more faithful; inspecting the attention distribution
-reveals \textit{why}.
+reveals \textit{why} (see Fig.~\ref{fig:attention_heatmaps}).
+
+
 For families with tight, sequential API chains, the Markov model
 concentrates attention on a small cluster of high-transition-weight
 tokens. In SmsPay, a consistent focus on telephony management and
-SMS dispatch APIs emerges across test samples---APIs that form the
+SMS dispatch APIs emerges across test samples. These APIs form the
 core register\,$\to$\,compose\,$\to$\,send chain and that appear
 as high-weight edges in the global transition matrix. Masking just
 these 20 tokens collapses model confidence by over 56\,pp
@@ -545,14 +578,14 @@ contrast, distributes attention more broadly across the sequence:
 many weakly relevant tokens each receive moderate attention, but
 removing any small subset causes only a mild confidence drop. This
 diffuse pattern is mechanistically consistent with the plain model's
-lower faithfulness gap---it has learned to classify from the overall
+lower faithfulness gap, as it has learned to classify from the overall
 statistical profile of the sequence rather than from a small set of
 critical API calls.
 
 The contrast is sharpest for GinMaster. The Markov model's attention
 is dominated by common host-application APIs (activity lifecycle,
 I/O, UI events) that appear frequently in the training corpus and
-thus form high-weight transition edges---but these APIs are shared
+thus form high-weight transition edges. However, these APIs are shared
 with benign software and carry no discriminative signal for GinMaster.
 The plain Transformer, learning purely from gradient signal, attends
 to the small set of system calls that distinguish GinMaster from its
@@ -596,11 +629,10 @@ embedding layer prior to training. A rigorous deletion-based faithfulness
 test on 9,337 Droidmon traces shows that this initialization produces
 \textit{[CLS]} attention maps that are more tightly coupled to model
 behavior than those of a plain Transformer, with faithfulness gap
-27.1\% vs.\ 17.0\% at $k{=}20$. This improvement comes at a 2.6\,pp
+27.1\% vs.\ 17.0\% at $m{=}20$. This improvement comes at a 2.6\,pp
 Macro-F1 cost, exposing a real accuracy--explainability tradeoff.
 The per-family analysis reveals that the benefit is tied to behavioral
-structure: families with stereotyped API sequences benefit most, while
-parasitic malware that blends into host-app traces benefits least.
+structure: families with stereotyped API sequences benefit most. However, we explicitly note that when malware signal is sparse relative to host noise (as seen with the parasitic GinMaster family), the global transition prior can actively mislead attention and hinder explainability, highlighting an important boundary condition for this approach.
 
 Future work includes per-class or pseudo-label-conditioned transition
 matrices, PPMI normalization of $\mathbf{T}$ prior to SVD, and
@@ -678,7 +710,7 @@ T.~Mikolov, I.~Sutskever, K.~Chen, G.~Corrado, and J.~Dean,
 in \textit{Proc. NeurIPS}, 2013, pp.\ 3111--3119.
 
 \bibitem{droidmon}
-idanr1986, ``Droidmon --- API monitor for Dalvik,''
+idanr1986, ``Droidmon - API monitor for Dalvik,''
 GitHub repository, 2014. [Online].
 Available: \url{https://github.com/idanr1986/droidmon}
 
@@ -691,6 +723,26 @@ S.~Hochreiter and J.~Schmidhuber,
 L.~Breiman,
 ``Random forests,''
 \textit{Mach.\ Learn.}, vol.\ 45, no.\ 1, pp.\ 5--32, 2001.
+
+\bibitem{soi2024enhancing}
+D.~Soi, A.~Sanna, D.~Maiorca, and G.~Giacinto,
+``Enhancing Android malware detection explainability through function call graph APIs,''
+\textit{Journal of Information Security and Applications}, vol.\ 80, p.\ 103691, 2024.
+
+\bibitem{wu2021why}
+T.~Wu, J.~Liu, et al.,
+``Why an android app is classified as malware: Toward malware classification interpretation,''
+\textit{ACM Trans.\ Softw.\ Eng.\ Methodol.\ (TOSEM)}, 2021.
+
+\bibitem{drebin2014}
+D.~Arp, M.~Spreitzenbarth, M.~Hubner, H.~Gascon, and K.~Rieck,
+``Drebin: Effective and explainable detection of android malware in your pocket,''
+in \textit{NDSS}, 2014.
+
+\bibitem{lashkari2018cicandmal2017}
+A.~H. Lashkari et al.,
+``Toward developing a systematic approach to generate benchmark android malware datasets and classification,''
+in \textit{IEEE ICCST}, 2018.
 
 \end{thebibliography}
 

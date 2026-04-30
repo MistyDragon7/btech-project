@@ -1,0 +1,247 @@
+Executive Summary
+This paper introduces a novel approach to Android malware-family classification that initializes Transformer
+embeddings using global Markov-chain statistics from API call transitions. The authors evaluate the impact
+of this “Markov initialization” on both classification accuracy and explainability (via attention “faithfulness”
+in a deletion test). On a 9,337-sample dynamic API-call dataset (8 malware families from Droidmon), the
+Markov-initialized Transformer achieves lower accuracy (≈0.927 vs 0.940 for a plain Transformer) but 
+greater attention faithfulness (e.g. +10.1% faithfulness gap at k=20) compared to random initialization.
+The study highlights an accuracy–explainability tradeoff, arguing that improved interpretability may be
+worth a small accuracy cost in high-stakes settings. 
+Overall, the paper is clearly written and introduces an interesting idea. The approach appears technically
+sound, and the evaluation on a real malware dataset is valuable. However , there are significant concerns
+that should be addressed before publication:
+Reproducibility Details: Key methodological details are missing (e.g. full model architecture,
+training hyperparameters, random seeds, SVD dimensions), and code is not provided. This hinders
+reproducibility. The authors should follow established best practices (e.g. reproducibility checklists
+) by listing all hyperparameters, number of runs, and sharing code. A clear Code Availability
+statement and public repository (as recommended by Nature portfolio guidelines) would greatly
+strengthen this work. 
+Evaluation Scope: The experiments are limited to one dataset (Droidmon traces) and 3-fold CV.
+Generalization to other benchmarks (e.g. Drebin, CICAndMal2017) or unseen families is not tested.
+We recommend additional experiments or at least a more thorough discussion of generalizability.
+Tables comparing this dataset to others (size, features, families) would clarify the context. For
+example, including a table of related datasets and their characteristics (e.g. Drebin: 5560 apps, 149
+families; CICMal2017: >2M samples, etc.) would be informative.
+Statistical Analysis: No significance tests are reported. Differences in accuracy or faithfulness could
+be due to chance given only 3 folds. We suggest applying appropriate tests (e.g. McNemar’s test for
+paired accuracies) or bootstrapped confidence intervals. A table of performance metrics with p-
+values or confidence intervals would clarify which improvements are statistically significant.
+Literature and Context: Related work on explainable malware detection and Transformer-based
+malware models should be cited and discussed. For example, Soi et al. (2024) use 1D-CNNs with
+SHAP to explain Android malware API sequence classification, and Wu et al. (2021), Tanha &
+Kafaie (2025), etc., apply XAI but focus on single APIs. This work goes further by encoding
+transition patterns, which is novel. The authors should explicitly cite such studies to clarify how their
+method differs. 
+Clarity: A minor but confusing point is the use of “k” in two ways: as the spacing in the Markov
+model (k∈[1,10]) and as the number of tokens masked (k=5,10,20). This overload can confuse
+• 
+1
+2
+• 
+• 
+3
+• 
+4
+5
+• 
+1
+readers. We suggest using different symbols or clarifying the context each time. Otherwise, the
+writing and structure are good, with only occasional formatting glitches (e.g. missing “0.” in Table II
+entries) that should be fixed.
+If these issues are addressed, the paper would make a solid contribution to explainable security-ML. The
+core idea is interesting and timely (Markov-inspired embeddings for interpretability), and the empirical
+findings are honestly reported. With deeper evaluation and better documentation, this paper could be
+acceptable. 
+Major Issues
+Reproducibility (Major) – Issue: The paper omits many critical details needed for replication. For
+example, the Transformer architecture (number of layers/heads, embedding dimension), training
+hyperparameters (learning rate, batch size, epochs, optimizer), dataset split procedure, and random
+seeds are not fully specified. The description of the SVD embedding (e.g. how many singular vectors
+are used) is unclear . Suggested Fix: Provide a complete Methods description or supplementary
+material detailing all experimental settings. Share code and data processing scripts in a public
+repository and include a “Code Availability” section (as advised by Nature’s guidelines). Follow the
+ML reproducibility checklist: list all hyperparameter ranges, number of runs, and include instructions
+to reproduce results. Expected Impact: This will allow reviewers and readers to verify and build on
+the results, enhancing the paper’s credibility. 
+Limited Dataset and Evaluation (Major) – Issue: Results are shown on only one dataset (Droidmon
+API traces) with 8 malware families. It is unclear how well the approach works on other benchmarks
+or on unseen malware families. The generalizability is therefore unknown. Suggested Fix: Test the
+method on additional public datasets (e.g. Drebin, CICAndMal2017) or at least perform cross-dataset
+validation. If new experiments are not feasible, the authors should more strongly qualify their claims
+and discuss limitations (they already note the single-dataset issue in passing). Including a table
+comparing the current dataset to others (size, number of classes, dynamic vs static) would
+contextualize the work. Expected Impact: Broader evaluation or clearer limitations would
+demonstrate whether the approach is robust or rather dataset-specific, improving the study’s
+significance and trustworthiness.
+Statistical Significance (Minor) – Issue: No statistical tests or confidence intervals are reported.
+With only 3 CV folds, reported “mean ± std” might not capture significance. The observed accuracy
+drop (94.0% to 92.7%) and faithfulness gains might be due to chance. Suggested Fix: Perform
+appropriate statistical tests (e.g. McNemar’s test for paired accuracy or t-tests on metric
+differences) to verify the differences. Present p-values or confidence intervals (perhaps in a table).
+Alternatively, increase the number of repeats to get more reliable estimates (e.g. 5-fold CV or
+multiple random splits). Expected Impact: This will clarify which performance changes are statistically
+meaningful, lending rigor to the claims of improved interpretability vs dropped accuracy.
+Explainability Claim (Major) – Issue: The paper claims “more interpretable” or “more faithful”
+attention due to Markov init, but the evidence is based on a specific deletion test metric. While this is
+sensible, the authors should ensure they do not overstate conclusions. For example, in one case
+(GinMaster), the plain Transformer had a much higher faithfulness gap (51.9% vs 12.0%). This
+suggests the Markov approach can hurt explainability when its priors misalign. Suggested Fix: Discuss
+1. 
+2
+1
+2. 
+3. 
+3
+4. 
+2
+this trade-off more explicitly. Consider adding analysis of when Markov priors help or hinder (e.g.
+which families benefit). A table summarizing per-family results (accuracy and faithfulness for plain vs
+Markov) would illustrate patterns. Optionally, compare with another explainability method (like SHAP
+or integrated gradients on the plain model) to give context to the attention results. Expected Impact:
+This deeper analysis would make the conclusions more nuanced and prevent overselling. It would
+also help readers understand in which scenarios the proposed initialization is beneficial.
+Literature Coverage (Minor) – Issue: The Related Work section mentions CNN/LSTM-based malware
+classifiers and notes Transformers, but misses recent explainable malware studies. It also does not
+cite any prior work that uses co-occurrence or Markov ideas for embeddings (aside from classic NLP
+embeddings [12,13]). Suggested Fix: Cite and briefly discuss relevant work, such as Soi et al. (2024)
+who use CNN+SHAP on API sequences, and recent GNN-based XAI approaches. Compare
+and contrast these to the current work. Also clarify that, as claimed, embedding initialization via
+Markov is novel (no obvious prior method is known). Expected Impact: This situates the contribution
+in the broader context and shows awareness of related methods in explainable Android malware
+detection.
+Notation and Clarity (Minor) – Issue: The symbol k is used for two different meanings: the spacing
+parameter in the Markov model (1≤k≤10) and the number of tokens masked in the deletion test
+(k=5,10,20). This can confuse readers. Suggested Fix: Use different notation (e.g. k vs m) or explicitly
+clarify in text/table captions. Also fix minor typos/formatting (e.g. missing leading “0.” in Table II
+entries). Expected Impact: Improves readability; avoids confusion.
+Minor Issues
+Writing and Organization: Overall the paper is well-organized. A couple of sentences could be
+rephrased for clarity (e.g. the description of the deletion test could be more intuitive). Proofread to
+fix small grammar issues. 
+Introduction Motivation: The Introduction quickly jumps into methodology. It might help to more
+explicitly state the hypothesis (that encoding global structure in embeddings might align attention
+with true behavior). 
+Figure 1 (Architecture): The figure is clear . (No action needed beyond possibly improving resolution
+if it appears blurry.) 
+Result Presentation: In Table II, underline/bold formatting is defined but not visible in plain text;
+ensure figures/tables are legible. Consider adding performance results for all relevant baselines
+mentioned in text (e.g. include entries for SHAP or other explainers if evaluated).
+Required Revisions Checklist
+[ ] Provide full methodological details: Report all model and training hyperparameters (embedding
+size, number of layers/heads, optimizer , learning rate, epochs, random seeds, etc.) and dataset
+splits. Justify and detail the Markov embedding dimension. 
+[ ] Share code and data: Publish code (model, training, evaluation scripts) and, if possible, the
+processed dataset or links to it. Include a “Code Availability” statement and deposit in a public
+repository (e.g. GitHub/Zenodo) as per best practices. 
+[ ] Expand evaluation: Run experiments on additional datasets (or provide more folds/seeds) to test
+generality. If not feasible, add a detailed discussion of limitations. 
+5. 
+4 5
+6. 
+• 
+• 
+• 
+• 
+• 
+• 
+2 6
+• 
+3
+[ ] Statistical testing: Compute significance tests (e.g. McNemar’s χ²-test, paired t-tests) for
+accuracy and faithfulness differences. Report p-values or confidence intervals. 
+[ ] Clarify notation: Resolve the ambiguous use of k. Ensure all symbols and terms are clearly
+defined. 
+[ ] Relate to prior work: Cite recent explainable malware studies and clarify the novelty relative to
+them . 
+[ ] Strengthen explainability analysis: Include additional analyses (per-family breakdown or
+comparisons to a post-hoc explainer) to illustrate when Markov initialization helps/hurts. 
+[ ] Improve table clarity: For any comparison of methods or datasets, include summary tables as
+appropriate. For example, a table comparing this work to related models (input type, explainability
+technique, accuracy) and another listing dataset statistics (see example below). Include references
+where appropriate. 
+These revisions will address both completeness and rigor , significantly enhancing the paper’s quality. 
+Recommended Reviewer Expertise and Conflicts
+Expertise: Potential reviewers should be experts in machine learning for cybersecurity (especially Android
+malware detection) and explainable AI. Experience with sequence models (Transformers, RNNs) and
+interpretability methods would be ideal. Knowledge of reproducibility practices is a plus. 
+Conflicts to Monitor: The author is affiliated with [Institution Name / UrbanCompany]. Ensure reviewers
+have no recent collaborations or institutional ties with the author . No obvious conflict is apparent. It would
+be prudent to avoid reviewers from the same organization or recent co-authors of the author , and to
+include diversity in the selection (academic and industry backgrounds). 
+Suggested Cover Letter Summary
+In revision, we have substantially improved the paper by adding detailed experimental information and broader
+evaluation. Specifically, we now list all hyperparameters (embedding dimensions, learning rates, etc.), training
+settings, and data splits in the Methods section and include a link to our open-source code repository. We have
+performed additional experiments (including [e.g. Drebin dataset]) and applied statistical tests (McNemar’s test) to
+confirm the reported effects. We expanded the Discussion of related work, adding citations to recent explainable
+malware studies and clarifying our novelty. Finally, we addressed notation issues (clarified the meaning of k) and
+corrected formatting errors in the tables. These revisions should make the methodology and conclusions much
+clearer and reproducible.
+Additional Material (Examples)
+We suggest the authors consider adding summary tables. For example:
+Table 1.Comparison of related Android malware classification methods.
+| Method | Input Type | Model | Explanation Method | Accuracy (F1, AUROC) | Code Availability |
+|-----------------------|-----------------|--------------------|-------------------------|-------------------------|--------------------| | Soi et al.
+(2024)  | APK static calls | 1D-CNN | SHAP (post-hoc) | – (reported in paper) | – (not provided) | | Wu et
+al. (2021)  | API sequence | LSTM | Input gradients | – | – | | This work | API sequence (dynamic) |
+• 3
+• 
+• 
+4 5
+• 
+• 
+4
+5
+4
+Transformer (ours) | Attention (intrinsic) | 0.927±0.004 (Tab.II) | – (to be released) | | Plain Transformer |
+API sequence | Transformer | Attention (intrinsic) | 0.940±0.003 (Tab.II) | – | | Others (e.g. LeViT-MC) |
+Image of binary | Vision Transformer | – | State-of-art on different data | [link] |
+Table 2.Dataset characteristics.
+| Dataset | Year | Domain | #Samples | #Classes | Code Availability / URL |
+|--------------------|-------|--------------|----------|----------|------------------------------| | Droidmon (ours) | 2021? |
+Dynamic API traces | 9337 | 8 | GitHub | | Drebin | 2014 | Static features | 5560 | 149 | source | |
+CICAndMal2017 | 2017 | Static features | 11314 | 26 | CIC repo | | MaleVis (LeViT-MC) | 2024 |
+Malware image | ~30k | 14* | [GitHub] |
+(# indicated for dynamic Malware-Only samples or families*) 
+Statistical Tests. For classification accuracy comparisons on paired data, McNemar’s test is appropriate.
+For example, to compare our two Transformer variants on the same test instances, a McNemar χ²-test (with
+continuity correction if needed) would determine if the accuracy drop is significant. A χ² value with p<0.05
+would indicate a meaningful difference. The authors may include such results in a table for transparency. 
+gantt
+    title Suggested Timeline for Additional Experiments
+    dateFormat  YYYY-MM-DD
+    section Data Preparation
+    Acquire additional datasets          :a1, 2026-05-01, 10d
+    Preprocess (tokenize, etc.)         :a2, after a1, 15d
+    section Experiments
+    Extend training runs (new data)     :b1, after a2, 30d
+    Hyperparameter tuning               :b2, 2026-06-15, 15d
+    section Analysis
+    Compute metrics & statistical tests :c1, after b2, 10d
+    Per-family attention analysis       :c2, 2026-07-05, 10d
+    section Writing
+    Draft revisions and new discussion  :d1, after c2, 20d
+    Submission of revised manuscript    :d2, 2026-07-31, 1d
+ReproducibilityChecklist-v2.0
+https://www.cs.mcgill.ca/~jpineau/ReproducibilityChecklist.pdf
+Reporting standards and availability of data, materials, code and protocols | Nature Portfolio
+https://www.nature.com/nature-portfolio/editorial-policies/reporting-standards?error=cookies_not_supported&code=207e4b8f-
+d43f-4896-8a2a-39eb842e87b3
+McNemar's test - Wikipedia
+https://en.wikipedia.org/wiki/McNemar%27s_test
+7
+8
+9
+3
+1 6
+2
+3
+5
+Anakin: explainable android malware detection with graph neural networks | Cybersecurity |
+Springer Nature Link
+https://link.springer .com/article/10.1186/s42400-026-00552-z
+Accelerating Malware Classification: A Vision Transformer Solution
+https://arxiv.org/html/2409.19461v1
+4 5
+7 8 9
+6
