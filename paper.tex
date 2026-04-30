@@ -24,25 +24,29 @@
 Android Malware Family Classification}
 
 \author{
-\IEEEauthorblockN{Arav Jain}
+\IEEEauthorblockN{Arav Jain\textsuperscript{*}\thanks{*These authors contributed equally to this work.}}
 \IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
 \textit{Delhi Technological University}\\
-aravjain.int@urbancompany.com}
+New Delhi, India\\
+aravjain\_mc22a13\_49@dtu.ac.in}
 \\[0.2cm]
-\IEEEauthorblockN{Divyanshu Bansal}
+\IEEEauthorblockN{Divyanshu Bansal\textsuperscript{*}}
 \IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
 \textit{Delhi Technological University}\\
+New Delhi, India\\
 divyanshubansal\_mc22a14\_03@dtu.ac.in}
 \and
-\IEEEauthorblockN{Harij Sharma}
+\IEEEauthorblockN{Harij Sharma\textsuperscript{*}}
 \IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
 \textit{Delhi Technological University}\\
-email address or ORCID}
+New Delhi, India\\
+harijsharma\_mc22a14\_10@dtu.ac.in}
 \\[0.2cm]
-\IEEEauthorblockN{Anshul Arora}
+\IEEEauthorblockN{Anshul Arora\textsuperscript{*}}
 \IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
 \textit{Delhi Technological University}\\
-email address or ORCID}
+New Delhi, India\\
+anshularora@dtu.ac.in}
 }
 
 \maketitle
@@ -86,13 +90,9 @@ with over three million new malicious samples detected annually~\cite{av_test_20
 Family-level classification, attributing a sample to a specific malware
 family such as Airpush, DroidKungFu, or Fusob, is essential for incident
 response, threat intelligence, and understanding the behavioral evolution
-of malware campaigns. The distinction is clinically meaningful: an
-Airpush infection (unauthorized adware and user tracking) calls for
-permission revocation and user notification, while a DroidKungFu
-infection (root exploitation followed by credential exfiltration)
-demands immediate device isolation, forensic chain-of-custody analysis,
-and credential rotation. A classifier that identifies the family
-provides actionable remediation context that binary detection cannot.
+of malware campaigns. Family-level classification is clinically meaningful:
+identifying specific families (e.g., adware vs.\ root exploits) provides
+actionable remediation context that binary detection alone cannot.
 
 Dynamic analysis via sandboxing captures actual runtime API calls rather
 than static bytecode, providing traces that are robust to code obfuscation.
@@ -164,15 +164,10 @@ a partial explanation under different faithfulness definitions.
 Deletion tests~\cite{samek2017evaluating} provide an empirical
 faithfulness criterion that sidesteps this debate: they measure directly
 whether the tokens a model attends to are the tokens it relies on.
-Alternative intrinsic explanation methods include attention
-rollout~\cite{abnar2020rollout}, which propagates attention through all
-layers by composing the per-layer matrices and accounting for residual
-connections, and gradient-based approaches such as Integrated
-Gradients~\cite{sundararajan2017integrated}, which attribute output
-changes to input features via path integration.
-These methods can yield more accurate saliency maps in some settings but
-require additional backward passes or multi-layer composition at
-inference time. We use raw averaged CLS attention as our explanation
+While gradient-based approaches~\cite{sundararajan2017integrated} or
+attention rollout~\cite{abnar2020rollout} can yield more accurate saliency maps,
+they require computationally expensive backward passes or multi-layer
+composition at inference time. We use raw averaged CLS attention as our explanation
 because it requires no additional computation and is directly
 interpretable to practitioners; the deletion test then provides
 empirical evidence of whether this simple explanation is meaningful.
@@ -574,13 +569,10 @@ load-bearing.
 For DroidKungFu, the Markov model attends strongly to privilege
 escalation and network I/O APIs, reflecting the exploit\,$\to$\,exfiltrate
 chain encoded by multi-hop transitions. The plain Transformer, by
-contrast, distributes attention more broadly across the sequence:
-many weakly relevant tokens each receive moderate attention, but
-removing any small subset causes only a mild confidence drop. This
-diffuse pattern is mechanistically consistent with the plain model's
-lower faithfulness gap, as it has learned to classify from the overall
-statistical profile of the sequence rather than from a small set of
-critical API calls.
+contrast, distributes attention diffusely across many weakly relevant
+tokens. This pattern explains its lower faithfulness gap: it classifies
+based on the overall statistical profile rather than a small, highly
+discriminative set of API calls.
 
 The contrast is sharpest for GinMaster. The Markov model's attention
 is dominated by common host-application APIs (activity lifecycle,
@@ -705,7 +697,7 @@ J.~Pennington, R.~Socher, and C.~D. Manning,
 in \textit{Proc. EMNLP}, 2014, pp.\ 1532--1543.
 
 \bibitem{mikolov2013word2vec}
-T.~Mikolov, I.~Sutskever, K.~Chen, G.~Corrado, and J.~Dean,
+T.~Mikolov et al.,
 ``Distributed representations of words and phrases and their compositionality,''
 in \textit{Proc. NeurIPS}, 2013, pp.\ 3111--3119.
 
@@ -725,7 +717,7 @@ L.~Breiman,
 \textit{Mach.\ Learn.}, vol.\ 45, no.\ 1, pp.\ 5--32, 2001.
 
 \bibitem{soi2024enhancing}
-D.~Soi, A.~Sanna, D.~Maiorca, and G.~Giacinto,
+D.~Soi et al.,
 ``Enhancing Android malware detection explainability through function call graph APIs,''
 \textit{Journal of Information Security and Applications}, vol.\ 80, p.\ 103691, 2024.
 
@@ -735,7 +727,7 @@ T.~Wu, J.~Liu, et al.,
 \textit{ACM Trans.\ Softw.\ Eng.\ Methodol.\ (TOSEM)}, 2021.
 
 \bibitem{drebin2014}
-D.~Arp, M.~Spreitzenbarth, M.~Hubner, H.~Gascon, and K.~Rieck,
+D.~Arp et al.,
 ``Drebin: Effective and explainable detection of android malware in your pocket,''
 in \textit{NDSS}, 2014.
 
