@@ -57,20 +57,19 @@ runtime behavior, but the deep learning models that classify these traces
 offer little insight into their decisions.
 We explore whether embedding initialization can make a Transformer's own
 attention mechanism more interpretable.
-Our approach builds a global k-spaced API transition matrix
-($k \in \{1,\ldots,10\}$), factorizes it via Truncated SVD, and uses
-the resulting vectors to initialize the model's token embeddings before
-any labeled training, encoding global behavioral structure into the
-embedding space from the outset.
+Our approach builds a global multi-step API transition matrix,
+factorizes it via Truncated SVD, and uses the resulting vectors to
+initialize the model's token embeddings prior to supervised training,
+encoding global behavioral structure into the embedding space from the
+outset.
 To measure the effect on transparency, we use a deletion test: if masking
 the tokens that the \textit{[CLS]} attention map ranks highest causes a
 larger confidence drop than masking random tokens, the attention is
 meaningfully aligned with the model's actual decision.
 Against a plain randomly-initialized Transformer on 9,337 Droidmon
-execution traces across 8 Android malware families (3-fold stratified CV),
-the Markov-initialized variant shows a substantially larger faithfulness
-gap at $m{=}20$ (27.1\% vs.\ 17.0\%), at a modest 2.6\,pp Macro-F1
-cost (0.858 vs.\ 0.884).
+execution traces across 8 Android malware families, the Markov-initialized
+variant shows a substantially larger faithfulness gap (27.1\% vs.\ 17.0\%),
+with a modest 2.6\,pp Macro-F1 cost.
 A per-family breakdown reveals that the gain is concentrated in families
 with stereotyped API chains and absent for parasitic malware that blends
 into host-app traffic, offering a principled account of where structural
@@ -79,14 +78,14 @@ initialization helps.
 
 \begin{IEEEkeywords}
 Android malware classification, Transformer, explainability,
-Markov chain, API call sequences, attention faithfulness, deletion test
+Markov chain, API call sequences, attention faithfulness
 \end{IEEEkeywords}
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Introduction}
 
 Android malware continues to pose a significant threat to mobile security,
-with over three million new malicious samples detected annually~\cite{av_test_2023}.
+with millions of new malicious samples detected annually~\cite{av_test_2023}.
 Family-level classification, attributing a sample to a specific malware
 family such as Airpush, DroidKungFu, or Fusob, is essential for incident
 response, threat intelligence, and understanding the behavioral evolution
@@ -96,7 +95,7 @@ actionable remediation context that binary detection alone cannot.
 
 Dynamic analysis via sandboxing captures actual runtime API calls rather
 than static bytecode, providing traces that are robust to code obfuscation.
-Deep learning models, including CNNs, LSTMs, and Transformers, achieve
+Deep learning models, such as CNNs and LSTMs, achieve
 high accuracy on such traces but operate as black boxes. Post-hoc
 explanation methods such as SHAP~\cite{lundberg2017shap} and LIME
 explain a surrogate model, not the model itself. Intrinsic
@@ -130,7 +129,7 @@ Our contributions are:
     with standard Transformer architectures.
   \item A controlled ablation on 9,337 samples demonstrating that this
     initialization produces measurably more faithful \textit{[CLS]}
-    attention maps (+10.1\,pp faithfulness gap at $m{=}20$).
+    attention maps.
   \item A per-family faithfulness analysis revealing family-specific
     patterns and a principled discussion of the accuracy--explainability
     tradeoff.
@@ -161,8 +160,7 @@ distributions can yield identical predictions, undermining the claim
 that attention reveals what the model relies on; Wiegreffe and
 Pinter~\cite{wiegreffe2019attention} argue attention can still serve as
 a partial explanation under different faithfulness definitions.
-Deletion tests~\cite{samek2017evaluating} provide an empirical
-faithfulness criterion that sidesteps this debate: they measure directly
+Deletion tests~\cite{samek2017evaluating} provide an empirical criterion that sidesteps this debate: they measure directly
 whether the tokens a model attends to are the tokens it relies on.
 While gradient-based approaches~\cite{sundararajan2017integrated} or
 attention rollout~\cite{abnar2020rollout} can yield more accurate saliency maps,
@@ -175,7 +173,7 @@ empirical evidence of whether this simple explanation is meaningful.
 \subsection{Graph-Based and Markov Approaches}
 D'Angelo et al.~\cite{dangelo2023kspaced} model malware behavior as
 k-spaced associative rules extracted from Droidmon API traces, achieving
-strong interpretable classification on the same dataset we use.
+strong classification on the same dataset we use.
 GloVe~\cite{pennington2014glove} and Word2Vec~\cite{mikolov2013word2vec}
 establish the broader precedent for deriving dense token embeddings from
 co-occurrence matrix factorization. We are the first to bridge Markov
@@ -197,8 +195,7 @@ collapsing to a generic reflection token.
 A vocabulary is constructed over the training set with a minimum
 frequency threshold of $f_{\min}=2$, yielding $|V|=1{,}118$ unique
 API tokens plus special tokens PAD and UNK. Sequences are truncated to
-$L_{\max}=512$ using \textit{head truncation} (retaining the first 512
-tokens), selected via a sweep over $\{256, 512, 768\}$ with both head
+$L_{\max}=512$ using \textit{head truncation}, selected via a sweep over $\{256, 512, 768\}$ with both head
 and tail strategies; head truncation outperformed tail truncation by
 1.7--2.9\,pp Macro-F1 at all tested lengths, indicating that early API
 calls (SDK initialization, reflection setup, permission requests) carry
@@ -263,8 +260,8 @@ post-hoc computation.
   \draw[arr] (clsout) -- (clf);
   \draw[arr] (clf) -- (out);
 
-  \node[right=0.12cm of emb, font=\scriptsize, text=orange!70!black]
-    {SVD($\mathbf{T}$)};
+  \node[left=0.12cm of emb, font=\scriptsize, text=orange!70!black]
+    {SVD($\mathbf{T}$) $\rightarrow$};
 \end{tikzpicture}
 \caption{Architecture. The embedding layer (orange) is initialized from
 SVD-factorized Markov transition matrices in the proposed model.
@@ -277,54 +274,22 @@ across all heads and layers form the intrinsic per-sample explanation.}
 \label{sec:markov}
 
 \textbf{Transition matrix construction.}
-For each training sequence $\mathbf{s} = (s_1, s_2, \ldots, s_n)$, we
-extract all k-spaced pairs $(s_i, s_{i+k})$ for $k \in \{1,\ldots,10\}$
-and accumulate a global count matrix:
-\begin{equation}
-  C(i,j) \mathrel{+}= 1
-  \quad \forall k \in [1,10],\; \forall (s_i, s_{i+k}) \in \mathbf{s}.
-\end{equation}
-Aggregating over all training sequences yields
-$\mathbf{C} \in \mathbb{R}^{|V| \times |V|}$. Row-normalizing gives the
-transition matrix:
+For each API execution trace $\mathbf{s} = (s_1, s_2, \ldots, s_n)$ of length $n$, where each $s_i$ is an API call from vocabulary $V$, we
+extract all k-spaced pairs $(s_i, s_{i+k})$ for $k \in \{1,\ldots,10\}$.
+We accumulate these into a global count matrix $\mathbf{C} \in \mathbb{R}^{|V| \times |V|}$, and row-normalize to obtain the transition matrix $\mathbf{T}$:
 \begin{equation}
   T_{ij} = \frac{C_{ij}}{\sum_j C_{ij}}.
 \end{equation}
-The k-spacing range $[1,10]$ simultaneously captures local (adjacent)
-and medium-range (contextual) co-occurrences, reflecting the multiscale
-structure of malware behavioral patterns. A global matrix (rather than
-per-class matrices) is used because class labels are unavailable at
-inference time.
-
-The left singular vectors $\mathbf{U}_d$ can be understood as a
-low-rank approximation of the row space of $\mathbf{T}$: APIs with
-similar outgoing transition profiles receive geometrically similar
-embedding vectors, while APIs that tend to co-occur with a distinctive
-set of partners receive distinctive representations. This means that
-APIs belonging to the same behavioral chain (for example, the
-telephony initialization, message composition, and send calls that
-constitute the SmsPay SMS-fraud sequence) are embedded close together
-in $\mathbb{R}^{d}$ before training begins, providing a natural
-inductive bias toward attending to semantically coherent API groups.
+Using a k-spacing of $[1,10]$ captures both local and medium-range API co-occurrences, which is crucial for modeling multi-step malware behavior. A global matrix (rather than per-class matrices) is used because class labels are unavailable at inference time.
 
 \textbf{SVD factorization.}
-We apply Truncated SVD to $\mathbf{T}$:
-\begin{equation}
-  \mathbf{T} \approx \mathbf{U}_d \boldsymbol{\Sigma}_d \mathbf{V}_d^\top,
-  \quad \mathbf{U}_d \in \mathbb{R}^{|V| \times d_{\text{model}}},
-\end{equation}
-retaining $d_{\text{model}}=128$ singular components. Each row of
-$\mathbf{U}_d$ encodes one API token's behavioral context as a
-dense 128-dimensional vector. This factorization is analogous to
-GloVe~\cite{pennington2014glove}, which derives embeddings from
-co-occurrence matrix factorization; here the co-occurrence structure
-encodes sequential transition dynamics across ten spacings simultaneously.
+We apply Truncated SVD to factorize $\mathbf{T} \approx \mathbf{U}_d \boldsymbol{\Sigma}_d \mathbf{V}_d^\top$, retaining $d_{\text{model}}=128$ components. Each row of the left singular matrix $\mathbf{U}_d \in \mathbb{R}^{|V| \times d_{\text{model}}}$ encodes an API's behavioral context as a dense vector. Thus, APIs that share similar outgoing transition profiles (like the constituent calls of an SMS-fraud sequence) receive geometrically proximate embedding vectors. This provides a structural inductive bias toward attending to semantically coherent API groups before training begins, analogous to GloVe~\cite{pennington2014glove}.
 
 \textbf{Initialization.}
 The rows of $\mathbf{U}_d$ are copied into the Transformer's
 \texttt{nn.Embedding} layer as initial weights; the PAD embedding is
-zeroed. The embedding layer is then frozen for 5 epochs---forcing
-attention heads to learn to read the pre-encoded structure---before
+zeroed. The embedding layer is then frozen for 5 epochs; forcing
+attention heads to learn to read the pre-encoded structure; before
 unfreezing for end-to-end fine-tuning.
 
 \subsection{Faithfulness Deletion Test}
@@ -530,7 +495,7 @@ norms and attract attention from early in training.
 Fusob (ransomware, 0.0\%\,$\to$\,22.2\%) improves substantially for a
 different reason: the plain model is probability-saturated
 ($P_0{>}0.999$) and deletion moves nothing, while the Markov model
-retains sensitivity---masking its top-attended tokens causes a
+retains sensitivity: masking its top-attended tokens causes a
 measurable confidence drop, indicating it has learned to rely on
 a specific subset of API calls rather than classifying by exclusion.
 
@@ -538,7 +503,7 @@ a specific subset of API calls rather than classifying by exclusion.
 GinMaster is the notable outlier (51.9\%\,$\to$\,12.0\%).
 GinMaster is a \textit{parasitic} malware that embeds itself inside
 legitimate host applications; its API traces are therefore dominated
-by host-app behavior---UI lifecycle, I/O, and network calls typical
+by host-app behavior: UI lifecycle, I/O, and network calls typical
 of benign software. The global Markov transition matrix is shaped by
 the majority of non-GinMaster samples, so Markov-initialized embeddings
 assign high salience to host-app API patterns rather than to the
@@ -600,11 +565,10 @@ be defensible, a model with more faithful attention may be preferred
 even at a small accuracy cost.
 
 \textbf{Limitations.}
-Results are on a single corpus with 8 families; generalization to other
-datasets (Drebin, CICAndMal2017) or to unseen families is untested.
+Results are on a single dynamic corpus with 8 families. Because our architecture requires ordered API sequences, it cannot be evaluated on standard static benchmarks (e.g., Drebin) or hybrid datasets lacking pure execution traces (e.g., CICAndMal2017). Generalization to other sequential datasets thus remains untested.
 Fusob and SmsPay ($\leq$173 samples each) have few test examples per
 fold, making per-class metrics for these families noisy.
-Vocabulary is constructed before fold splitting---a soft leakage of
+Vocabulary is constructed before fold splitting: a soft leakage of
 token existence (but not label information) that is documented but
 not resolved.
 Finally, the deletion test is a necessary but not sufficient condition
@@ -672,8 +636,8 @@ M.~Sundararajan, A.~Taly, and Q.~Yan,
 in \textit{Proc. ICML}, 2017, pp.\ 3319--3328.
 
 \bibitem{dangelo2023kspaced}
-G.~D'Angelo, F.~Palmieri, and S.~Robustelli,
-``k-Spaced associative classification rules for mobile malware detection,''
+G.~D'Angelo, F.~Palmieri, and A.~Robustelli,
+``Privacy-preserving malware detection in Android-based IoT devices through federated Markov chains,''
 \textit{Expert Syst.\ Appl.}, 2023.
 
 \bibitem{nataraj2011malware}
