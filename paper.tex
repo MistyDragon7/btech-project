@@ -1,7 +1,8 @@
-\documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
+\documentclass[12pt]{article}
 
-\usepackage{cite}
+\usepackage{authblk}
+\usepackage[round]{natbib}
+\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
@@ -23,31 +24,14 @@
 \title{Markov-Initialized Transformers for Explainable\\
 Android Malware Family Classification}
 
-\author{
-\IEEEauthorblockN{Arav Jain\textsuperscript{*}\thanks{*These authors contributed equally to this work.}}
-\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
-\textit{Delhi Technological University}\\
-New Delhi, India\\
-aravjain\_mc22a13\_49@dtu.ac.in}
-\\[0.2cm]
-\IEEEauthorblockN{Divyanshu Bansal\textsuperscript{*}}
-\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
-\textit{Delhi Technological University}\\
-New Delhi, India\\
-divyanshubansal\_mc22a14\_03@dtu.ac.in}
-\and
-\IEEEauthorblockN{Harij Sharma\textsuperscript{*}}
-\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
-\textit{Delhi Technological University}\\
-New Delhi, India\\
-harijsharma\_mc22a14\_10@dtu.ac.in}
-\\[0.2cm]
-\IEEEauthorblockN{Anshul Arora\textsuperscript{*}}
-\IEEEauthorblockA{\textit{Department of Applied Mathematics}\\
-\textit{Delhi Technological University}\\
-New Delhi, India\\
-anshularora@dtu.ac.in}
-}
+\author[1]{Arav Jain}
+\author[1]{Divyanshu Bansal}
+\author[1]{Harij Sharma}
+\author[1]{Anshul Arora}
+\affil[1]{Department of Applied Mathematics, Delhi Technological University, New Delhi, India\\
+\texttt{\{aravjain\_mc22a13\_49, divyanshubansal\_mc22a14\_03, harijsharma\_mc22a14\_10, anshularora\}@dtu.ac.in}}
+
+\date{}
 
 \maketitle
 
@@ -55,14 +39,14 @@ anshularora@dtu.ac.in}
 Mobile malware sandboxes generate rich API call traces that capture true
 runtime behavior, but the deep learning models that classify these traces
 offer little insight into their decisions.
-We explore whether embedding initialization can make a Transformer's own
+This study explores whether embedding initialization can make a Transformer's own
 attention mechanism more interpretable.
-Our approach builds a global multi-step API transition matrix,
+The proposed approach builds a global multi-step API transition matrix,
 factorizes it via Truncated SVD, and uses the resulting vectors to
 initialize the model's token embeddings prior to supervised training,
 encoding global behavioral structure into the embedding space from the
 outset.
-To measure the effect on transparency, we use a deletion test: if masking
+To measure the effect on transparency, a deletion test is utilized: if masking
 the tokens that the \textit{[CLS]} attention map ranks highest causes a
 larger confidence drop than masking random tokens, the attention is
 meaningfully aligned with the model's actual decision.
@@ -74,18 +58,16 @@ A per-family breakdown reveals that the gain is concentrated in families
 with stereotyped API chains and absent for parasitic malware that blends
 into host-app traffic, offering a principled account of where structural
 initialization helps.
-\end{abstract}
 
-\begin{IEEEkeywords}
-Android malware classification, Transformer, explainability,
+\textbf{Keywords:} Android malware classification, Transformer, explainability,
 Markov chain, API call sequences, attention faithfulness
-\end{IEEEkeywords}
+\end{abstract}
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Introduction}
 
 Android malware continues to pose a significant threat to mobile security,
-with millions of new malicious samples detected annually~\cite{av_test_2023}.
+with millions of new malicious samples detected annually~\citep{av_test_2023}.
 Family-level classification, attributing a sample to a specific malware
 family such as Airpush, DroidKungFu, or Fusob, is essential for incident
 response, threat intelligence, and understanding the behavioral evolution
@@ -97,7 +79,7 @@ Dynamic analysis via sandboxing captures actual runtime API calls rather
 than static bytecode, providing traces that are robust to code obfuscation.
 Deep learning models, such as CNNs and LSTMs, achieve
 high accuracy on such traces but operate as black boxes. Post-hoc
-explanation methods such as SHAP~\cite{lundberg2017shap} and LIME
+explanation methods such as SHAP~\citep{lundberg2017shap} and LIME
 explain a surrogate model, not the model itself. Intrinsic
 explainability, where the model's own internal representations serve
 as explanations, remains underexplored in the malware domain.
@@ -107,8 +89,8 @@ is a natural candidate for intrinsic explanation: it produces a
 per-sample importance ranking without any external computation.
 However, whether attention constitutes a \textit{faithful}
 explanation, one that identifies the tokens the model genuinely
-relies on, is empirically contested~\cite{jain2019attention,
-wiegreffe2019attention}. Deletion tests~\cite{samek2017evaluating}
+relies on, is empirically contested~\citep{jain2019attention,
+wiegreffe2019attention}. Deletion tests~\citep{samek2017evaluating}
 provide a concrete criterion that sidesteps the theoretical debate:
 if masking the highest-attention tokens reduces model confidence
 more than masking random tokens, the attention map has predictive
@@ -140,9 +122,9 @@ Our contributions are:
 
 \subsection{Deep Learning for Malware Classification}
 Early static-analysis work represented malware as grayscale bytecode
-images and applied CNNs~\cite{nataraj2011malware}. Sequence-based models
+images and applied CNNs~\citep{nataraj2011malware}. Sequence-based models
 using LSTMs and GRUs on API call traces showed strong generalization to
-unseen variants~\cite{ye2019deep}. More recently, Transformer
+unseen variants~\citep{ye2019deep}. More recently, Transformer
 architectures have been applied to API sequence classification, exploiting
 self-attention to model long-range behavioral dependencies between API
 calls. None of these works directly assess the faithfulness of the
@@ -150,20 +132,18 @@ resulting attention-based explanations.
 
 \subsection{Explainability in Security ML}
 Post-hoc methods such as SHAP and LIME have been applied to malware
-classifiers~\cite{lundberg2017shap}, but they explain a surrogate model
-rather than the trained model itself. Recent work in explainable Android malware detection has utilized post-hoc techniques; for example, Soi et al.~\cite{soi2024enhancing} apply SHAP to 1D-CNNs over API sequences, while Wu et al.~\cite{wu2021why} use input gradients for LSTMs. However, these methods typically focus on single-API attributions post-training. In contrast, our approach intrinsically encodes transition patterns directly into the embedding space.
+classifiers~\citep{lundberg2017shap}, but they explain a surrogate model
+rather than the trained model itself. Recent work in explainable Android malware detection has utilized post-hoc techniques; for example, \citet{soi2024enhancing} apply SHAP to 1D-CNNs over API sequences, while \citet{wu2021why} use input gradients for LSTMs. However, these methods typically focus on single-API attributions post-training. In contrast, our approach intrinsically encodes transition patterns directly into the embedding space.
 
 The use of attention weights as
-intrinsic explanations is theoretically contested: Jain and
-Wallace~\cite{jain2019attention} show that alternative attention
+intrinsic explanations is theoretically contested: \citet{jain2019attention} show that alternative attention
 distributions can yield identical predictions, undermining the claim
-that attention reveals what the model relies on; Wiegreffe and
-Pinter~\cite{wiegreffe2019attention} argue attention can still serve as
+that attention reveals what the model relies on; \citet{wiegreffe2019attention} argue attention can still serve as
 a partial explanation under different faithfulness definitions.
-Deletion tests~\cite{samek2017evaluating} provide an empirical criterion that sidesteps this debate: they measure directly
+Deletion tests~\citep{samek2017evaluating} provide an empirical criterion that sidesteps this debate: they measure directly
 whether the tokens a model attends to are the tokens it relies on.
-While gradient-based approaches~\cite{sundararajan2017integrated} or
-attention rollout~\cite{abnar2020rollout} can yield more accurate saliency maps,
+While gradient-based approaches~\citep{sundararajan2017integrated} or
+attention rollout~\citep{abnar2020rollout} can yield more accurate saliency maps,
 they require computationally expensive backward passes or multi-layer
 composition at inference time. We use raw averaged CLS attention as our explanation
 because it requires no additional computation and is directly
@@ -171,10 +151,10 @@ interpretable to practitioners; the deletion test then provides
 empirical evidence of whether this simple explanation is meaningful.
 
 \subsection{Graph-Based and Markov Approaches}
-D'Angelo et al.~\cite{dangelo2023kspaced} model malware behavior as
+\citet{dangelo2023kspaced} model malware behavior as
 k-spaced associative rules extracted from Droidmon API traces, achieving
 strong classification on the same dataset we use.
-GloVe~\cite{pennington2014glove} and Word2Vec~\cite{mikolov2013word2vec}
+GloVe~\citep{pennington2014glove} and Word2Vec~\citep{mikolov2013word2vec}
 establish the broader precedent for deriving dense token embeddings from
 co-occurrence matrix factorization. We are the first to bridge Markov
 transition modeling with Transformer embedding initialization for malware
@@ -186,7 +166,7 @@ directly via a deletion test.
 
 \subsection{Preprocessing and Tokenization}
 We use API call traces from the Droidmon dynamic analysis
-sandbox~\cite{droidmon}. Each trace is a sequence of Android API events
+sandbox~\citep{droidmon}. Each trace is a sequence of Android API events
 recorded during sandboxed execution. We apply reflection-aware
 tokenization: calls resolved via Java reflection are tagged
 \texttt{REFL:class.method} to preserve the true call target rather than
@@ -204,7 +184,7 @@ more family-discriminating signal.
 \subsection{Transformer Architecture}
 \label{sec:arch}
 
-Our Transformer~\cite{vaswani2017attention} (Fig.~\ref{fig:arch})
+Our Transformer~\citep{vaswani2017attention} (Fig.~\ref{fig:arch})
 prepends a learnable \textit{[CLS]} token to every input sequence and
 classifies from the CLS final hidden state.
 
@@ -283,7 +263,7 @@ We accumulate these into a global count matrix $\mathbf{C} \in \mathbb{R}^{|V| \
 Using a k-spacing of $[1,10]$ captures both local and medium-range API co-occurrences, which is crucial for modeling multi-step malware behavior. A global matrix (rather than per-class matrices) is used because class labels are unavailable at inference time.
 
 \textbf{SVD factorization.}
-We apply Truncated SVD to factorize $\mathbf{T} \approx \mathbf{U}_d \boldsymbol{\Sigma}_d \mathbf{V}_d^\top$, retaining $d_{\text{model}}=128$ components. Each row of the left singular matrix $\mathbf{U}_d \in \mathbb{R}^{|V| \times d_{\text{model}}}$ encodes an API's behavioral context as a dense vector. Thus, APIs that share similar outgoing transition profiles (like the constituent calls of an SMS-fraud sequence) receive geometrically proximate embedding vectors. This provides a structural inductive bias toward attending to semantically coherent API groups before training begins, analogous to GloVe~\cite{pennington2014glove}.
+We apply Truncated SVD to factorize $\mathbf{T} \approx \mathbf{U}_d \boldsymbol{\Sigma}_d \mathbf{V}_d^\top$, retaining $d_{\text{model}}=128$ components. Each row of the left singular matrix $\mathbf{U}_d \in \mathbb{R}^{|V| \times d_{\text{model}}}$ encodes an API's behavioral context as a dense vector. Thus, APIs that share similar outgoing transition profiles (like the constituent calls of an SMS-fraud sequence) receive geometrically proximate embedding vectors. This provides a structural inductive bias toward attending to semantically coherent API groups before training begins, analogous to GloVe~\citep{pennington2014glove}.
 
 \textbf{Initialization.}
 The rows of $\mathbf{U}_d$ are copied into the Transformer's
@@ -327,19 +307,18 @@ The SVD embedding dimension used is $d_{\text{model}}=128$.
 \label{sec:setup}
 
 \subsection{Dataset}
-We use the Droidmon execution traces from D'Angelo et
-al.~\cite{dangelo2023kspaced}, obtained directly from the authors.
+We use the Droidmon execution traces from \citet{dangelo2023kspaced}, obtained directly from the authors.
 Samples with trace length $< 5$ API calls are excluded, yielding 9,337
 traces across 8 malware families (Table~\ref{tab:dataset}). The corpus
 exhibits a 35$\times$ class imbalance between the dominant family
 (Airpush, 63\%) and the two smallest (Fusob and SmsPay, $<2\%$ each).
 Class-weighted loss and stratified fold assignment mitigate this imbalance.
 
-Our methodology relies on dynamic API traces, which capture runtime behavior and obfuscation resistance, differentiating it from static-feature datasets like Drebin~\cite{drebin2014} or CICAndMal2017~\cite{lashkari2018cicandmal2017}. However, evaluating on a single dataset remains a limitation; future work must verify generalization to other benchmarks.
+Our methodology relies on dynamic API traces, which capture runtime behavior and obfuscation resistance, differentiating it from static-feature datasets like Drebin~\citep{drebin2014} or CICAndMal2017~\citep{lashkari2018cicandmal2017}. However, evaluating on a single dataset remains a limitation; future work must verify generalization to other benchmarks.
 
 \begin{table}[t]
 \centering
-\caption{Dataset: Droidmon traces from D'Angelo et al.~\cite{dangelo2023kspaced}.}
+\caption{Dataset: Droidmon traces from \citet{dangelo2023kspaced}.}
 \label{tab:dataset}
 \begin{tabular}{lrl}
 \toprule
@@ -360,9 +339,9 @@ Fusob        &   166 & Ransomware \\
 \end{table}
 
 \subsection{Baselines}
-We compare against: Random Forest~\cite{breiman2001rf} (100 trees),
+We compare against: Random Forest~\citep{breiman2001rf} (100 trees),
 LinearSVM, Decision Tree, Gaussian Na\"{i}ve Bayes (GNB), and a 2-layer
-BiLSTM~\cite{hochreiter1997lstm} ($d=128$, mean-pooled). All classical
+BiLSTM~\citep{hochreiter1997lstm} ($d=128$, mean-pooled). All classical
 models use bag-of-API-ngrams features (TF-IDF) with identical class
 weights; all neural models use the same sequence representation and
 folds as the Transformers.
@@ -437,7 +416,6 @@ attention heads at the same architecture and scale.
 \caption{Deletion test: mean probability drop $\Delta$ when masking top-$m$
   CLS-attention tokens vs.\ $m$ random tokens (240 samples, 8 families).}
 \label{tab:faithfulness}
-\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llccc}
 \toprule
 \textbf{Model} & \textbf{Metric} & $m{=}5$ & $m{=}10$ & $m{=}20$ \\
@@ -452,8 +430,7 @@ attention heads at the same architecture and scale.
   & $\Delta_{\text{rand}}$  & 0.01\% &  0.9\%  &  0.1\% \\
   & Gap $G$                 & \textbf{9.5\%} & \textbf{17.4\%} & \textbf{27.1\%} \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 \end{table}
 
 \subsection{Per-Family Faithfulness}
@@ -595,110 +572,114 @@ matrices, PPMI normalization of $\mathbf{T}$ prior to SVD, and
 validation on additional corpora to test whether the faithfulness
 improvement generalizes beyond this dataset.
 
+\section*{Acknowledgements}
+
+This work was supported by the Department of Applied Mathematics at Delhi Technological University.
+
 % ─────────────────────────────────────────────────────────────────────────────
-\bibliographystyle{IEEEtran}
+\bibliographystyle{apalike}
 
-\begin{thebibliography}{00}
+\begin{thebibliography}{}
 
-\bibitem{av_test_2023}
-AV-TEST Institute, ``Malware statistics \& trends report,''
-\textit{av-test.org}, 2023.
-
-\bibitem{lundberg2017shap}
-S.~M. Lundberg and S.-I. Lee,
-``A unified approach to interpreting model predictions,''
-in \textit{Proc. NeurIPS}, 2017, pp.\ 4765--4774.
-
-\bibitem{jain2019attention}
-S.~Jain and B.~C. Wallace,
-``Attention is not explanation,''
-in \textit{Proc. NAACL-HLT}, 2019, pp.\ 3543--3556.
-
-\bibitem{wiegreffe2019attention}
-S.~Wiegreffe and Y.~Pinter,
-``Attention is not not explanation,''
-in \textit{Proc. EMNLP-IJCNLP}, 2019, pp.\ 11--20.
-
-\bibitem{samek2017evaluating}
-W.~Samek, A.~Binder, G.~Montavon, S.~Lapuschkin, and K.-R. M\"{u}ller,
-``Evaluating the visualization of what a deep neural network has learned,''
-\textit{IEEE Trans.\ Neural Netw.\ Learn.\ Syst.}, vol.\ 28, no.\ 11,
-pp.\ 2660--2673, 2017.
-
-\bibitem{abnar2020rollout}
-S.~Abnar and W.~Zuidema,
+\bibitem[Abnar and Zuidema(2020)]{abnar2020rollout}
+Abnar, S., and Zuidema, W. (2020).
 ``Quantifying attention flow in Transformers,''
-in \textit{Proc. ACL}, 2020, pp.\ 4190--4197.
+in \textit{Proc. ACL}, pp.\ 4190--4197.
 
-\bibitem{sundararajan2017integrated}
-M.~Sundararajan, A.~Taly, and Q.~Yan,
-``Axiomatic attribution for deep networks,''
-in \textit{Proc. ICML}, 2017, pp.\ 3319--3328.
-
-\bibitem{dangelo2023kspaced}
-G.~D'Angelo, F.~Palmieri, and A.~Robustelli,
-``Privacy-preserving malware detection in Android-based IoT devices through federated Markov chains,''
-\textit{Expert Syst.\ Appl.}, 2023.
-
-\bibitem{nataraj2011malware}
-L.~Nataraj, S.~Karthikeyan, G.~Jacob, and B.~S. Manjunath,
-``Malware images: Visualization and automatic classification,''
-in \textit{Proc. VizSec}, 2011, pp.\ 1--7.
-
-\bibitem{ye2019deep}
-Y.~Ye, T.~Li, D.~Adjeroh, and S.~S. Iyengar,
-``A survey on malware detection using data mining techniques,''
-\textit{ACM Comput.\ Surv.}, vol.\ 50, no.\ 3, pp.\ 41:1--41:40, 2017.
-
-\bibitem{vaswani2017attention}
-A.~Vaswani et al.,
-``Attention is all you need,''
-in \textit{Proc. NeurIPS}, 2017, pp.\ 5998--6008.
-
-\bibitem{pennington2014glove}
-J.~Pennington, R.~Socher, and C.~D. Manning,
-``GloVe: Global vectors for word representation,''
-in \textit{Proc. EMNLP}, 2014, pp.\ 1532--1543.
-
-\bibitem{mikolov2013word2vec}
-T.~Mikolov et al.,
-``Distributed representations of words and phrases and their compositionality,''
-in \textit{Proc. NeurIPS}, 2013, pp.\ 3111--3119.
-
-\bibitem{droidmon}
-idanr1986, ``Droidmon - API monitor for Dalvik,''
-GitHub repository, 2014. [Online].
-Available: \url{https://github.com/idanr1986/droidmon}
-
-\bibitem{hochreiter1997lstm}
-S.~Hochreiter and J.~Schmidhuber,
-``Long short-term memory,''
-\textit{Neural Comput.}, vol.\ 9, no.\ 8, pp.\ 1735--1780, 1997.
-
-\bibitem{breiman2001rf}
-L.~Breiman,
-``Random forests,''
-\textit{Mach.\ Learn.}, vol.\ 45, no.\ 1, pp.\ 5--32, 2001.
-
-\bibitem{soi2024enhancing}
-D.~Soi et al.,
-``Enhancing Android malware detection explainability through function call graph APIs,''
-\textit{Journal of Information Security and Applications}, vol.\ 80, p.\ 103691, 2024.
-
-\bibitem{wu2021why}
-T.~Wu, J.~Liu, et al.,
-``Why an android app is classified as malware: Toward malware classification interpretation,''
-\textit{ACM Trans.\ Softw.\ Eng.\ Methodol.\ (TOSEM)}, 2021.
-
-\bibitem{drebin2014}
-D.~Arp et al.,
+\bibitem[Arp et~al.(2014)]{drebin2014}
+Arp, D., Spreitzenbarth, M., H\"{u}bner, M., Gascon, H., and Rieck, K. (2014).
 ``Drebin: Effective and explainable detection of android malware in your pocket,''
-in \textit{NDSS}, 2014.
+in \textit{NDSS}.
 
-\bibitem{lashkari2018cicandmal2017}
-A.~H. Lashkari et al.,
+\bibitem[AV-TEST Institute(2023)]{av_test_2023}
+AV-TEST Institute (2023).
+``Malware statistics \& trends report,''
+\textit{av-test.org}.
+
+\bibitem[Breiman(2001)]{breiman2001rf}
+Breiman, L. (2001).
+``Random forests,''
+\textit{Mach.\ Learn.}, vol.\ 45, no.\ 1, pp.\ 5--32.
+
+\bibitem[D'Angelo et~al.(2023)]{dangelo2023kspaced}
+D'Angelo, G., Farsimadan, E., Ficco, M., Palmieri, F., and Robustelli, A. (2023).
+``Privacy-preserving malware detection in Android-based IoT devices through federated Markov chains,''
+\textit{Expert Syst.\ Appl.}.
+
+\bibitem[Hochreiter and Schmidhuber(1997)]{hochreiter1997lstm}
+Hochreiter, S., and Schmidhuber, J. (1997).
+``Long short-term memory,''
+\textit{Neural Comput.}, vol.\ 9, no.\ 8, pp.\ 1735--1780.
+
+\bibitem[idanr1986(2014)]{droidmon}
+idanr1986 (2014).
+``Droidmon - API monitor for Dalvik,''
+GitHub repository. Available: \url{https://github.com/idanr1986/droidmon}.
+
+\bibitem[Jain and Wallace(2019)]{jain2019attention}
+Jain, S., and Wallace, B. C. (2019).
+``Attention is not explanation,''
+in \textit{Proc. NAACL-HLT}, pp.\ 3543--3556.
+
+\bibitem[Lashkari et~al.(2018)]{lashkari2018cicandmal2017}
+Lashkari, A. H., Kadir, A. F. A., Taheri, L., and Ghorbani, A. A. (2018).
 ``Toward developing a systematic approach to generate benchmark android malware datasets and classification,''
-in \textit{IEEE ICCST}, 2018.
+in \textit{IEEE ICCST}.
+
+\bibitem[Lundberg and Lee(2017)]{lundberg2017shap}
+Lundberg, S. M., and Lee, S.-I. (2017).
+``A unified approach to interpreting model predictions,''
+in \textit{Proc. NeurIPS}, pp.\ 4765--4774.
+
+\bibitem[Mikolov et~al.(2013)]{mikolov2013word2vec}
+Mikolov, T., Sutskever, I., Chen, K., Corrado, G. S., and Dean, J. (2013).
+``Distributed representations of words and phrases and their compositionality,''
+in \textit{Proc. NeurIPS}, pp.\ 3111--3119.
+
+\bibitem[Nataraj et~al.(2011)]{nataraj2011malware}
+Nataraj, L., Karthikeyan, S., Jacob, G., and Manjunath, B. S. (2011).
+``Malware images: Visualization and automatic classification,''
+in \textit{Proc. VizSec}, pp.\ 1--7.
+
+\bibitem[Pennington et~al.(2014)]{pennington2014glove}
+Pennington, J., Socher, R., and Manning, C. D. (2014).
+``GloVe: Global vectors for word representation,''
+in \textit{Proc. EMNLP}, pp.\ 1532--1543.
+
+\bibitem[Samek et~al.(2017)]{samek2017evaluating}
+Samek, W., Binder, A., Montavon, G., Lapuschkin, S., and M\"{u}ller, K.-R. (2017).
+``Evaluating the visualization of what a deep neural network has learned,''
+\textit{IEEE Trans.\ Neural Netw.\ Learn.\ Syst.}, vol.\ 28, no.\ 11, pp.\ 2660--2673.
+
+\bibitem[Soi et~al.(2024)]{soi2024enhancing}
+Soi, D., Sanna, A., Maiorca, D., and Giacinto, G. (2024).
+``Enhancing Android malware detection explainability through function call graph APIs,''
+\textit{Journal of Information Security and Applications}, vol.\ 80, p.\ 103691.
+
+\bibitem[Sundararajan et~al.(2017)]{sundararajan2017integrated}
+Sundararajan, M., Taly, A., and Yan, Q. (2017).
+``Axiomatic attribution for deep networks,''
+in \textit{Proc. ICML}, pp.\ 3319--3328.
+
+\bibitem[Vaswani et~al.(2017)]{vaswani2017attention}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., and Polosukhin, I. (2017).
+``Attention is all you need,''
+in \textit{Proc. NeurIPS}, pp.\ 5998--6008.
+
+\bibitem[Wiegreffe and Pinter(2019)]{wiegreffe2019attention}
+Wiegreffe, S., and Pinter, Y. (2019).
+``Attention is not not explanation,''
+in \textit{Proc. EMNLP-IJCNLP}, pp.\ 11--20.
+
+\bibitem[Wu et~al.(2021)]{wu2021why}
+Wu, T., Chen, S., Gao, C., Fan, L., Liu, Y., Wen, W., and Lyu, M. R. (2021).
+``Why an android app is classified as malware: Toward malware classification interpretation,''
+\textit{ACM Trans.\ Softw.\ Eng.\ Methodol.\ (TOSEM)}.
+
+\bibitem[Ye et~al.(2017)]{ye2019deep}
+Ye, Y., Li, T., Adjeroh, D., and Iyengar, S. S. (2017).
+``A survey on malware detection using data mining techniques,''
+\textit{ACM Comput.\ Surv.}, vol.\ 50, no.\ 3, pp.\ 41:1--41:40.
 
 \end{thebibliography}
 
