@@ -1,0 +1,60 @@
+11:18:58 [INFO] bilstm: BiLSTM config: max_seq_len=512  truncation=head
+11:18:58 [INFO] bilstm: Loading FULL corpus (matches GAME-Mal benchmark)...
+11:18:58 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+11:19:01 [INFO] src.preprocessing:   Airpush: 5880 samples
+11:19:01 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+11:19:01 [INFO] src.preprocessing:   Fusob: 166 samples
+11:19:02 [INFO] src.preprocessing:   Genpua: 312 samples
+11:19:02 [INFO] src.preprocessing:   GinMaster: 523 samples
+11:19:04 [INFO] src.preprocessing:   Jisut: 430 samples
+11:19:05 [INFO] src.preprocessing:   Opfake: 596 samples
+11:19:05 [INFO] src.preprocessing:   SmsPay: 173 samples
+11:19:05 [INFO] bilstm: Loaded 9337 samples across 8 families
+11:19:05 [INFO] src.preprocessing: Vocabulary size: 1118 (min_freq=2)
+11:19:06 [INFO] bilstm: Device: mps
+11:19:06 [INFO] bilstm: ============================================================
+11:19:06 [INFO] bilstm: FOLD 1/3   train=6224  test=3113
+11:19:06 [INFO] bilstm: ============================================================
+11:19:47 [INFO] src.bilstm: BiLSTM ep=  1 train_loss=0.9996 acc=0.7681 f1=0.6814
+11:22:24 [INFO] src.bilstm: BiLSTM ep=  5 train_loss=0.2841 acc=0.8850 f1=0.8037
+11:25:38 [INFO] src.bilstm: BiLSTM ep= 10 train_loss=0.1127 acc=0.9268 f1=0.8636
+11:28:54 [INFO] src.bilstm: BiLSTM ep= 15 train_loss=0.0498 acc=0.9348 f1=0.8787
+11:32:09 [INFO] src.bilstm: BiLSTM ep= 20 train_loss=0.0313 acc=0.9245 f1=0.8707
+11:35:31 [INFO] src.bilstm: BiLSTM ep= 25 train_loss=0.0269 acc=0.9422 f1=0.8815
+11:38:52 [INFO] src.bilstm: BiLSTM ep= 30 train_loss=0.0203 acc=0.9415 f1=0.8844
+11:42:10 [INFO] src.bilstm: BiLSTM ep= 35 train_loss=0.0169 acc=0.9441 f1=0.8889
+11:45:29 [INFO] src.bilstm: BiLSTM ep= 40 train_loss=0.0160 acc=0.9457 f1=0.8867
+11:47:30 [INFO] src.bilstm: BiLSTM early stop ep=43 best_f1=0.8903
+11:47:30 [INFO] bilstm: FOLD 1 -> acc=0.9444 f1=0.8903 auc=0.9902
+11:47:30 [INFO] bilstm: ============================================================
+11:47:30 [INFO] bilstm: FOLD 2/3   train=6225  test=3112
+11:47:30 [INFO] bilstm: ============================================================
+11:48:10 [INFO] src.bilstm: BiLSTM ep=  1 train_loss=1.0474 acc=0.8316 f1=0.7445
+11:50:51 [INFO] src.bilstm: BiLSTM ep=  5 train_loss=0.2968 acc=0.9094 f1=0.8280
+11:54:10 [INFO] src.bilstm: BiLSTM ep= 10 train_loss=0.1424 acc=0.9422 f1=0.8889
+11:57:27 [INFO] src.bilstm: BiLSTM ep= 15 train_loss=0.0683 acc=0.9444 f1=0.8880
+12:00:43 [INFO] src.bilstm: BiLSTM ep= 20 train_loss=0.0437 acc=0.9470 f1=0.8880
+12:03:55 [INFO] src.bilstm: BiLSTM ep= 25 train_loss=0.0328 acc=0.9512 f1=0.8948
+12:07:07 [INFO] src.bilstm: BiLSTM ep= 30 train_loss=0.0239 acc=0.9476 f1=0.8911
+12:10:18 [INFO] src.bilstm: BiLSTM ep= 35 train_loss=0.0237 acc=0.9521 f1=0.8977
+12:10:18 [INFO] src.bilstm: BiLSTM early stop ep=35 best_f1=0.8980
+12:10:18 [INFO] bilstm: FOLD 2 -> acc=0.9534 f1=0.8980 auc=0.9933
+12:10:18 [INFO] bilstm: ============================================================
+12:10:18 [INFO] bilstm: FOLD 3/3   train=6225  test=3112
+12:10:18 [INFO] bilstm: ============================================================
+12:10:57 [INFO] src.bilstm: BiLSTM ep=  1 train_loss=1.0410 acc=0.8130 f1=0.7030
+12:13:32 [INFO] src.bilstm: BiLSTM ep=  5 train_loss=0.2997 acc=0.9107 f1=0.8520
+12:16:44 [INFO] src.bilstm: BiLSTM ep= 10 train_loss=0.1536 acc=0.9049 f1=0.8375
+12:19:58 [INFO] src.bilstm: BiLSTM ep= 15 train_loss=0.0504 acc=0.9306 f1=0.8769
+12:23:16 [INFO] src.bilstm: BiLSTM ep= 20 train_loss=0.0283 acc=0.9293 f1=0.8797
+12:26:31 [INFO] src.bilstm: BiLSTM ep= 25 train_loss=0.0195 acc=0.9409 f1=0.8887
+12:29:46 [INFO] src.bilstm: BiLSTM ep= 30 train_loss=0.0149 acc=0.9467 f1=0.8919
+12:32:58 [INFO] src.bilstm: BiLSTM ep= 35 train_loss=0.0130 acc=0.9454 f1=0.8936
+12:36:11 [INFO] src.bilstm: BiLSTM ep= 40 train_loss=0.0107 acc=0.9431 f1=0.8841
+12:39:25 [INFO] src.bilstm: BiLSTM ep= 45 train_loss=0.0105 acc=0.9438 f1=0.8866
+12:40:42 [INFO] src.bilstm: BiLSTM early stop ep=47 best_f1=0.8936
+12:40:42 [INFO] bilstm: FOLD 3 -> acc=0.9454 f1=0.8936 auc=0.9920
+12:40:42 [INFO] bilstm: ============================================================
+12:40:42 [INFO] bilstm: BiLSTM 3-fold complete in 81.6 min
+12:40:42 [INFO] bilstm: acc=0.9477 +/- 0.0040   f1=0.8940 +/- 0.0032   auc=0.9918 +/- 0.0013
+12:40:42 [INFO] bilstm: Saved: /Users/aravjain/PERSONAL/btech-project/results/bilstm_summary.json

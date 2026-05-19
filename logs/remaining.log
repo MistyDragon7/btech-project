@@ -1,0 +1,18 @@
+[2026-04-26 01:12:59] === chained runner started ===
+[2026-04-26 01:12:59] waiting for seq_len sweep PID=93407
+[2026-04-26 01:24:46] === chained runner started ===
+[2026-04-26 01:24:46] waiting for seq_len sweep PID=93407
+[2026-04-26 09:23:40] seq_len sweep finished
+[2026-04-26 09:23:40] --- final GAME-Mal 3-fold (best seq_len/truncation) ---
+[2026-04-26 11:18:55] final GAME-Mal 3-fold (best seq_len/truncation) exit=0
+[2026-04-26 11:18:55] --- BiLSTM 3-fold (same config) ---
+[2026-04-26 12:40:42] BiLSTM 3-fold (same config) exit=0
+[2026-04-26 12:40:42] --- deletion test on new saved model ---
+[2026-04-26 12:41:12] deletion test on new saved model exit=0
+[2026-04-26 12:41:12] --- regenerate per-class CSV (corrected column name) ---
+[2026-04-26 12:41:35] regenerate per-class CSV (corrected column name) exit=0
+[2026-04-26 12:41:35] --- aggregate FINAL_REPORT.md ---
+[2026-04-26 12:41:35] aggregate FINAL_REPORT.md exit=0
+[2026-04-26 12:41:35] --- project coherence analysis ---
+[2026-04-26 12:41:35] project coherence analysis exit=1
+[2026-04-26 12:41:35] STEP FAILED: project coherence analysis. See logs/analyze.log. Aborting pipeline.

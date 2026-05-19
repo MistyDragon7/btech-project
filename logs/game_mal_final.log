@@ -1,0 +1,58 @@
+09:23:44 [INFO] game_mal_final: Final config: max_seq_len=512  truncation=head
+09:23:44 [INFO] game_mal_final:   (sweep mean F1=0.8875)
+09:23:44 [INFO] game_mal_final: Loading FULL corpus (len>=5)...
+09:23:44 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+09:23:47 [INFO] src.preprocessing:   Airpush: 5880 samples
+09:23:48 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+09:23:48 [INFO] src.preprocessing:   Fusob: 166 samples
+09:23:48 [INFO] src.preprocessing:   Genpua: 312 samples
+09:23:49 [INFO] src.preprocessing:   GinMaster: 523 samples
+09:23:50 [INFO] src.preprocessing:   Jisut: 430 samples
+09:23:52 [INFO] src.preprocessing:   Opfake: 596 samples
+09:23:52 [INFO] src.preprocessing:   SmsPay: 173 samples
+09:23:52 [INFO] game_mal_final: Loaded 9337 samples across 8 families
+09:23:52 [INFO] src.preprocessing: Vocabulary size: 1118 (min_freq=2)
+09:23:53 [INFO] game_mal_final: Device: mps   vocab_size=1118
+09:23:53 [INFO] game_mal_final: ============================================================
+09:23:53 [INFO] game_mal_final: FOLD 1/3   train=6224  test=3113
+09:23:53 [INFO] game_mal_final: ============================================================
+09:25:04 [INFO] game_mal_final:   ep=  1 train=1.4507 val=1.1112 acc=0.6479 f1=0.5420
+09:29:42 [INFO] game_mal_final:   ep=  5 train=0.3573 val=0.3742 acc=0.9020 f1=0.8302
+09:35:32 [INFO] game_mal_final:   ep= 10 train=0.1943 val=0.3278 acc=0.9197 f1=0.8581
+09:41:17 [INFO] game_mal_final:   ep= 15 train=0.1040 val=0.4186 acc=0.9187 f1=0.8525
+09:47:01 [INFO] game_mal_final:   ep= 20 train=0.0642 val=0.3777 acc=0.9361 f1=0.8693
+09:52:44 [INFO] game_mal_final:   ep= 25 train=0.0472 val=0.4275 acc=0.9309 f1=0.8595
+09:58:34 [INFO] game_mal_final:   ep= 30 train=0.0432 val=0.4697 acc=0.9325 f1=0.8645
+09:59:43 [INFO] game_mal_final:   early stop ep=31 best_f1=0.8757 @ ep=19
+09:59:43 [INFO] game_mal_final: FOLD 1 -> acc=0.9374 f1=0.8757 auc=0.9827 (best ep=19)
+09:59:43 [INFO] game_mal_final: ============================================================
+09:59:43 [INFO] game_mal_final: FOLD 2/3   train=6225  test=3112
+09:59:43 [INFO] game_mal_final: ============================================================
+10:00:50 [INFO] game_mal_final:   ep=  1 train=1.4624 val=0.9408 acc=0.7220 f1=0.5734
+10:05:11 [INFO] game_mal_final:   ep=  5 train=0.3412 val=0.2997 acc=0.9113 f1=0.8423
+10:10:38 [INFO] game_mal_final:   ep= 10 train=0.1782 val=0.3298 acc=0.9126 f1=0.8449
+10:16:14 [INFO] game_mal_final:   ep= 15 train=0.0942 val=0.3486 acc=0.9264 f1=0.8577
+10:21:54 [INFO] game_mal_final:   ep= 20 train=0.0668 val=0.3679 acc=0.9335 f1=0.8686
+10:27:20 [INFO] game_mal_final:   ep= 25 train=0.0495 val=0.3945 acc=0.9309 f1=0.8656
+10:32:46 [INFO] game_mal_final:   ep= 30 train=0.0368 val=0.4075 acc=0.9383 f1=0.8806
+10:38:15 [INFO] game_mal_final:   ep= 35 train=0.0313 val=0.4109 acc=0.9431 f1=0.8837
+10:41:31 [INFO] game_mal_final:   early stop ep=38 best_f1=0.8853 @ ep=26
+10:41:31 [INFO] game_mal_final: FOLD 2 -> acc=0.9386 f1=0.8853 auc=0.9858 (best ep=26)
+10:41:31 [INFO] game_mal_final: ============================================================
+10:41:31 [INFO] game_mal_final: FOLD 3/3   train=6225  test=3112
+10:41:31 [INFO] game_mal_final: ============================================================
+10:42:36 [INFO] game_mal_final:   ep=  1 train=1.4973 val=1.2358 acc=0.6099 f1=0.4899
+10:46:58 [INFO] game_mal_final:   ep=  5 train=0.4040 val=0.3410 acc=0.8975 f1=0.8200
+10:52:26 [INFO] game_mal_final:   ep= 10 train=0.2145 val=0.2840 acc=0.9338 f1=0.8785
+10:57:53 [INFO] game_mal_final:   ep= 15 train=0.1366 val=0.3207 acc=0.9242 f1=0.8733
+11:03:21 [INFO] game_mal_final:   ep= 20 train=0.0792 val=0.3426 acc=0.9425 f1=0.8873
+11:08:49 [INFO] game_mal_final:   ep= 25 train=0.0602 val=0.3577 acc=0.9399 f1=0.8830
+11:14:30 [INFO] game_mal_final:   ep= 30 train=0.0422 val=0.3819 acc=0.9393 f1=0.8829
+11:18:54 [INFO] game_mal_final:   early stop ep=34 best_f1=0.8897 @ ep=22
+11:18:54 [INFO] game_mal_final: FOLD 3 -> acc=0.9418 f1=0.8897 auc=0.9858 (best ep=22)
+11:18:54 [INFO] game_mal_final: Wrote /Users/aravjain/PERSONAL/btech-project/results/game_mal_final.json
+11:18:54 [INFO] game_mal_final: Saved best-fold model (fold 3, ep 22, f1=0.8897) to /Users/aravjain/PERSONAL/btech-project/results/models
+11:18:54 [INFO] game_mal_final: Updated GAME-Mal row in /Users/aravjain/PERSONAL/btech-project/results/results_summary.csv
+11:18:54 [INFO] game_mal_final: ============================================================
+11:18:54 [INFO] game_mal_final: FINAL GAME-Mal 3-fold complete in 115.0 min
+11:18:54 [INFO] game_mal_final: acc=0.9393 +/- 0.0019   f1=0.8836 +/- 0.0058   auc=0.9848 +/- 0.0015

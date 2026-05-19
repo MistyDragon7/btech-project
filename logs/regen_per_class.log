@@ -1,0 +1,9 @@
+Wrote /Users/aravjain/PERSONAL/btech-project/results/game_mal_per_class.csv (column 'auc' renamed to 'balanced_accuracy')
+  Airpush         P=0.994  R=0.984  F1=0.989  bal_acc=0.987
+  DroidKungFu     P=0.965  R=0.965  F1=0.965  bal_acc=0.980
+  Fusob           P=0.982  R=1.000  F1=0.991  bal_acc=1.000
+  Genpua          P=0.821  R=0.939  F1=0.876  bal_acc=0.966
+  GinMaster       P=0.969  R=0.975  F1=0.972  bal_acc=0.987
+  Jisut           P=0.991  R=1.000  F1=0.996  bal_acc=1.000
+  Opfake          P=1.000  R=0.978  F1=0.989  bal_acc=0.989
+  SmsPay          P=0.895  R=0.944  F1=0.919  bal_acc=0.971

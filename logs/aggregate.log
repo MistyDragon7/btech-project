@@ -1,0 +1,3 @@
+[OK] appended BiLSTM to /Users/aravjain/PERSONAL/btech-project/results/results_summary.csv
+[OK] best seq_len config: max_seq_len=512 truncation=head f1=0.8874595786610906
+[OK] wrote /Users/aravjain/PERSONAL/btech-project/results/FINAL_REPORT.md

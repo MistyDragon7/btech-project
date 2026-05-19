@@ -1,0 +1,39 @@
+12:40:45 [INFO] deletion: Device: mps
+12:40:45 [INFO] deletion: Loading corpus...
+12:40:45 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+12:40:48 [INFO] src.preprocessing:   Airpush: 5880 samples
+12:40:49 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+12:40:49 [INFO] src.preprocessing:   Fusob: 166 samples
+12:40:50 [INFO] src.preprocessing:   Genpua: 312 samples
+12:40:50 [INFO] src.preprocessing:   GinMaster: 523 samples
+12:40:51 [INFO] src.preprocessing:   Jisut: 430 samples
+12:40:53 [INFO] src.preprocessing:   Opfake: 596 samples
+12:40:53 [INFO] src.preprocessing:   SmsPay: 173 samples
+12:40:54 [INFO] deletion: [Airpush] k= 5  base=0.974  gate->0.985 (Δ=-0.010)  rand->0.966 (Δ=0.008)
+12:40:55 [INFO] deletion: [Airpush] k=10  base=0.974  gate->0.990 (Δ=-0.016)  rand->0.974 (Δ=0.000)
+12:40:56 [INFO] deletion: [Airpush] k=20  base=0.974  gate->0.968 (Δ=0.006)  rand->0.995 (Δ=-0.021)
+12:40:56 [INFO] deletion: [DroidKungFu] k= 5  base=0.997  gate->0.996 (Δ=0.002)  rand->0.996 (Δ=0.002)
+12:40:57 [INFO] deletion: [DroidKungFu] k=10  base=0.997  gate->0.989 (Δ=0.008)  rand->0.995 (Δ=0.002)
+12:40:58 [INFO] deletion: [DroidKungFu] k=20  base=0.997  gate->0.943 (Δ=0.055)  rand->0.990 (Δ=0.007)
+12:40:59 [INFO] deletion: [Fusob] k= 5  base=1.000  gate->1.000 (Δ=-0.000)  rand->1.000 (Δ=-0.000)
+12:40:59 [INFO] deletion: [Fusob] k=10  base=1.000  gate->1.000 (Δ=-0.000)  rand->1.000 (Δ=0.000)
+12:41:00 [INFO] deletion: [Fusob] k=20  base=1.000  gate->1.000 (Δ=-0.000)  rand->1.000 (Δ=0.000)
+12:41:01 [INFO] deletion: [Genpua] k= 5  base=0.964  gate->0.962 (Δ=0.003)  rand->0.965 (Δ=-0.001)
+12:41:02 [INFO] deletion: [Genpua] k=10  base=0.964  gate->0.956 (Δ=0.008)  rand->0.966 (Δ=-0.002)
+12:41:03 [INFO] deletion: [Genpua] k=20  base=0.964  gate->0.936 (Δ=0.028)  rand->0.944 (Δ=0.020)
+12:41:03 [INFO] deletion: [GinMaster] k= 5  base=0.937  gate->0.935 (Δ=0.002)  rand->0.938 (Δ=-0.001)
+12:41:04 [INFO] deletion: [GinMaster] k=10  base=0.937  gate->0.935 (Δ=0.002)  rand->0.935 (Δ=0.002)
+12:41:05 [INFO] deletion: [GinMaster] k=20  base=0.937  gate->0.935 (Δ=0.002)  rand->0.936 (Δ=0.001)
+12:41:06 [INFO] deletion: [Jisut] k= 5  base=1.000  gate->1.000 (Δ=0.000)  rand->1.000 (Δ=-0.000)
+12:41:06 [INFO] deletion: [Jisut] k=10  base=1.000  gate->1.000 (Δ=0.000)  rand->1.000 (Δ=0.000)
+12:41:07 [INFO] deletion: [Jisut] k=20  base=1.000  gate->1.000 (Δ=0.000)  rand->1.000 (Δ=0.000)
+12:41:08 [INFO] deletion: [Opfake] k= 5  base=0.995  gate->0.995 (Δ=-0.001)  rand->0.995 (Δ=-0.000)
+12:41:09 [INFO] deletion: [Opfake] k=10  base=0.995  gate->0.996 (Δ=-0.002)  rand->0.961 (Δ=0.034)
+12:41:09 [INFO] deletion: [Opfake] k=20  base=0.995  gate->0.996 (Δ=-0.001)  rand->0.987 (Δ=0.007)
+12:41:10 [INFO] deletion: [SmsPay] k= 5  base=0.882  gate->0.881 (Δ=0.002)  rand->0.876 (Δ=0.006)
+12:41:11 [INFO] deletion: [SmsPay] k=10  base=0.882  gate->0.878 (Δ=0.004)  rand->0.883 (Δ=-0.001)
+12:41:12 [INFO] deletion: [SmsPay] k=20  base=0.882  gate->0.874 (Δ=0.008)  rand->0.882 (Δ=0.000)
+12:41:12 [INFO] deletion: Saved /Users/aravjain/PERSONAL/btech-project/results/deletion_test.json
+12:41:12 [INFO] deletion: OVERALL k= 5  Δgate=-0.0005  Δrand=0.0018  diff=-0.0022
+12:41:12 [INFO] deletion: OVERALL k=10  Δgate=0.0006  Δrand=0.0043  diff=-0.0038
+12:41:12 [INFO] deletion: OVERALL k=20  Δgate=0.0123  Δrand=0.0019  diff=0.0104

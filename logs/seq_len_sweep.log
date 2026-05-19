@@ -1,0 +1,73 @@
+00:52:53 [INFO] seq_len_sweep: Loading corpus...
+00:52:53 [INFO] src.preprocessing: Found 8 families: ['Airpush', 'DroidKungFu', 'Fusob', 'Genpua', 'GinMaster', 'Jisut', 'Opfake', 'SmsPay']
+00:52:57 [INFO] src.preprocessing:   Airpush: 5880 samples
+00:52:58 [INFO] src.preprocessing:   DroidKungFu: 1257 samples
+00:52:58 [INFO] src.preprocessing:   Fusob: 166 samples
+00:52:59 [INFO] src.preprocessing:   Genpua: 312 samples
+00:52:59 [INFO] src.preprocessing:   GinMaster: 523 samples
+00:53:01 [INFO] src.preprocessing:   Jisut: 430 samples
+00:53:03 [INFO] src.preprocessing:   Opfake: 596 samples
+00:53:03 [INFO] src.preprocessing:   SmsPay: 173 samples
+00:53:03 [INFO] seq_len_sweep: Loaded 8085 samples across 8 families (len>=30 filter)
+00:53:04 [INFO] src.preprocessing: Vocabulary size: 1109 (min_freq=2)
+00:53:04 [INFO] seq_len_sweep: Device: mps
+00:53:04 [INFO] seq_len_sweep: ============================================================
+00:53:04 [INFO] seq_len_sweep: CONFIG: max_seq_len=256  truncation=head
+00:53:04 [INFO] seq_len_sweep: ============================================================
+00:53:05 [INFO] seq_len_sweep:   fold 1/3 (train=5390 test=2695)
+00:58:19 [INFO] seq_len_sweep:     early stop ep=25 best_f1=0.8898
+00:58:19 [INFO] seq_len_sweep:   -> acc=0.9451 f1=0.8898 auc=0.9856
+00:58:19 [INFO] seq_len_sweep:   fold 2/3 (train=5390 test=2695)
+01:02:51 [INFO] seq_len_sweep:   -> acc=0.9377 f1=0.8737 auc=0.9857
+01:02:51 [INFO] seq_len_sweep:   fold 3/3 (train=5390 test=2695)
+01:07:16 [INFO] seq_len_sweep:     early stop ep=25 best_f1=0.8797
+01:07:16 [INFO] seq_len_sweep:   -> acc=0.9403 f1=0.8797 auc=0.9883
+01:07:16 [INFO] seq_len_sweep: ============================================================
+01:07:16 [INFO] seq_len_sweep: CONFIG: max_seq_len=256  truncation=tail
+01:07:16 [INFO] seq_len_sweep: ============================================================
+01:07:16 [INFO] seq_len_sweep:   fold 1/3 (train=5390 test=2695)
+01:11:22 [INFO] seq_len_sweep:     early stop ep=23 best_f1=0.8582
+01:11:22 [INFO] seq_len_sweep:   -> acc=0.9369 f1=0.8582 auc=0.9832
+01:11:22 [INFO] seq_len_sweep:   fold 2/3 (train=5390 test=2695)
+01:14:40 [INFO] seq_len_sweep:     early stop ep=17 best_f1=0.8558
+01:14:40 [INFO] seq_len_sweep:   -> acc=0.9217 f1=0.8558 auc=0.9776
+01:14:40 [INFO] seq_len_sweep:   fold 3/3 (train=5390 test=2695)
+01:18:27 [INFO] seq_len_sweep:     early stop ep=19 best_f1=0.8622
+01:18:27 [INFO] seq_len_sweep:   -> acc=0.9336 f1=0.8622 auc=0.9820
+01:18:27 [INFO] seq_len_sweep: ============================================================
+01:18:27 [INFO] seq_len_sweep: CONFIG: max_seq_len=512  truncation=head
+01:18:27 [INFO] seq_len_sweep: ============================================================
+01:18:27 [INFO] seq_len_sweep:   fold 1/3 (train=5390 test=2695)
+01:43:11 [INFO] seq_len_sweep:   -> acc=0.9484 f1=0.8940 auc=0.9813
+01:43:11 [INFO] seq_len_sweep:   fold 2/3 (train=5390 test=2695)
+02:02:42 [INFO] seq_len_sweep:     early stop ep=20 best_f1=0.8702
+02:02:42 [INFO] seq_len_sweep:   -> acc=0.9369 f1=0.8702 auc=0.9849
+02:02:42 [INFO] seq_len_sweep:   fold 3/3 (train=5390 test=2695)
+02:26:27 [INFO] seq_len_sweep:   -> acc=0.9481 f1=0.8982 auc=0.9841
+02:26:27 [INFO] seq_len_sweep: ============================================================
+02:26:27 [INFO] seq_len_sweep: CONFIG: max_seq_len=512  truncation=tail
+02:26:27 [INFO] seq_len_sweep: ============================================================
+02:26:27 [INFO] seq_len_sweep:   fold 1/3 (train=5390 test=2695)
+02:50:13 [INFO] seq_len_sweep:     early stop ep=25 best_f1=0.8851
+02:50:13 [INFO] seq_len_sweep:   -> acc=0.9395 f1=0.8851 auc=0.9786
+02:50:13 [INFO] seq_len_sweep:   fold 2/3 (train=5390 test=2695)
+03:14:01 [INFO] seq_len_sweep:   -> acc=0.9325 f1=0.8543 auc=0.9776
+03:14:01 [INFO] seq_len_sweep:   fold 3/3 (train=5390 test=2695)
+03:33:59 [INFO] seq_len_sweep:     early stop ep=21 best_f1=0.8697
+03:33:59 [INFO] seq_len_sweep:   -> acc=0.9336 f1=0.8697 auc=0.9852
+03:33:59 [INFO] seq_len_sweep: ============================================================
+03:33:59 [INFO] seq_len_sweep: CONFIG: max_seq_len=768  truncation=head
+03:33:59 [INFO] seq_len_sweep: ============================================================
+03:33:59 [INFO] seq_len_sweep:   fold 1/3 (train=5390 test=2695)
+04:12:04 [INFO] seq_len_sweep:     early stop ep=25 best_f1=0.8870
+04:12:04 [INFO] seq_len_sweep:   -> acc=0.9503 f1=0.8870 auc=0.9858
+04:12:04 [INFO] seq_len_sweep:   fold 2/3 (train=5390 test=2695)
+04:45:37 [INFO] seq_len_sweep:     early stop ep=22 best_f1=0.8907
+04:45:37 [INFO] seq_len_sweep:   -> acc=0.9499 f1=0.8907 auc=0.9848
+04:45:37 [INFO] seq_len_sweep:   fold 3/3 (train=5390 test=2695)
+05:19:04 [INFO] seq_len_sweep:     early stop ep=22 best_f1=0.8825
+05:19:04 [INFO] seq_len_sweep:   -> acc=0.9377 f1=0.8825 auc=0.9821
+05:19:04 [INFO] seq_len_sweep: ============================================================
+05:19:04 [INFO] seq_len_sweep: CONFIG: max_seq_len=768  truncation=tail
+05:19:04 [INFO] seq_len_sweep: ============================================================
+05:19:04 [INFO] seq_len_sweep:   fold 1/3 (train=5390 test=2695)

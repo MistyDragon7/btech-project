@@ -6,7 +6,15 @@
       "Bash(wc -l /Users/aravjain/PERSONAL/btech-project/extracted_data/SmsPay/*.apk)",
       "Bash(head -5 /Users/aravjain/PERSONAL/btech-project/extracted_data/Fusob/*.apk)",
       "Bash(mkdir -p .claude/memory)",
-      "Bash(cp ~/.claude/projects/-Users-aravjain-PERSONAL-btech-project/memory/*.md .claude/memory/)"
+      "Bash(cp ~/.claude/projects/-Users-aravjain-PERSONAL-btech-project/memory/*.md .claude/memory/)",
+      "Bash(git rm *)",
+      "Bash(git *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('Overall k=20:', d.get\\('overall',{}\\).get\\('k_20',{}\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'k={k}:', d.get\\('overall',{}\\).get\\(f'k_{k}',{}\\)\\) for k in [5,10,20]]\")",
+      "Bash(pdflatex --version)",
+      "Read(//Library/**)",
+      "Read(//usr/local/**)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
